@@ -124,7 +124,9 @@ void CZWeapon::Fire(CZProjectile& projectile)
 	projectile.PreFireProjectile();
 
 	if (!projectile.FireValidityCheck())
-		m_pProjectileList.RemoveProjectile(projectile);
+	{
+		// m_pProjectileList.RemoveProjectile(projectile);
+	}
 	else
 	{
 		

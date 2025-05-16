@@ -82,12 +82,12 @@ void CZProjectile::PreFireProjectile()
 {
 	if (m_shottype == PROJECTILE_TYPE::ONE_FRAME)
 	{
-		CZWeapon::m_pProjectileList.GetNextDirectFireDI(&m_di, &m_di_handle);
+		// CZWeapon::m_pProjectileList.GetNextDirectFireDI(&m_di, &m_di_handle);
 		m_removeASAP = false;
 	}
 	else
 	{
-		CZWeapon::m_pProjectileList.GetNextIndirectFireDI(&m_di, &m_di_handle);
+		// CZWeapon::m_pProjectileList.GetNextIndirectFireDI(&m_di, &m_di_handle);
 		m_removeASAP = false;
 	}
 }

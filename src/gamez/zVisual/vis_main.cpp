@@ -358,6 +358,6 @@ namespace zdb
 
 	void CVisData::NextVertex(u32 stride)
 	{
-		m_vertex_start 
+		
 	}
 }
