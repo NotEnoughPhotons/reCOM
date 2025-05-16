@@ -3,6 +3,118 @@
 CZAnimMain ZAnim;
 bool CZAnimMain::m_LoadFromZAR = false;
 
+static f32 _x;
+
+char* _local_wildcard_ptr = NULL;
+char* _input_str_ptr = NULL;
+u32 _digit_count = 0;
+
+void CZAnimMain::Open()
+{
+	if (m_IsOpen)
+	{
+		Unload();
+		Close();
+	}
+
+	m_version = 0x1e;
+	m_gravity = -9.8f;
+	_x = 0.0f;
+	m_Lod = 2;
+	m_search_external_nodes = false;
+	m_unused = 0;
+	m_animset_count = 0;
+	m_animset_list = NULL;
+	m_cmdset_count = 0;
+	m_cmdset_list = NULL;
+	m_UserActionAnimIndex = 0;
+	m_block_activation_callback = false;
+
+	for (u32 i = 0; i < 41; i++)
+	{
+		m_inv_exp[i] = 1.0f - expf(_x) / (expf(10.0f) - 1.0f);
+		_x += 0.25f;
+		m_exp[i] = expf(_x) / (expf(10.0f) - 1.0f);
+	}
+
+	InitCommands();
+	// NewAnimSet(2);
+
+	                     // Why?
+	m_animset_list[2] = *(CZAnimSet*)0x1;
+	m_animset_list[50] = *(CZAnimSet*)0x1;
+	m_animset_list[98] = *(CZAnimSet*)0x1;
+	m_CurrentFrame = 0;
+	m_RunningAnimCount = 0;
+	m_IsOpen = true;
+}
+
+bool CZAnimMain::Close()
+{
+	bool unloaded = Unload();
+
+	if (_local_wildcard_str)
+	{
+		zfree(_local_wildcard_str);
+		_local_wildcard_str = NULL;
+	}
+
+	_input_str_ptr = NULL;
+	_digit_count = 0;
+
+	if (m_NetworkPacket)
+	{
+		zfree(m_NetworkPacket);
+		m_NetworkPacket = NULL;
+	}
+
+	m_NetworkPacketMaxSize = 0;
+	m_IsOpen = false;
+	m_IsStarted = false;
+	
+	return unloaded;
+}
+
+bool CZAnimMain::Unload()
+{
+	// CZAnimNameTable::Unload();
+
+	if (m_animset_list)
+	{
+		for (u32 i = 0; i < m_animset_count; i++)
+		{
+			// CZAnimSet::Unload();
+		}
+
+		zfree(m_animset_list);
+		m_animset_list = NULL;
+	}
+
+	m_animset_count = 0;
+	m_CurAnimSet = NULL;
+
+	if (m_cmdset_list)
+	{
+		for (u32 i = 0; i < m_cmdset_count; i++)
+		{
+			// UnloadCmdSet(i);
+		}
+
+		zfree(m_cmdset_list);
+		m_cmdset_list = NULL;
+	}
+
+	m_cmdset_count = 0;
+	m_CurAnim = NULL;
+	m_CurSeq = NULL;
+}
+
+bool CZAnimMain::CmdValid() const
+{
+	_zsequence* sequence = m_CurSeq;
+	return *sequence->cmd_pc < sequence->name_index + sequence->seq_data_size;
+}
+
 void CZAnimMain::CmdNext()
 {
 	m_CurSeq->cmd_pc += *m_CurSeq->cmd_pc;

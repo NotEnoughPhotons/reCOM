@@ -7,6 +7,9 @@
 #include "gamez/zValve/zvalve.h"
 #include "gamez/zSound/zsnd.h"
 
+#define ANIMTYPE_UNKNOWN01 1
+#define ANIMTYPE_CONDITION 2
+
 class CZAnim;
 class CZAnimEx;
 class CZAnimMain;
@@ -29,6 +32,13 @@ namespace zdb
 }
 
 extern CZAnimMain ZAnim;
+
+extern u32* seq_offset_stack;
+extern u32 seq_offset_stack_size;
+
+extern char* _local_wildcard_str;
+extern char* _input_str_ptr;
+extern u32 _digit_count;
 
 static bool CmdAddNode(zdb::CNode node);
 static bool CmdRemoveNode(zdb::CNode node);
@@ -552,12 +562,16 @@ class CZAnimMain : public _zanim_main_params
 public:
 	char* SplitName(char* name, char** splitname);
 
-	void Open() {}
+	void Open();
+	bool Close();
+	bool Unload();
 	bool InitCommands();
 
 	void CmdNext();
 	void CmdNext(s32 program_counter);
 	void CmdSet(s32 program_counter);
+
+	bool CmdValid() const;
 	
 	_zanim_cmd_hdr* AddCmd(const char* name, _zanim_cmd_hdr*(*parser)(_zrdr*), void(*begin)(_zanim_cmd_hdr*), bool(*tick)(_zanim_cmd_hdr*, f32*), void(*end)(_zanim_cmd_hdr*));
 	_zanim_cmd_hdr* AnimParseExpression(_zanim_cmd_hdr* header, _zrdr* reader);
@@ -591,7 +605,7 @@ public:
 
 	u8 m_Lod;
 	void(*m_network_activation_callback)();
-	void(*m_block_activation_callback)();
+	bool m_block_activation_callback;
 
 	_zanim_cmd_hdr m_cmd_if;
 	_zanim_cmd_hdr m_cmd_elseif;
@@ -603,7 +617,7 @@ public:
 	f32 m_exp[41];
 	f32 m_inv_exp[41];
 
-	ZAnimNetworkPacket m_NetworkPacket;
+	ZAnimNetworkPacket* m_NetworkPacket;
 	s32 m_NetworkPacketMaxSize;
 
 	s32 m_RunningAnimCount;
