@@ -1,4 +1,5 @@
 #include "zweapon.h"
+#include "zwep_projectilelist.h"
 #include "gamez/zNetwork/znet.h"
 
 void CZProjectile::Reset()

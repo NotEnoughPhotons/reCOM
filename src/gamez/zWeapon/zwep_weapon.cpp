@@ -123,12 +123,8 @@ void CZWeapon::Fire(CZProjectile& projectile)
 
 	projectile.PreFireProjectile();
 
-	if (!projectile.FireValidityCheck())
-		m_pProjectileList.RemoveProjectile(projectile);
-	else
-	{
-		
-	}
+	// if (!projectile.FireValidityCheck())
+		// m_pProjectileList.RemoveProjectile(projectile);
 }
 
 //	RVA: 0x339A30 -> SCUS_971.34

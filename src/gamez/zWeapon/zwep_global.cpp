@@ -18,6 +18,8 @@ bool CZWeapon::m_allowWeaponIntersection = false;
 u32 CZWeapon::AI_PARAMS::version = 1;
 CSnd* CZWeapon::m_bulletPassSound = NULL;
 
+CZProjectileList CZWeapon::m_pProjectileList;
+
 bool ZWepReader::Read(zar::CZAR& archive, CZWeaponList* weapons, void* ammo)
 {
 	u32 version = 0;
