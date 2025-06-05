@@ -13,8 +13,9 @@ enum PARTICLE_TYPE
 class Particle
 {
 public:
-	struct Props
+	class Props
 	{
+	public:
 		s32 m_refCount;
 
 		Sequence m_textureSeq;
@@ -35,4 +36,41 @@ public:
 		f32 m_visualDensity;
 		bool m_checkFade;
 	};
+
+	class Source
+	{
+	public:
+		Source();
+		~Source();
+
+		static Source* Create();
+
+		void RenderBBox();
+		
+		void GetBBox(CBBox* box);
+		void Default();
+		
+		void CheckExtents(CPnt4D extents, f32 padding);
+		void ColorSequenceAdd(f32 param_1, f32 param_2, f32 param_3, f32 param_4, f32 param_5);
+		void ColorSequenceClear();
+
+		void Tick(f32 dT);
+		void Reset();
+	};
+	
+	class Instance
+	{
+	public:
+		Instance(CPnt4D* param_1, CPnt4D* param_2, CPnt4D* param_3, f32 param_4,
+			     f32 param_5, f32 param_6, zdb::CTexHandle*, Props* properties, Source* source);
+
+		void Expire();
+		void Render(const CMatrix& transform);
+	};
+	
+	static void Open();
+	static void Close();
+
+	static void FlushDynTexList();
+	
 };
