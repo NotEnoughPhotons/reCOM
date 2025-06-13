@@ -42,9 +42,9 @@ void CZAnimMain::Open()
 	// NewAnimSet(2);
 
 	                     // Why?
-	m_animset_list[2] = *(CZAnimSet*)0x1;
-	m_animset_list[50] = *(CZAnimSet*)0x1;
-	m_animset_list[98] = *(CZAnimSet*)0x1;
+	// m_animset_list[2] = *(CZAnimSet*)0x1;
+	// m_animset_list[50] = *(CZAnimSet*)0x1;
+	// m_animset_list[98] = *(CZAnimSet*)0x1;
 	m_CurrentFrame = 0;
 	m_RunningAnimCount = 0;
 	m_IsOpen = true;
