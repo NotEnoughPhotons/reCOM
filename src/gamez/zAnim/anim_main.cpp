@@ -6,6 +6,7 @@ bool CZAnimMain::m_LoadFromZAR = false;
 static f32 _x;
 
 char* _local_wildcard_ptr = NULL;
+char* _local_wildcard_str = NULL;
 char* _input_str_ptr = NULL;
 u32 _digit_count = 0;
 
@@ -107,6 +108,8 @@ bool CZAnimMain::Unload()
 	m_cmdset_count = 0;
 	m_CurAnim = NULL;
 	m_CurSeq = NULL;
+
+	return true;
 }
 
 bool CZAnimMain::CmdValid() const

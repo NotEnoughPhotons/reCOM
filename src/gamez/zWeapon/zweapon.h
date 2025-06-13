@@ -498,8 +498,7 @@ public:
 	static bool m_allowWeaponIntersection;
 
 	static CZWeaponList m_listWeapons;
-	// I hate these vector classes. Screw them.
-	// static CZProjectileList m_pProjectileList;
+	static CZProjectileList m_pProjectileList;
 
 	static CSnd* m_bulletPassSound;
 
