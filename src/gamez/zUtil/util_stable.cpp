@@ -91,7 +91,7 @@ char* CSTable::CreateString(const char* str)
 		{
 			// Duplicate the string and insert it
 			char* dupstr = zstrdup(str);
-			insert(begin(), dupstr);
+			insert(end(), dupstr);
 			out = dupstr;
 		}
 		// Are we the owner of all strings?
@@ -107,7 +107,7 @@ char* CSTable::CreateString(const char* str)
 				memcpy(out, str, length);
 				m_bytes += length;
 
-				insert(begin(), out);
+				insert(end(), out);
 			}
 		}
 	}

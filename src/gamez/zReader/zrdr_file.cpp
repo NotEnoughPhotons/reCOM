@@ -3,6 +3,7 @@
 
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zUtil/util_stack.h"
+#include "SDL3/SDL_log.h"
 
 char* buffer = NULL;
 

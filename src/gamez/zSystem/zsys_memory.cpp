@@ -13,6 +13,8 @@
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zVideo/zvid.h"
 
+#define NOGAME
+
 bool postinited = false;
 size_t _HeapSize = 0;
 
@@ -104,8 +106,8 @@ size_t zsys_FullAllocAndFree()
 void zSysPostInit()
 {
 #ifdef NOGAME
+	return;
 #else
-
 	
 	if (!postinited)
 	{

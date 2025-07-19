@@ -93,7 +93,7 @@ public:
 
 	virtual void Init() {}
 	virtual bool Open(void* buf) { return false; }
-	virtual bool Open(const char* file);
+	virtual bool Open(const char* file, const char* mode = "rb");
 	virtual void Close();
 	virtual void Release();
 
@@ -125,7 +125,7 @@ public:
 	bool LoadBuffer();
 
 	virtual bool Open(void* buf, size_t size);
-	virtual bool Open(const char* buf);
+	virtual bool Open(const char* buf, const char* mode = "rb");
 	virtual void Close();
 	virtual void Release();
 

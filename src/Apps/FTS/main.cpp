@@ -6,7 +6,7 @@
 
 // Uncomment to not use a game directory
 // Useful for external testing
-// #define NOGAME
+#define NOGAME
 
 bool LoadWorld(const char* name);
 char* SetDatabase(const char* db);
@@ -37,11 +37,14 @@ int main(int argc, char** argv)
 
 	SetDatabase("ui");
 	
-	theGame.StartEngine();
-	theGame.StartPlay();
+	// theGame.StartEngine();
+	// theGame.StartPlay();
 
-	while (true)
+	CRdrFile* file = zrdr_read("data/s1/common/zrdr/ai_moves.rdr");
+	file->Compile();
+	
+	/* while (true)
 	{
 		theGame.Tick(0);
-	}
+	}*/
 }

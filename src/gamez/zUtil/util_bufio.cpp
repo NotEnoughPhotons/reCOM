@@ -26,9 +26,9 @@ bool CBufferIO::Open(void* buf, size_t size)
 	return true;
 }
 
-bool CBufferIO::Open(const char* buf)
+bool CBufferIO::Open(const char* buf, const char* mode)
 {
-	bool success = CFileIO::Open(buf);
+	bool success = CFileIO::Open(buf, mode);
 	bool isOpen = CFileIO::IsOpen();
 
 	if (isOpen)

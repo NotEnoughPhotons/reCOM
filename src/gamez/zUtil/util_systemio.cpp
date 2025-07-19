@@ -43,9 +43,9 @@ CFileIO::CFileIO(const CFileIO& other)
 	m_cd = NULL;
 }
 
-bool CFileIO::Open(const char* file)
+bool CFileIO::Open(const char* file, const char* mode)
 {
-	m_file = (s64)std::fopen(file, "rb");
+	m_file = (s64)std::fopen(file, mode);
 
 	if (m_file != NULL)
 	{
@@ -116,7 +116,10 @@ size_t CFileIO::fseek(int offset, int origin)
 
 size_t CFileIO::ftell()
 {
-	return 0;
+	// Before this used to return 0
+	// I changed it since it would be more -
+	// useful.
+	return std::ftell((FILE*)m_file);
 }
 
 size_t CFileIO::fwrite(const char* buf)
@@ -139,7 +142,7 @@ size_t CFileIO::fwrite(const char* buf)
 
 size_t CFileIO::fwrite(const void* buf, size_t count)
 {
-	return std::fwrite(buf, count, sizeof(u32), (FILE*)m_file);
+	return std::fwrite(buf, 1, count, (FILE*)m_file);
 }
 
 void CFileIO::fflush()

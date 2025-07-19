@@ -185,6 +185,9 @@ public:
 
 	static CRdrFile* Load(zar::CZAR* archive, zar::CKey* key);
 
+	bool Compile();
+	bool CompileRecursive(_zrdr* tag, CFileIO& writer);
+	
 	zar::CKey* Insert(zar::CZAR* archive, zar::CKey* key);
 	_zrdr* MakeUnion(const char* name, bool isstr);
 	char ReadToken(_zrdr** array);
