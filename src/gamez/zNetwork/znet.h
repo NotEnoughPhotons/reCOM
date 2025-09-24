@@ -224,6 +224,8 @@ class CZNetGame
 {
 public:
 	bool Initialize();
+
+	void MasterStartGame();
 	
 	CValve* m_pMaxRoundCountValve;
 	CValve* m_pHalfRoundCountValve;
