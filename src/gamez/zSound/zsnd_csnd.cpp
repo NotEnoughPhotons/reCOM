@@ -34,6 +34,8 @@ bool CSnd::m_vagEnabled = false;
 std::vector<CSnd*> CSnd::m_soundlist;
 std::unordered_map<const char*, CSnd*> CSnd::m_soundmap;
 
+bool CFileCD::m_streamingSndActive = false;
+
 _zrdr* sound_rdr = NULL;
 
 CSnd::CSnd()
@@ -57,6 +59,33 @@ void CSnd::Init()
 		char path_buf[256];
 		sprintf_s(path_buf, "%s/SOUNDS/VAGSTORE.ZAR", gamez_GameRunPath);
 		m_vagArchive.Open(path_buf, 0, 0x21, 16);
+	}
+}
+
+void CSnd::Open()
+{
+	CFileCD::m_streamingSndActive = true;
+
+	if (!sound_rdr)
+		sound_rdr = zrdr_read("sounds.rdr", NULL, 0);
+
+	m_max_num_vags = 6;
+	// TODO: Write wrapper for the 989snd library
+	// snd_InitVAGStreamingEx(6, 0xf000, 1, 1);
+}
+
+void CSnd::NetOpen()
+{
+	if (!sound_rdr)
+		sound_rdr = zrdr_read("sounds.rdr", NULL, 0);
+
+	// snd_SetMasterVolume(8, 0x400);
+
+	if (m_vagEnabled)
+	{
+		CFileCD::m_streamingSndActive = true;
+		m_max_num_vags = 4;
+		// snd_InitVagStreamingEx(4, 0xf000, 1, 1);
 	}
 }
 
