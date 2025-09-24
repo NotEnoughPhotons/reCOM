@@ -1,5 +1,7 @@
 #include "hud.h"
 
+#include "gamez/zNetwork/znet.h"
+
 CHUD* theHUD;
 
 s32 hudInit()
@@ -79,4 +81,9 @@ CZSealBody* CHUD::GetHUDOwner()
 void CHUD::Init(zdb::CWorld* world)
 {
 
+}
+
+void CHUD::ReInit_Uninit()
+{
+    // CZNewHudMap::UninitMap();
 }

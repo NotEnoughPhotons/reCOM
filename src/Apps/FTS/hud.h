@@ -158,6 +158,7 @@ public:
 class CZNewHudMap : public C2D
 {
 public:
+	void UninitMap() {}
 	void SwitchToCompassMap() { }
 	
 	std::list<void*> m_itemlist;
@@ -588,6 +589,9 @@ public:
 	void Off() {}
 	
 	void Init(zdb::CWorld* world);
+
+	void ReInit_Init();
+	void ReInit_Uninit();
 
 	// CDynTexList m_dyntexlist;
 
