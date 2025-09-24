@@ -530,6 +530,8 @@ public:
 class CZAnimSet
 {
 public:
+	bool Start();
+
 	void GetName();
 
 	bool m_WasStarted;
