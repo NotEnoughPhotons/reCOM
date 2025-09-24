@@ -11,6 +11,8 @@ _zvid_public zVid;
 CValve* lodLevel = NULL;
 CWindow* theWindow = NULL;
 
+s32 CVideo::m_defaultFrameRate = 0;
+
 void zVid_Init(_zvid_mode mode)
 {
 	zVid.runTime = 0.0f;
