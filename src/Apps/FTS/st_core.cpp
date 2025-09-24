@@ -39,6 +39,15 @@ bool CCoreState::Init()
 	CRdrArchive::CloseAll();
 	CRdrArchive::RemoveArchive("readerm.zar", "database");
 
+	zTaskScheduler.AddTask("UnitTick", CSealUnit::TickAll, 0.8f, NULL);
+
+	theMission.OnMissionStart();
+	theMission.m_winlosstimer = -1.0f;
+
+	zSysFifoEnd();
+	CVideo::MaxFrameRate(CVideo::m_defaultFrameRate);
+	zVid_Sync0();
+
 	return true;
 }
 
