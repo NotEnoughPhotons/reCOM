@@ -116,8 +116,10 @@ public:
 	CSnd();
 
 	static void Init();
+	static void Open();
 	static void Close();
 	static void UIOpen();
+	static void NetOpen();
 	static void AddNewCSnd(CSnd* sound);
 	static CSnd* GetSoundByName(const char* name);
 	static bool GetSubtitles();
