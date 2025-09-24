@@ -85,13 +85,14 @@ public:
 	void PreOpen(const char* db);
 	void Read(_zrdr* reader);
 
+	void OnMissionStart();
 	void OnMissionComplete(MISSION_STATE state);
 	
 	void Tick(f32 dT);
 	void TickInFirefight(f32 dT);
 	
 	CZNetGame* netGame;
-private:
+
 	MISSION_STATE m_state;
 
 	char* m_database;
