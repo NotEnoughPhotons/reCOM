@@ -45,6 +45,7 @@ public:
 	static size_t Read(void* buf, int count);
 public:
 	static _FILECD* m_TOC;
+	static bool m_streamingSndActive;
 
 	_FILECD* m_toc;
 	unsigned int m_pos;
