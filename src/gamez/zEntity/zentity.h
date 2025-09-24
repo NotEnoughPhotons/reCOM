@@ -208,6 +208,7 @@ public:
 class CPickup
 {
 public:
+	void Pickup(std::vector<CEntity*> entityList);
 	void Destroy();
 private:
 	zdb::CNode* m_node;
