@@ -233,6 +233,92 @@ void CMission::Read(_zrdr* reader)
 	}
 }
 
+void CMission::OnMissionStart()
+{
+	VALVE_STATE valveMissionState;
+
+	m_state = MISSION_RUNNING;
+	m_delay = -1.0f;
+	appCamera->ResetDeathCam();
+	m_DelayEndMission = false;
+	m_FadingToEndMission = false;
+
+	valveMissionState = VALVE_STATE::VSTATE_DORMANT;
+
+	if (m_valve_complete)
+	{
+		valveMissionState = VALVE_STATE::VSTATE_PERMANENT;
+		m_valve_complete->m_value = 0;
+		m_valve_complete->MakeCallbacks(valveMissionState);
+	}
+
+	if (m_valve_failure)
+	{
+		valveMissionState = VALVE_STATE::VSTATE_PERMANENT;
+		m_valve_failure->m_value = 0;
+		m_valve_failure->MakeCallbacks(valveMissionState);
+	}
+
+	if (m_valve_abort)
+	{
+		valveMissionState = VALVE_STATE::VSTATE_PERMANENT;
+		m_valve_abort->m_value = 0;
+		m_valve_abort->MakeCallbacks(valveMissionState);
+	}
+
+	if (m_valve_timeout)
+	{
+		valveMissionState = VALVE_STATE::VSTATE_PERMANENT;
+		m_valve_timeout->m_value = 0;
+		m_valve_timeout->MakeCallbacks(valveMissionState);
+	}
+
+	if (m_valve_nofade)
+	{
+		valveMissionState = VALVE_STATE::VSTATE_PERMANENT;
+		m_valve_nofade->m_value = 0;
+		m_valve_nofade->MakeCallbacks(valveMissionState);
+	}
+
+	zdb::CWorld::m_world->m_diIntDelayCnt = 0;
+
+	CInput::Flush();
+
+	CZAnimSet* common = NULL; // ZAnim.GetAnimSet("common");
+	CZAnimSet* mission = NULL;
+
+	if (common)
+		common->Start();
+
+	if (mission)
+		mission->Start();
+
+	// TODO: Animation init loop
+
+	if (!theNetwork.m_bNetwork)
+		CSnd::Open();
+	else
+		CSnd::NetOpen();
+
+	CSnd::m_listenerIsValid = true;
+	CSndJukebox::Start();
+
+	if (theNetwork.m_bNetwork)
+	{
+		// CPickup::Open(CEntity::m_list);
+		theHUD->ReInit_Uninit();
+		theHUD->ReInit_Init();
+
+		if (m_pNetGame)
+		{
+			if (theNetwork.m_bSessionMaster)
+				m_pNetGame->m_mp_major_game_state = MP_MAJOR_GAME_STATE::MP_MAJOR_INPLAY;
+
+			m_pNetGame->MasterStartGame();
+		}
+	}
+}
+
 void CMission::OnMissionComplete(MISSION_STATE state)
 {
 	if (state != m_state)
