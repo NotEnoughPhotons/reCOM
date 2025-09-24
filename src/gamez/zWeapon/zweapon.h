@@ -588,6 +588,8 @@ public:
 class CZProjectile
 {
 public:
+	static f32 ResolveDamage(f32* health, f32* armor, f32 damage, f32 multiplier);
+
 	bool SetProjectile(zdb::CNode* owner, CZWeapon* weapon, CZAmmo* ammo,
 	                   const CPnt3D& startpos, CPnt3D& velscale, const CPnt3D& vel,
 	                   s32 id, zdb::CModel* model, f32 time, f32 removal_time);

@@ -64,6 +64,32 @@ zdb::CNode* CZProjectile::GetInstance() const
 	return m_instance;
 }
 
+f32 CZProjectile::ResolveDamage(f32* health, f32* armor, f32 damage, f32 multiplier)
+{
+	f32 armorpct = damage - *armor * (multiplier / 10.0f);
+	f32 healthpct = damage - armorpct;
+
+	if (armorpct <= 0.0f)
+	{
+		armorpct = 0.0f;
+		healthpct = damage - 0.0f;
+	}
+
+	healthpct = *armor - healthpct / 4.0f;
+	*armor = healthpct;
+
+	if (healthpct <= 0.0f)
+		*armor = 0.0f;
+
+	healthpct = *health;
+	*health = healthpct - armorpct;
+
+	if (healthpct - armorpct <= 0.0f)
+		*health = 0.0f;
+
+	return *health;
+}
+
 bool CZProjectile::FireValidityCheck()
 {
 	// Created projectiles are validated by the server only.
