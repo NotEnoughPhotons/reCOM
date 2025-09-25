@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef APP_GAMEVER_H
+#define APP_GAMEVER_H
 enum GameZ_FTSGame
 {
     game_NONE,
@@ -20,3 +21,4 @@ extern GameZ_FTSGameInfo game_info;
 extern GameZ_FTSGame game_name;
 
 GameZ_FTSGame GetGame();
+#endif

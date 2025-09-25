@@ -1,4 +1,6 @@
-#pragma once
+#ifndef APP_HUD_H
+#define APP_HUD_H
+
 #include <map>
 
 #include "gamez/zGame/zgame.h"
@@ -678,3 +680,4 @@ class CCompassAnchor
 {
 
 };
+#endif
