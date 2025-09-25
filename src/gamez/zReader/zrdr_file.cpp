@@ -57,7 +57,7 @@ bool CRdrFile::ValidateFormat()
 	bool validated = false;
 	bool endline = false;
 	bool comment = false;
-	s32 i = 0;
+	s32 index = 0;
 	
 	do
 	{
@@ -65,75 +65,48 @@ bool CRdrFile::ValidateFormat()
 		{
 			file = fstack.front();
 
+			// Reached end of file?
 			if (!file->fread(&symbol, 1))
-			{
 				break;
-			}
 
 			validated = true;
 			
 			if (!validated)
 			{
 				file->fseek(0, SEEK_SET);
-				return i == 0;
+				return index == 0;
 			}
+
+			// Tag begin
+			if (symbol == '(')
+				if (!endline && !comment) index++;
 
 			// Tag end
 			if (symbol == ')')
-			{
-				if ((!endline) && (!comment))
-				{
-					i--;
-				}
-			}
-			else
-			{
-				// Tag begin
-				if (symbol == '(')
-				{
-					if (!endline && !comment)
-					{
-						i++;
-					}
-				}
-				else
-				{
-					// New-line or carriage return
-					if ((symbol == '\n') || (symbol == '\r'))
-					{
-						if (!endline)
-						{
-							comment = false;
-						}
-					}
-					else
-					{
-						// Comment
-						if (symbol == ';')
-						{
-							if (!endline)
-							{
-								comment = true;
-							}
-						}
-						else
-						{
-							// Include path
-							if ((symbol == '\"') && (!comment))
-							{
-								endline = (bool)(endline ^ 1);
-							}
-						}
-					}
-				}
-			}
+				if (!endline && !comment) index--;
+
+			// New-line
+			if (symbol == '\n')
+				if (!endline) comment = false;
+
+			// Carriage return
+			if (symbol == '\r')
+				if (!endline) comment = false;
+
+			// Comment
+			if (symbol == ';')
+				if (!endline) comment = true;
+
+			// Include path
+			if (symbol == '\"' && !comment)
+				endline = (bool)(endline ^ 1);
 		}
 
-		if (fstack.size() < 2)
+		if (fstack.size() == 1)
 		{
 			validated = false;
 			file->fseek(0, SEEK_SET);
-			return i == 0;
+			return index == 0;
 		}
 
 		fstack.pop(true);
@@ -142,47 +115,44 @@ bool CRdrFile::ValidateFormat()
 
 CRdrFile* CRdrFile::Load(zar::CZAR* archive, zar::CKey* key)
 {
+	if (!key)
+		return NULL;
+
+	if (key->GetSize() == -1)
+		return NULL;
+
+	size_t keySize = key->GetSize();
+
+	void* zrdr_buf = zmalloc(keySize);
+
+	if (!archive->Fetch(key, zrdr_buf, keySize))
+		return NULL;
+
 	CRdrFile* rdrFile = new CRdrFile();
+	CSTable stable = CSTable(0, 1024);
 
-	if (key != NULL)
-	{
-		size_t keySize = key->GetSize();
-
-		if (keySize != -1)
-		{
-			void* zrdr_buf = zmalloc(keySize);
-
-			if (archive->Fetch(key, zrdr_buf, keySize))
-			{
-				CSTable stable = CSTable(0, 1024);
-				rdrFile->m_strings = stable;
-				rdrFile->m_buffer = static_cast<char*>(zrdr_buf);
-				rdrFile->m_size = keySize;
-				rdrFile->type = ZRDR_ARRAY;
-				rdrFile->array = NULL;
-				rdrFile->Resolve(false);
-			}
-		}
-	}
+	rdrFile->m_strings = stable;
+	rdrFile->m_buffer = static_cast<char*>(zrdr_buf);
+	rdrFile->m_size = keySize;
+	rdrFile->type = ZRDR_ARRAY;
+	rdrFile->array = NULL;
+	rdrFile->Resolve(false);
 
 	return rdrFile;
 }
 
 bool CRdrFile::Resolve(bool resolveA)
 {
-	_zrdr* header = reinterpret_cast<_zrdr*>(m_buffer);
+	_zrdr* header = NULL;
 	_zrdr* resolved = NULL;
 	char* start = NULL;
 	char* str = NULL;
 	char* table = NULL;
 
-	if (!header)
-	{
-		return false;
-	}
+	header = reinterpret_cast<_zrdr*>(m_buffer);
 
-	str = NULL;
-	resolved = NULL;
+	if (!header)
+		return false;
 
 	// Legacy version of zReader supported by the following games:
 	// - Top Gun Hornet's Nest
@@ -192,20 +162,13 @@ bool CRdrFile::Resolve(bool resolveA)
 	// - Crimson Skies
 	if (resolveA)
 	{
-		str = NULL;
-
-		if (header)
-		{
-			str = reinterpret_cast<char*>(&header[1]);
-			resolved = reinterpret_cast<_zrdr*>(m_buffer[header->integer]);
-		}
+		str = reinterpret_cast<char*>(&header[1]);
+		resolved = reinterpret_cast<_zrdr*>(m_buffer[header->integer]);
 
 		if (this->type != ZRDR_STRING && this->type == ZRDR_ARRAY)
 		{
 			for (u32 i = 1; i < this->array->integer; i++)
-			{
 				_resolveA(&this->array[i], resolved, str);
-			}
 			
 			return true;
 		}
@@ -214,48 +177,35 @@ bool CRdrFile::Resolve(bool resolveA)
 		return true;
 	}
 	
-	if (header)
-	{
-		str = reinterpret_cast<char*>(header + 1);
-		resolved = reinterpret_cast<_zrdr*>(m_buffer + header->integer);
-	}
+	str = reinterpret_cast<char*>(header + 1);
+	resolved = reinterpret_cast<_zrdr*>(m_buffer + header->integer);
 
 	if (type == ZRDR_STRING)
-	{
 		this->string = str;
-	}
-	else
+
+	if (type != ZRDR_ARRAY)
 	{
-		if (type != ZRDR_ARRAY)
-		{
-			start = m_buffer;
-			table = NULL;
+		start = m_buffer;
+		table = NULL;
 
-			if (start)
-			{
-				table = start + sizeof(_zrdr);
-			}
+		if (start)
+			table = start + sizeof(_zrdr);
 
-			m_strings.LoadTable(table, reinterpret_cast<u32>(start), false);
-			return true;
-		}
-
-		this->array = resolved;
-		
-		for (u32 i = 1; i < this->array->integer; i++)
-		{
-			_resolveB(&this->array[i], resolved, str);
-		}
+		m_strings.LoadTable(table, reinterpret_cast<u32>(start), false);
+		return true;
 	}
+
+	this->array = resolved;
+
+	for (u32 i = 1; i < this->array->integer; i++)
+		_resolveB(&this->array[i], resolved, str);
 
 	start = m_buffer;
 
 	table = NULL;
 
 	if (start)
-	{
 		table = start + sizeof(_zrdr);
-	}
 
 	m_strings.LoadTable(table, *(u32*)start, false);
 	return true;

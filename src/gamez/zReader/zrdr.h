@@ -6,12 +6,13 @@
 
 #define MAX_ZRDR_PATH_LEN 767
 
-#define pptoken_ifdef 0 
-#define pptoken_else 1
-#define pptoken_endif 2
-#define pptoken_include 3
-#define pptoken_undef 4
+#define pptoken_ifdef 1 << 0
+#define pptoken_else  1 << 1
+#define pptoken_endif 1 << 2
+#define pptoken_include 1 << 3
+#define pptoken_undef 1 << 4
 
+#define ZRDR_FLAG_RAW   0x1
 #define ZRDR_FLAG_ALLOC 0x4
 
 struct _zrdr;

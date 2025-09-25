@@ -309,33 +309,28 @@ bool _eval_defined(char* token)
 void _resolveA(_zrdr* self, _zrdr* root, char* name)
 {
 	if (self->type == ZRDR_STRING)
-	{
 		self->string = self->string - (s32)name;
-	}
-	else if (self->type == ZRDR_ARRAY)
+
+	if (self->type != ZRDR_ARRAY)
+		return;
+
+	for (u32 i = 1; self->array->integer; i++)
 	{
-		for (u32 i = 1; self->array->integer; i++)
+		_zrdr* node = &self->array[i];
+
+		if (node->type == ZRDR_STRING)
+			node->string = node->string - (s32)name;
+
+		if (node->type == ZRDR_ARRAY)
 		{
-			_zrdr* node = &self->array[i];
+			for (u32 j = 1; j < node->array->integer; j++)
+				_resolveA(&node->array[j], root, name);
 
-			if (node->type == ZRDR_STRING)
-			{
-				node->string = node->string - (s32)name;
-			}
-			else if (node->type == ZRDR_ARRAY)
-			{
-				for (u32 j = 1; j < node->array->integer; j++)
-				{
-					_zrdr* node_child = &node->array[j];
-					_resolveA(node_child, root, name);
-				}
-
-				node->string = self->string - (s32)name;
-			}
+			node->string = self->string - (s32)name;
 		}
-
-		self->string = self->string - (s32)name;
 	}
+
+	self->string = self->string - (s32)name;
 }
 
 void _resolveB(_zrdr* self, _zrdr* root, char* name)
@@ -345,26 +340,25 @@ void _resolveB(_zrdr* self, _zrdr* root, char* name)
 		// Assign string pointer to point at the entry in the string table
 		self->string += (s32)name;
 	}
-	else if (self->type == ZRDR_ARRAY)
+
+	if (self->type != ZRDR_ARRAY)
+		return;
+
+	self->string += (s32)root;
+
+	for (u32 i = 1; i < self->array->integer; i++)
 	{
-		self->string += (s32)root;
-                
-		for (u32 i = 1; i < self->array->integer; i++)
+		_zrdr* child = &self->array[i];
+
+		if (child->type == ZRDR_STRING)
+			child->string += (s32)name;
+
+		if (child->type == ZRDR_ARRAY)
 		{
-			_zrdr* child = &self->array[i];
-                		
-			if (child->type == ZRDR_STRING)
-			{
-				child->string += (s32)name;
-			}
-			else if (child->type == ZRDR_ARRAY)
-			{
-				child->string += (s32)root;
-				for (u32 j = 1; j < child->array->integer; j++)
-				{
-					_resolveB(&child->array[j], root, name);
-				}
-			}
+			child->string += (s32)root;
+
+			for (u32 j = 1; j < child->array->integer; j++)
+				_resolveB(&child->array[j], root, name);
 		}
 	}
 }
@@ -372,59 +366,54 @@ void _resolveB(_zrdr* self, _zrdr* root, char* name)
 CRdrFile* zrdr_read(const char* name, const char* path, s32 flags)
 {
 	if (path && strlen(path) < MAX_ZRDR_PATH_LEN)
-	{
 		strcpy(cur_zrdr_path, path);
-	}
 
 	cur_zrdr_flags = flags;
 
 	CRdrFile* rdrfile = CRdrArchive::FindRdr(name);
 
-	// Is the zrdr file non-compiled?
-	if (flags & 1U != 0 || !rdrfile)
+	// Is the reader file compiled?
+	if ((flags & ZRDR_FLAG_RAW) == 0 || rdrfile)
+		return rdrfile;
+
+	CBufferIO* io = new CBufferIO();
+
+	// Search for it in the game disc directory
+	if (!io->Open(zrdr_findfile(name, path)))
 	{
-		CBufferIO* io = new CBufferIO();
-
-		// Search for it in the game disc directory
-		if (!io->Open(zrdr_findfile(name, path)))
-		{
-			io->Close();
-		}
-		else
-		{
-			// Insert into file stack
-			fstack.insert(fstack.begin(), io);
-
-			rdrfile = new CRdrFile();
-
-			// Check for any syntax errors
-			if (rdrfile->ValidateFormat())
-			{
-				// Begin tokenization and create zrdr structure
-				_zrdr* array = rdrfile->ReadArray();
-				rdrfile->type = array->type;
-				rdrfile->array = array->array;
-				rdrfile->length = 1;
-
-				// Why is this here?
-				zfree(array);
-			}
-			// Syntax error check failed
-			else
-			{
-				SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Syntax error in zReader file %s!", name);
-				// delete array;
-				rdrfile = NULL;
-			}
-
-			if (!fstack.empty())
-			{
-				fstack.erase(fstack.begin(), fstack.end());
-			}
-
-			io->Close();
-		}
+		// Search wasn't successful.
+		io->Close();
+		return NULL;
 	}
+
+	fstack.insert(fstack.begin(), io);
+
+	rdrfile = new CRdrFile();
+
+	// Check for any syntax errors
+	if (rdrfile->ValidateFormat())
+	{
+		// Begin tokenization and create tag structure
+		_zrdr* array = rdrfile->ReadArray();
+		rdrfile->type = array->type;
+		rdrfile->array = array->array;
+		rdrfile->length = 1;
+
+		// Why is this here?
+		zfree(array);
+	}
+	// Syntax error check failed
+	else
+	{
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Syntax error in zReader file %s!", name);
+		// delete array;
+		rdrfile = NULL;
+	}
+
+	if (!fstack.empty())
+		fstack.erase(fstack.begin(), fstack.end());
+
+	io->Close();
 	
 	return rdrfile;
 }
