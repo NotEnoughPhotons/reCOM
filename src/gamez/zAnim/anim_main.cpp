@@ -107,6 +107,8 @@ bool CZAnimMain::Unload()
 	m_cmdset_count = 0;
 	m_CurAnim = NULL;
 	m_CurSeq = NULL;
+
+	return true;
 }
 
 bool CZAnimMain::CmdValid() const

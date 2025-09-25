@@ -1,5 +1,5 @@
 #pragma once
-#include "Apps/FTS/hud.h"
+#include "Apps/FTS/hud/hud.h"
 
 #include "gamez/zAI/zai.h"
 #include "gamez/zAnim/zanim.h"

@@ -1,5 +1,5 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION
-#include "hud.h"
+#include "Apps/FTS/hud/hud.h"
 
 #include <SDL3_image/SDL_image.h>
 

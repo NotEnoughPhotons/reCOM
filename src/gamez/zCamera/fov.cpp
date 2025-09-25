@@ -1,6 +1,6 @@
 #include "zcam.h"
 
-#include "Apps/FTS/hud.h"
+#include "Apps/FTS/hud/hud.h"
 
 #include "gamez/zSeal/zseal.h"
 

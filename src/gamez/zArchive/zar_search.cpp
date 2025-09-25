@@ -338,7 +338,7 @@ namespace zar
 
 		if (offset == position && stringKey->m_size <= key->m_size)
 		{
-			keyOffset = m_pFile->fread(buf, key->m_size);
+			offset = m_pFile->fread(buf, key->m_size);
 			Unsecurify(buf, key->m_size);
 
 			if (key->m_size == offset)

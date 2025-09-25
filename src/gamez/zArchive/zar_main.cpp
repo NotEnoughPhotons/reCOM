@@ -720,7 +720,7 @@ namespace zar
 		if (m_head.version != ZAR_VERSION_2)
 			return false;
 
-		void* stable_ptr = zmalloc(m_head.stable_size);
+		stable_ptr = zmalloc(m_head.stable_size);
 
 		// Read key names into memory.
 		m_pFileAlloc->fread(stable_ptr, m_head.stable_size);
