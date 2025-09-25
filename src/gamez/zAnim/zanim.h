@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZANIM_H
+#define ZANIM_H
 #include <string>
 
 #include "gamez/zNode/znode.h"
@@ -831,3 +832,4 @@ bool zAnimUIAppMenuTick(_zanim_cmd_hdr*, f32*);
 bool zAnimUIMenuTick(_zanim_cmd_hdr*, f32*);
 bool zAnimWaitTick(_zanim_cmd_hdr*, f32*);
 bool zAnimWhileTick(_zanim_cmd_hdr*, f32*);
+#endif

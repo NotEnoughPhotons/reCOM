@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZREADER_H
+#define ZREADER_H
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zSystem/zsys.h"
@@ -223,3 +224,4 @@ public:
 
 	size_t fread(void* buf, size_t size);
 };
+#endif

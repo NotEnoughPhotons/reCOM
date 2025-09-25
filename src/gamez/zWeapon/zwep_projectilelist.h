@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ZWEAPON_PROJECTILELIST_H
+#define ZWEAPON_PROJECTILELIST_H
 #include "vector"
 
 #include "gamez/zIntersect/zintersect.h"
@@ -29,3 +30,4 @@ public:
     u8 m_indirectFireDIUsed[60];
     s32 m_indirect_firstfree;
 };
+#endif

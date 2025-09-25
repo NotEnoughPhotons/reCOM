@@ -2,3 +2,8 @@
 
 _zsys_public zSys;
 bool postinit = false;
+
+void zSysFifoEnd()
+{
+
+}

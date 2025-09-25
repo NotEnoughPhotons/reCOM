@@ -116,3 +116,8 @@ _zanim_cmd_hdr* zAnimLoadWhile(_zrdr* tag)
         return cmd;
     }
 }
+
+bool CZAnimSet::Start()
+{
+    return false;
+}

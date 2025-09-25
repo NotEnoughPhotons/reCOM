@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZNODE_H
+#define ZNODE_H
 #include <vector>
 
 #include "gamez/zRender/zrender.h"
@@ -612,3 +613,4 @@ private:
 	s32 m_type;
 	u32 m_flags;
 };
+#endif

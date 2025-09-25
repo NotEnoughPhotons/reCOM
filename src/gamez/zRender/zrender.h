@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZRENDER_H
+#define ZRENDER_H
 #include <string>
 
 // TODO:
@@ -267,3 +268,4 @@ class CScrollingTexture_Object : public std::vector<CScrollingTexture_band*>
 private:
 	s32 m_bandMax;
 };
+#endif

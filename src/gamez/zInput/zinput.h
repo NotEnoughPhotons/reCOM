@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZINPUT_H
+#define ZINPUT_H
 #include "gamez/zSystem/zsys.h"
 
 class CInput;
@@ -148,3 +149,4 @@ class CKeyboard
 public:
 	void Tick(f32 delta);
 };
+#endif

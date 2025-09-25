@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ZVEHICLE_H
+#define ZVEHICLE_H
 class CVehicleRdr
 {
 
@@ -22,3 +23,4 @@ private:
     u32 m_unused : 26;
     s32 m_startIndex;
 };
+#endif

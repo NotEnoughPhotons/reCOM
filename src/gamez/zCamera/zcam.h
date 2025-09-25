@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZCAMERA_H
+#define ZCAMERA_H
 #include "gamez/zAnim/zanim.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zNode/znode.h"
@@ -339,3 +340,4 @@ public:
 	static CHUD* m_hud;
 	static CZSealBody* m_seal;
 };
+#endif

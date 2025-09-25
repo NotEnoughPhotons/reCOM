@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZMATH_H
+#define ZMATH_H
 #include <cmath>
 
 #include "gamez/zSystem/zsys.h"
@@ -260,3 +261,4 @@ public:
 	f32 left;
 	f32 right;
 };
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZVALVE_H
+#define ZVALVE_H
 #include <list>
 
 #include "gamez/zReader/zrdr.h"
@@ -112,4 +113,4 @@ public:
 	u32 m_pool_length;
 	u32 m_max_char_len;
 };
-
+#endif

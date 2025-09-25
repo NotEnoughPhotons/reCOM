@@ -83,6 +83,11 @@ void CHUD::Init(zdb::CWorld* world)
 
 }
 
+void CHUD::ReInit_Init()
+{
+
+}
+
 void CHUD::ReInit_Uninit()
 {
     // CZNewHudMap::UninitMap();

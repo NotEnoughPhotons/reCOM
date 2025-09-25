@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZGAME_H
+#define ZGAME_H
 #include "gamez/zFTS/fts_state.h"
 #include "gamez/zTwoD/ztwod.h"
 
@@ -140,3 +141,4 @@ public:
 	CSaferStr m_MPEGName;
 	C2DButton m_ScreenControls;
 };
+#endif

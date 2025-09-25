@@ -1,5 +1,10 @@
 #include "zseal.h"
 
+SEAL_STANCE CZSealBody::GetStance(char flag) const
+{
+	return SEAL_STANCE::STANCE_NONE;
+}
+
 bool CZSealBody::DamageBody(f32 damage, f32 multiplier)
 {
 	s8 retidx = 0;

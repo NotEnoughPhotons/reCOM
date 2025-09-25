@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZVIDEO_H
+#define ZVIDEO_H
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
 
@@ -112,3 +113,4 @@ public:
 
 	static s32 m_defaultFrameRate;
 };
+#endif

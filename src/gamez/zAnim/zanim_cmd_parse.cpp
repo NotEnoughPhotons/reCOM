@@ -155,18 +155,3 @@ _zanim_cmd_hdr* CZAnimMain::AnimParseExpression(_zanim_cmd_hdr* header, _zrdr* r
         }
     }
 }
-
-_zanim_cmd_hdr* zAnimLoad_If(_zrdr* reader)
-{
-    _zanim_cmd_hdr* header = NULL;
-
-    if (reader)
-    {
-        header = (_zanim_cmd_hdr*)zcalloc(1, sizeof(_zanim_cmd_hdr) * 2);
-        header->data_size = 0;
-        header->data_type = 0;
-        header = ZAnim.AnimParseExpression(header, reader);
-    }
-
-    return header;
-}

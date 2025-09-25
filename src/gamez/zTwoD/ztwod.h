@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZTWOD_H
+#define ZTWOD_H
 #include <SDL3/SDL.h>
 
 #include "gamez/zAnim/zanim.h"
@@ -413,3 +414,4 @@ public:
 
 	f32 _fPressedTime;
 };
+#endif

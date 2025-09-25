@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZUI_H
+#define ZUI_H
 #include <list>
 
 #include "gamez/zTwoD/ztwod.h"
@@ -161,4 +162,4 @@ public:
 };
 
 extern CUIVarManager theUIVarManager;
-
+#endif

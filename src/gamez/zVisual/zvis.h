@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZVISUAL_H
+#define ZVISUAL_H
 #include <deque>
 
 #include "gamez/zArchive/zar.h"
@@ -227,3 +228,4 @@ namespace zdb
 		bool Exists(const CVisual* visual);
 	};
 }
+#endif

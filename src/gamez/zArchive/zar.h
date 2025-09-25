@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZARCHIVE_H
+#define ZARCHIVE_H
 #include <list>
 #include <vector>
 
@@ -328,3 +329,4 @@ namespace zar
 		bool m_bSecure;
 	};
 }
+#endif

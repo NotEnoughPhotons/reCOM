@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZPARTICLE_H
+#define ZPARTICLE_H
 #include "gamez/zAnim/zanim.h"
 
 enum PARTICLE_TYPE
@@ -74,3 +75,4 @@ public:
 	static void FlushDynTexList();
 	
 };
+#endif

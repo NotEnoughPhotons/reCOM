@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZUTIL_STABLE_H
+#define ZUTIL_STABLE_H
 #include <vector>
 
 #include "gamez/zSystem/zsys.h"
@@ -32,3 +33,4 @@ public:
 	u32 m_bytes;
 	u32 m_reserve;
 };
+#endif

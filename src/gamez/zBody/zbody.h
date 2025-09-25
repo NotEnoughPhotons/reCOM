@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZBODY_H
+#define ZBODY_H
 #include "gamez/zAnim/zanim.h"
 #include "gamez/zNode/znode.h"
 
@@ -68,3 +69,4 @@ private:
 	CPnt3D m_saved_pos;
 	CQuat m_saved_rot;
 };
+#endif

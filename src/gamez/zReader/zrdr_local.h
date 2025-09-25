@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZREADER_LOCAL_H
+#define ZREADER_LOCAL_H
 #include <stack>
 #include <vector>
 
@@ -26,3 +27,4 @@ public:
 
 	std::stack<std::vector<_zrdr*>> m_stack;
 };
+#endif

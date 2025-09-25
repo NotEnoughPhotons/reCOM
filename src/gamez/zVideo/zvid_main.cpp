@@ -48,8 +48,18 @@ void zVid_Open()
 	
 }
 
+void zVid_Sync0()
+{
+
+}
+
 void zvid_SetVideoMode(_zvid_mode mode)
 {
 	zVid.vidMode = mode;
 	zVid.videoMode = mode;
+}
+
+f32 CVideo::MaxFrameRate(s32 fr)
+{
+	return 0.0f;
 }

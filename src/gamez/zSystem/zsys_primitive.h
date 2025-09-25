@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ZSYSTEM_PRIMITIVE_H
+#define ZSYSTEM_PRIMITIVE_H
 /// -------------------------------------------
 /// INCLUDES
 /// -------------------------------------------
@@ -18,3 +19,4 @@ typedef int32_t    s32; // int
 typedef int64_t    s64; // long
 typedef float      f32; // float
 typedef double     f64;
+#endif

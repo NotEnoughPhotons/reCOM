@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZIMGUI_H
+#define ZIMGUI_H
 #include <imgui/imgui.h>
 
 #include "gamez/zSystem/zsys.h"
@@ -19,3 +20,4 @@ public:
 
     static ImGuiIO m_io;
 };
+#endif

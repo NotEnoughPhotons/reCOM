@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZSYSTEM_ALLOC_H
+#define ZSYSTEM_ALLOC_H
 /// -------------------------------------------
 /// ALLOCATION MACROS
 /// -------------------------------------------
@@ -8,3 +9,4 @@
 #define zmemalign(alignment, size) __memalign(alignment, size, __FILE__, __LINE__)
 #define zstrdup(str) __strdup(str, __FILE__, __LINE__)
 #define zfree(block) __free(block, __FILE__, __LINE__)
+#endif

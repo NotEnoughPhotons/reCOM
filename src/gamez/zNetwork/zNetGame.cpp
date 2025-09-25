@@ -55,3 +55,8 @@ bool CZNetGame::Initialize()
 
     return true;
 }
+
+void CZNetGame::MasterStartGame()
+{
+
+}

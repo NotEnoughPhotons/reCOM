@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ZCHARACTER_H
+#define ZCHARACTER_H
 #include "gamez/zCamera/zcam.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zReader/zrdr.h"
@@ -238,3 +239,4 @@ public:
 	bool m_loaded = false;
 	std::vector<CCameraParams> m_cam_params;
 };
+#endif

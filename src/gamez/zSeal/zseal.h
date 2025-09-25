@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZSEAL_H
+#define ZSEAL_H
 #include "Apps/FTS/hud/hud.h"
 
 #include "gamez/zAI/zai.h"
@@ -445,7 +446,7 @@ public:
 	void HandleDamage(CZProjectile* projectile);
 	void HandleDamageExplosive(CZBodyPart* part, DAMAGE_LOCATION location);
 	void HandleDamageNonExplosive(CZBodyPart* part, DAMAGE_LOCATION location);
-	s32 HandleFallingDamage(f32 impactForce); // TODO: Figure out what this function returns
+	s32  HandleFallingDamage(f32 impactForce); // TODO: Figure out what this function returns
 	void HandleFootfallSound(CPnt3D* position);
 	void HandleGrenadeExplosion();
 	void HandleKiller(s32 killerIndex);
@@ -1210,3 +1211,4 @@ public:
 	static _zanim_cmd_hdr* Parse(_zrdr* reader);
 	static bool Tick(_zanim_cmd_hdr* header, f32* delta);
 };
+#endif

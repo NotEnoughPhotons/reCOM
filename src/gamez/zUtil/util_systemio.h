@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZUTIL_SYSTEMIO_H
+#define ZUTIL_SYSTEMIO_H
 #include <iostream>
 
 #include "gamez/zSystem/zsys.h"
@@ -144,3 +145,4 @@ private:
 	void* m_buffer;
 	size_t m_bufsize;
 };
+#endif

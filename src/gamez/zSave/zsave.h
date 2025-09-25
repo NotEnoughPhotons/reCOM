@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZSAVE_H
+#define ZSAVE_H
 #include "gamez/zArchive/zar.h"
 #include "gamez/zSystem/zsys.h"
 
@@ -34,3 +35,4 @@ namespace zdb
         s32 m_version;
     };
 }
+#endif

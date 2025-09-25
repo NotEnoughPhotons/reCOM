@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZWEAPON_H
+#define ZWEAPON_H
 #include <list>
 
 #include "zwep_projectilelist.h"
@@ -667,3 +668,4 @@ public:
 	f32 FactorY;
 	f32 Factor;
 };
+#endif

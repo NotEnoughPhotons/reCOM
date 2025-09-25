@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FTS_STATE_H
+#define FTS_STATE_H
 #include <deque>
 
 #include "gamez/zMath/zmath.h"
@@ -245,3 +246,4 @@ private:
 };
 
 class CStateCmdQueue : public std::deque<CGameStateChangeCmd*> {};
+#endif

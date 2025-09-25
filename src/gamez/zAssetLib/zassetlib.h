@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZASSETLIB_H
+#define ZASSETLIB_H
 #include <list>
 
 #include "gamez/zNode/znode.h"
@@ -71,3 +72,4 @@ namespace zdb
 
 	class CRefList : public std::list<CAssetLib*> {};
 }
+#endif

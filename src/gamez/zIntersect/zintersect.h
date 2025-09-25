@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef ZINTERSECT_H
+#define ZINTERSECT_H
 #include <vector>
 
 #include "gamez/zMath/zmath.h"
@@ -102,3 +103,4 @@ namespace zdb
         
     };
 }
+#endif

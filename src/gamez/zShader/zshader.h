@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZSHADER_H
+#define ZSHADER_H
 #include "gamez/zSystem/zsys.h"
 
 class CShader
@@ -20,3 +21,4 @@ public:
     u32 m_vertex;
     u32 m_fragment;
 };
+#endif

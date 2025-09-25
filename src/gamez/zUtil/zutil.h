@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZUTIL_H
+#define ZUTIL_H
 #include "util_systemio.h"
 
 #include "gamez/zSystem/zsys_primitive.h"
@@ -28,3 +29,4 @@ private:
 	bool m_doLog;
 	CFileIO* m_fileIO;
 };
+#endif

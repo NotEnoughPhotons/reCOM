@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZSYSTEM_H
+#define ZSYSTEM_H
 #include <list>
 #include <stdlib.h>
 #include <cstring>
@@ -208,3 +209,4 @@ class CConsole
 public:
 	void Tick(f32 dT);
 };
+#endif

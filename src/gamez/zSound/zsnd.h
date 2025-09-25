@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ZSOUND_H
+#define ZSOUND_H
+
 #include <vector>
 #include <unordered_map>
 
@@ -254,3 +256,5 @@ public:
 	void Tick();
 	void Stop();
 };
+
+#endif

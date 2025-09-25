@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZFTS_H
+#define ZFTS_H
 
 #include "gamez/zAI/zai.h"
 #include "gamez/zEntity/zentity.h"
@@ -181,3 +182,4 @@ class CZBombState
 public:
 	static s32 m_FutureBombState;
 };
+#endif

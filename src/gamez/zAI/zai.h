@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ZAI_H
+#define ZAI_H
 #include <vector>
 
 #include "gamez/zMath/zmath.h"
@@ -587,3 +588,4 @@ class CAiVismap
 {
 
 };
+#endif
