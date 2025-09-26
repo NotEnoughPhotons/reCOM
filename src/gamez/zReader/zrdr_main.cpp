@@ -292,7 +292,7 @@ bool zrdr_toINT(_zrdr* reader, s32* output, s32 size)
 	if (reader->array->integer < size + 1)
 		return false;
 
-	for (u32 i = 1; i < size; i++)
+	for (u32 i = 1; i < size + 1; i++)
 	{
 		s32 integer = 0;
 		_zrdr* node = &reader->array[i];
