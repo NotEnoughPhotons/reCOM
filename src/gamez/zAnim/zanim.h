@@ -413,6 +413,8 @@ struct ZAnimNetworkPacket
 
 struct AnimSet
 {
+	void AddBlendable();
+
 	ANIMSET_PARAMS m_aparams;
 
 	bool m_ready;
