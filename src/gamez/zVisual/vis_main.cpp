@@ -18,9 +18,7 @@ void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 	zdb::CMesh* mesh = model->GetMesh();
 	sprintf_s(buf, 192, "MESH_%s", model->m_name);
 
-	zar::CKey* meshkey = archive->OpenKey(buf);
-
-	if (meshkey)
+	if (auto meshkey = archive->OpenKey(buf))
 	{
 		if (archive->FetchLIP(meshkey, reinterpret_cast<void**>(meshword)))
 		{
@@ -44,14 +42,10 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 	char node_light_name[1024];
 	
 	if (!node)
-	{
 		return;
-	}
 
 	if (node->m_hasMesh)
-	{
 		node->GetSubMesh();
-	}
 
 	if (!node->m_visual.empty())
 	{
@@ -62,6 +56,26 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 	u32 vis_id = 0;
 	u32 child_vis_id = 0;
 	
+	for (auto i = model->m_child.begin(); i != model->m_child.end(); i++)
+	{
+		zdb::CNode* n = *i;
+		zdb::CNode* child = n->FindChild(node->m_name, true);
+
+		if (!child)
+			child = n;
+
+		child->m_vid = vis_id;
+
+		for (auto j = child->m_visual.begin(); j != child->m_visual.end(); j++)
+		{
+			zdb::CVisual* visual = *j;
+
+			sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
+			strcpy(node_light_name, node_name);
+			strcat(node_light_name, "L");
+		}
+	}
+
 	auto node_iterator = model->m_child.begin();
 	while (node_iterator != model->m_child.end())
 	{
@@ -182,6 +196,14 @@ namespace zdb
 		m_data_size = size;
 		m_instance_count++;
 		m_active = true;
+	}
+
+	void CVisData::SetBilinear(_word128* qwc, bool bilinear)
+	{
+		while (m_nextGif->u8[2] != 8)
+		{
+			m_nextGif++;
+		}
 	}
 	
 	CVisual* CVisual::Create(zar::CZAR& archive)

@@ -105,9 +105,13 @@ namespace zdb
 		void SearchVertex();
 		void SelectVertex(CVisual* vis, u32 vertex);
 
+		void SetBilinear(_word128* qwc, bool bilinear);
+
 		u32 m_vertex_start;
 		u32 m_vertex_count;
 		u8* m_cur_vertex;
+
+		_word128* m_nextGif;
 	};
 	
 	/// <summary>
@@ -177,6 +181,8 @@ namespace zdb
 
 		bool m_has_lods;
 		
+		std::vector<CVisual*> m_vis_child;
+
 		u32 m_refcount;
 		void* m_detail_buff;
 		u32 m_detail_cnt;
