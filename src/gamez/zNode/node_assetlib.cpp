@@ -11,79 +11,60 @@ namespace zdb
 
 	CModel* CAssetList::GetModel(const char* name)
 	{
-		CModel* model = NULL;
+		if (m_cache_model || name || strcmp(m_cache_model->m_name, name) != 0)
+			return m_cache_model;
 
-		if (m_cache_model == NULL || name == NULL || strcmp(m_cache_model->m_name, name) != 0)
+		for (auto i = begin(); i != end(); i++)
 		{
-			auto it = begin();
+			CAssetLib* lib = *i;
+			CModel* model = lib->m_models.GetModel(name);
 
-			while (it != end())
-			{
-				CAssetLib* lib = *it;
-				model = lib->m_models.GetModel(name);
-
-				if (model != NULL)
-				{
-					break;
-				}
-
-				++it;
-			}
-
-			m_cache_model = model;
-		}
-		else
-		{
-			model = m_cache_model;
+			if (model)
+				return m_cache_model = model;
 		}
 
-		return model;
+		return NULL;
 	}
 
 	bool CAssetLib::IsNamed(const char* name) const
 	{
 		bool isnamed = false;
 
-		if (strcmp(name, m_name) == 0)
-		{
-			isnamed = true;
-		}
-		else
-		{
-			size_t length = strlen(name);
-			s32 i = length - 1;
-			length = strlen(m_name);
-			s32 j = length - 1;
-			isnamed = true;
+		if (strcmp(name, m_name) != 0)
+			return true;
 
-			// TODO:
-			// clean this up
-			do
+		size_t length = strlen(name);
+		s32 i = length - 1;
+		length = strlen(m_name);
+		s32 j = length - 1;
+		isnamed = true;
+
+		// TODO:
+		// clean this up
+		do
+		{
+			for (; (-1 < i) && (name[i] == '/' || name[i] == '\\'); --i) {}
+			for (; (-1 < j) && (m_name[j] == '/' || m_name[j] == '\\'); --j) {}
+
+			if (i < 0 || j < 0)
 			{
-				for (; (-1 < i) && (name[i] == '/' || name[i] == '\\'); --i) {}
-				for (; (-1 < j) && (m_name[j] == '/' || m_name[j] == '\\'); --j) {}
+				if (i == j)
+				{
+					return isnamed;
+				}
 
-				if (i < 0 || j < 0)
-				{
-					if (i == j)
-					{
-						return isnamed;
-					}
-
-					isnamed = false;
-				}
-				else if (name[i] == m_name[j])
-				{
-					i--;
-					j--;
-				}
-				else
-				{
-					isnamed = false;
-				}
+				isnamed = false;
 			}
-			while (isnamed);
-		}
+			else if (name[i] == m_name[j])
+			{
+				i--;
+				j--;
+			}
+			else
+			{
+				isnamed = false;
+			}
+		} while (isnamed);
 
 		return isnamed;
 	}
@@ -110,64 +91,49 @@ namespace zdb
 		CAssetLib* lib = NULL;
 		
 		if (!name)
-		{
 			return NULL;
-		}
-		else
+
+		for (auto i = begin(); i != end(); i++)
 		{
-			auto it = begin();
-
-			while (it != end())
+			if ((*i)->IsNamed(name))
 			{
-				if ((*it)->IsNamed(name))
+				lib = *i;
+				break;
+			}
+		}
+
+		if (lib)
+			return lib;
+
+		// If the library doesn't have a proper name -
+		// search any subdirectories
+		for (auto i = begin(); i != end(); i++)
+		{
+			CAssetLib* alib = *i;
+
+			size_t length = strlen(alib->m_name);
+			s32 idx = length - 1;
+			char* libname = NULL;
+
+			if (idx > -1)
+			{
+				do
 				{
-					lib = *it;
-					break;
-				}
-				
-				++it;
+					char c = alib->m_name[idx];
+
+					if (c == '/' || c == '\\')
+					{
+						libname = alib->m_name + idx + 1;
+					}
+
+					idx--;
+				} while (idx > -1);
 			}
 
-			// If the library doesn't have a proper name -
-			// search any subdirectories
-			if (!lib)
-			{
-				it = begin();
+			libname = alib->m_name + idx + 1;
 
-				while (it != end())
-				{
-					CAssetLib* alib = *it;
-
-					size_t length = strlen(alib->m_name);
-					s32 idx = length - 1;
-					char* libname = NULL;
-					
-					if (idx > -1)
-					{
-						do
-						{
-							char c = alib->m_name[idx];
-
-							if (c == '/' || c == '\\')
-							{
-								libname = alib->m_name + idx + 1;
-							}
-
-							idx--;
-						}
-						while (idx > -1);
-					}
-					
-					libname = alib->m_name + idx + 1;
-
-					if (strcmp(libname, name) == 0)
-					{
-						return *it;
-					}
-					
-					++it;
-				}
-			}
+			if (strcmp(libname, name) == 0)
+				return *i;
 		}
 
 		return lib;

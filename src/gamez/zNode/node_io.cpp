@@ -9,59 +9,42 @@ namespace zdb
 	{
 		tag_NODE_PARAMS nparams;
 		CNode* node = NULL;
+		char* modelname = NULL;
+		u32 regionmask = 0;
+
+		if (!CWorld::m_world)
+			return NULL;
+
+		if (!&sload.m_zfile)
+			return NULL;
+
+		InitNodeParams(&nparams, NULL);
 
 		nparams.m_matrix = CMatrix::identity;
 
-		if (CWorld::m_world == NULL)
-		{
-			node = NULL;
-		}
-		else
-		{
-			InitNodeParams(&nparams, NULL);
+		sload.m_zfile.Fetch("model_name", &modelname);
+		sload.m_zfile.Fetch("nparams", &nparams, sizeof(tag_NODE_PARAMS));
+		sload.m_zfile.Fetch("regionmask", &regionmask);
 
-			if (&sload.m_zfile == NULL)
-			{
-				node = NULL;
-			}
-			else
-			{
-				char* modelname = NULL;
-				u32 regionmask = 0;
+		if (!modelname)
+			return NULL;
 
-				sload.m_zfile.Fetch("model_name", &modelname);
-				sload.m_zfile.Fetch("nparams", &nparams, sizeof(tag_NODE_PARAMS));
-				sload.m_zfile.Fetch("regionmask", &regionmask);
+		CModel* model = CWorld::GetModel(modelname);
 
-				node = NULL;
+		if (!model)
+			return NULL;
 
-				if (modelname != NULL)
-				{
-					CModel* model = CWorld::GetModel(modelname);
+		if (!modelname)
+			zfree(modelname);
 
-					if (modelname == NULL)
-					{
-						zfree(modelname);
-					}
+		modelname = NULL;
 
-					modelname = NULL;
-
-					if (model == NULL)
-					{
-						node = NULL;
-					}
-					else
-					{
-						node = CreateInstance(model, NULL, NULL);
-						node->m_matrix = nparams.m_matrix;
-						node->m_bbox.m_min = nparams.m_bbox.m_min;
-						node->m_bbox.m_max = nparams.m_bbox.m_max;
-						node->m_type = nparams.m_type;
-						node->ReadDataBegin(sload);
-					}
-				}
-			}
-		}
+		node = CreateInstance(model, NULL, NULL);
+		node->m_matrix = nparams.m_matrix;
+		node->m_bbox.m_min = nparams.m_bbox.m_min;
+		node->m_bbox.m_max = nparams.m_bbox.m_max;
+		node->m_type = nparams.m_type;
+		node->ReadDataBegin(sload);
 
 		return node;
 	}
@@ -78,9 +61,8 @@ namespace zdb
 
 	CNode* CNode::Read(CSaveLoad& sload, CNode* parent)
 	{
-		CNode* node = NULL;
-		
 		tag_NODE_PARAMS nparams;
+		CNode* node = NULL;
 		u32 nodetype = 0;
 		u32 regionmask = 0;
 
@@ -96,7 +78,7 @@ namespace zdb
 			sload.m_zfile.Fetch("nparams", &nparams, sizeof(tag_NODE_PARAMS));
 			sload.m_zfile.Fetch("regionmask", &regionmask);
 
-			switch (nparams.m_type)
+			switch ((CNode::TYPE)nparams.m_type)
 			{
 			case TYPE::NODE_TYPE_CHILD:
 				isChild = true;
@@ -167,16 +149,12 @@ namespace zdb
 				if (!node->Read(sload))
 				{
 					if (node)
-					{
 						delete node;
-					}
 					
 					node = NULL;
 				}
 				else if (parent)
-				{
 					parent->AddChild(node);
-				}
 			}
 		}
 		else
@@ -190,9 +168,7 @@ namespace zdb
 			node = new CNode();
 
 			if (node->Read(sload) && parent)
-			{
 				parent->AddChild(node);
-			}
 
 			sload.m_zfile.CloseKey(key);
 		}
