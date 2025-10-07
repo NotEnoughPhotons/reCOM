@@ -130,7 +130,7 @@ namespace zar
 		/// <param name="mode"> - The read mode for opening the file.</param>
 		/// <param name="padded_size"> - The amount of padding bytes labelled "P" that exist in the file.</param>
 		/// <returns>Whether or not the operation was successful.</returns>
-		bool Open(const char* name, int version, unsigned int mode, size_t padded_size);
+		bool Open(const char* name, s32 version, u32 mode, size_t padded_size);
 		
 		/// <summary>
 		/// Closes the ZAR file descriptor, and frees the resources associated with it.
