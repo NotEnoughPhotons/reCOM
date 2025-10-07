@@ -40,6 +40,10 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 {
 	char node_name[1024];
 	char node_light_name[1024];
+
+	u32 bufidx = 0;
+	u32 vis_id, child_vis_id = 0;
+	u32 node_ofs = 0;
 	
 	if (!node)
 		return;
@@ -53,9 +57,6 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 		node_index++;
 	}
 
-	u32 vis_id = 0;
-	u32 child_vis_id = 0;
-	
 	for (auto i = model->m_child.begin(); i != model->m_child.end(); i++)
 	{
 		zdb::CNode* n = *i;
@@ -66,116 +67,106 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 
 		child->m_vid = vis_id;
 
-		for (auto j = child->m_visual.begin(); j != child->m_visual.end(); j++)
+		for (auto j = node->m_visual.begin(); j != node->m_visual.end(); j++)
 		{
 			zdb::CVisual* visual = *j;
 
 			sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
 			strcpy(node_light_name, node_name);
 			strcat(node_light_name, "L");
+
+			if (archive->Fetch(node_light_name, &node_ofs, sizeof(u32)))
+				child->SetDynamicLight(true, false);
+			else if (archive->Fetch(node_name, &node_ofs, sizeof(u32)))
+			{
+				vis->m_node_ofs = node_ofs;
+				visual->SetBuffer(&vis->m_data_buffer[vis->m_node_ofs], bufidx, vis);
+			}
+		}
+
+		bufidx++;
+	}
+
+	if (&model->m_list == NULL || model->m_bForceExport)
+	{
+		zdb::CMesh* mesh = model->GetMesh();
+
+		for (auto i = model->m_child.begin(); i != model->m_child.end(); i++)
+		{
+			zdb::CNode* n = *i;
+			zdb::CNode* child = n->FindChild(node->m_name, true);
+
+			if (!child)
+				child = n;
+
+			child->m_vid = vis_id;
+
+			for (auto j = node->m_visual.begin(); j != node->m_visual.end(); j++)
+			{
+				zdb::CVisual* visual = *j;
+
+				sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
+				strcpy(node_light_name, node_name);
+				strcat(node_light_name, "L");
+
+				if (archive->Fetch(node_light_name, &node_ofs, sizeof(u32)))
+					child->SetDynamicLight(true, false);
+				else if (archive->Fetch(node_name, &node_ofs, sizeof(u32)))
+				{
+					vis->m_node_ofs = node_ofs;
+					visual->SetBuffer(&vis->m_data_buffer[vis->m_node_ofs], bufidx, vis);
+				}
+			}
+
+			bufidx++;
 		}
 	}
 
-	auto node_iterator = model->m_child.begin();
-	while (node_iterator != model->m_child.end())
+	for (auto i = node->m_child.begin(); i != node->m_child.end(); i++)
 	{
-		zdb::CNode* node = *node_iterator;
-		zdb::CNode* child = node->FindChild(node->m_name, true);
+		zdb::CNode* parent = *i;
+		zdb::CNode* child = NULL;
+
+		if (parent->m_type == (u32)zdb::CNode::TYPE::NODE_TYPE_CHILD)
+			child = parent;
 
 		if (!child)
-		{
-			child = node;
-		}
-
-		child->m_vid = vis_id;
-
-		auto vis_iterator = child->m_visual.begin();
-		while (vis_iterator != child->m_visual.end())
-		{
-			zdb::CVisual* visual = *vis_iterator;
-
-			// TODO: Figure out what the visual vectors are storing
-			// visual->some_vector_1.insert(visual->some_vector_1.end(), lod);
-			// visual->some_vector_2.insert(visual->some_vector_2.end(), something);
-
-			sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
-			strcpy(node_light_name, node_name);
-			strcat(node_light_name, "L");
-
-			u32 local24 = 0;
-			bool fetched = false;
-
-			fetched = archive->Fetch(node_light_name, &local24, sizeof(u32));
-			
-			if (!fetched)
-			{
-				fetched = archive->Fetch(node_name, &local24, sizeof(u32));
-			}
-			else
-			{
-				child->SetDynamicLight(true, false);
-			}
-
-			if (!fetched)
-			{
-				// TODO: More visual vector stuff needs to be figured out -
-				// And implemented!
-			}
-			else
-			{
-				// TODO: Add quadword parameters to this function -
-				// to target a MultiGen vertex buffer
-				// visual->SetBuffer();
-			}
-			
-			++vis_iterator;
-		}
-		
-		++node_iterator;
+			hookupVisuals(archive, key, parent, model, vis);
 	}
 }
 
 void hookupVisuals(zar::CZAR* archive, zdb::CModel* model)
 {
 	zdb::CVisBase* vis = NULL;
-	zdb::CMesh* mesh = model->GetMesh();
 
-	if (!mesh)
-	{
-		node_index = -1;
-
-		zar::CKey* modelkey = archive->OpenKey(model->m_name);
-
-		if (modelkey)
-		{
-			vis = new zdb::CVisBase(modelkey->GetSize());
-			
-			if (!archive->FetchLIP(modelkey, reinterpret_cast<void**>(vis)))
-			{
-				if (modelkey && !vis->m_active)
-				{
-					if (vis->m_data_buffer)
-					{
-						zfree(vis->m_data_buffer);
-					}
-
-					vis->m_data_buffer = NULL;
-				}
-
-				zdb::CVisBase::m_instance_count--;
-				delete vis;
-			}
-			else
-			{
-				hookupVisuals(archive, modelkey, model, model, vis);
-			}
-
-			archive->CloseKey(modelkey);
-		}
-	}
-	else
+	if (model->GetMesh())
 	{
 		hookupMesh(archive, model);
+		return;
+	}
+
+	node_index = -1;
+
+	if (zar::CKey* key = archive->OpenKey(model->m_name))
+	{
+		vis = new zdb::CVisBase(key->GetSize());
+
+		if (!archive->FetchLIP(key, reinterpret_cast<void**>(&vis)))
+		{
+			if (!vis->m_active)
+			{
+				if (vis->m_data_buffer)
+					zfree(vis->m_data_buffer);
+
+				vis->m_data_buffer = NULL;
+			}
+
+			zdb::CVisBase::m_instance_count--;
+			delete vis;
+		}
+		else hookupVisuals(archive, key, model, model, vis);
+
+		archive->CloseKey(key);
 	}
 }
 
@@ -210,54 +201,50 @@ namespace zdb
 	{
 		CVisual* visual = NULL;
 		u32 vtype = 0;
+
 		archive.Fetch("vtype", &vtype);
 
-		if (vtype == 2)
+		switch (vtype)
 		{
+		case 2:
 			visual = new CSubMesh();
-		}
-		else if (vtype == 1)
-		{
+		case 1:
 			visual = new CMesh();
-		}
-		else if (vtype == 0 || vtype == -1)
-		{
+		case 0:
+		case -1:
 			visual = new CVisual();
 		}
 
-		if (visual != NULL)
-		{
+		if (visual)
 			visual->Read(archive);
-		}
 
 		return visual;
 	}
 
 	bool CVisual::Read(zar::CZAR& archive)
 	{
+		u32 detail_size = 0;
+
 		archive.Fetch("vparams", this, sizeof(tag_VIS_PARAMS));
 
 		if (m_detail_buff == NULL)
-		{
 			zfree(m_detail_buff);
-		}
 
 		m_detail_buff = NULL;
 		m_detail_cnt = 0;
 
 		archive.Fetch("detail_cnt", &m_detail_cnt);
 		
-		if (m_detail_cnt != 0)
+		if (!m_detail_cnt)
+			return false;
+
+		archive.Fetch("detail_size", &detail_size);
+		m_detail_buff = zmalloc(detail_size);
+		archive.Fetch("detail_buff", m_detail_buff, detail_size);
+
+		for (u32 i = 0; i < m_detail_cnt; i++)
 		{
-			u32 detail_size = 0;
-			archive.Fetch("detail_size", &detail_size);
-			m_detail_buff = zmalloc(detail_size);
-			archive.Fetch("detail_buff", m_detail_buff, detail_size);
-
-			for (s32 i = 0; i < m_detail_cnt; i++)
-			{
-
-			}
+			
 		}
 
 		return true;
@@ -265,32 +252,17 @@ namespace zdb
 
 	bool CVisual::DrawLOD(zdb::CLOD_band* lod, f32 range, f32* distance)
 	{
-		bool inrange = false;
+		if (lod->m_minRangeNearSq < range || lod->m_maxRangeFarSq > range)
+			return false;
 
-		if (lod->m_minRangeNearSq < range && range < lod->m_maxRangeFarSq)
-		{
-			if (lod->m_minFade)
-			{
-				inrange = true;
-			}
-			else if (range < lod->m_minRangeFarSq || (inrange = true, lod->m_maxRangeFarSq < range))
-			{
-				if (lod->m_minFade || lod->m_minRangeNearSq < range)
-				{
-					inrange = true;
-					if (lod->m_maxFade)
-					{
-						if (lod->m_maxRangeNearSq <= range)
-						{
-							inrange = true;
-							*distance = *distance * lod->m_minInvDeltaRangeSq * (range - lod->m_minRangeNearSq);
-						}
-					}
-				}
-			}
-		}
+		if (!lod->m_minFade)
+			return false;
 
-		return inrange;
+		if (lod->m_minRangeFarSq < range || lod->m_maxRangeFarSq > range)
+			return false;
+
+		*distance *= lod->m_minInvDeltaRangeSq * (range - lod->m_minRangeNearSq);
+		return true;
 	}
 
 	void CVisual::SetBuffer(_word128* wvis, u32 bufferidx, CVisBase* visdata)
@@ -310,16 +282,12 @@ namespace zdb
 	void CVisual::Render()
 	{
 		if (m_renderState != 0)
-		{
 			VuUpdate(1.0f);
-		}
 	}
 
 	void CVisual::VuUpdate(f32 opacity)
 	{
-		glUseProgram(m_shader->m_ID);
-		glBindVertexArray(m_vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+
 	}
 
 	CTexture* CVisual::ResolveTextureName(_word128* wtexture, _word128* wname)
@@ -370,9 +338,7 @@ namespace zdb
 		for (auto it = begin(); it != end(); it++)
 		{
 			if (*it == visual)
-			{
 				return true;
-			}
 		}
 
 		return false;

@@ -88,7 +88,8 @@ namespace zdb
 		
 		static u32 m_instance_count;
 
-		void* m_data_buffer;
+		u32 m_node_ofs;
+		_word128* m_data_buffer;
 		s32 m_buffer_count;
 		size_t m_data_size;
 		bool m_active;
