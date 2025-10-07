@@ -2,6 +2,7 @@
 #define ZNODE_H
 #include <vector>
 
+#include "gamez/zAssetLib/zassetlib.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zIntersect/zintersect.h"
 #include "gamez/zVisual/zvis.h"
@@ -426,7 +427,7 @@ namespace zdb
 		s32 m_variant;
 		bool m_bForceExport;
 		bool m_bbox_valid;
-		// CRefList m_list;
+		CRefList m_list;
 		CAssetLib* m_AssetLib;
 	};
 
