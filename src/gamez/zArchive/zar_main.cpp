@@ -379,9 +379,7 @@ namespace zar
 		else
 			m_filename = strdup(name);
 
-		if (m_filename 
-			&& m_filename != "DEFAULT_ZAR_NAME" 
-			&& m_filename == name)
+		if (m_filename && m_filename != "DEFAULT_ZAR_NAME" )
 		{
 			m_data_padded = padded_size;
 
