@@ -111,6 +111,7 @@ namespace zdb
 		u32 m_vertex_count;
 		u8* m_cur_vertex;
 
+		_word128* m_data;
 		_word128* m_nextGif;
 	};
 	
