@@ -403,32 +403,27 @@ void zrdr_freearray(_zrdr* reader)
 	if (!reader)
 		return;
 
-	if (reader->type == ZRDR_REAL)
-		reader->real = 0.0f;
+	if (reader->type == ZRDR_STRING)
+		reader->string = NULL;
 
-	if (reader->type != ZRDR_ARRAY && reader->integer == 0)
+	if (reader->type != ZRDR_ARRAY)
 		return;
 
-	for (u32 i = 0; i < reader->integer; i++)
+	for (u32 i = 0; node = &reader->array[i], i <= reader->array->integer; i++)
 	{
-		node = &reader->array[i];
-
-		if (node->integer <= i)
-			break;
-
-		if (node->type == ZRDR_REAL)
-			node->real = 0.0f;
+		if (node->type == ZRDR_STRING)
+			node->string = NULL;
 
 		if (node->type == ZRDR_ARRAY && node->integer != 0)
 		{
 			for (u32 j = 0; j < node->array->integer; j++)
-				zrdr_freearray(&node[j]);
+				zrdr_freearray(&node->array[j]);
 
-			zfree(node);
-			node->integer = 0;
+			zfree(node->array);
+			node->array = NULL;
 		}
-
-		zfree(node);
-		node->integer = 0;
 	}
+
+	zfree(reader->array);
+	reader->array = NULL;
 }
