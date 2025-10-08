@@ -147,6 +147,39 @@ char* zrdr_findstring(_zrdr* reader, const char* name)
 	return NULL;
 }
 
+bool zrdr_findSTRING(_zrdr* reader, const char* name, const char** list)
+{
+	auto tag = zrdr_findtag_startidx(reader, name, 1);
+
+	if (!tag)
+		return false;
+
+	if (!list)
+		return false;
+
+	if (tag->type )
+
+	if (tag->type == ZRDR_ARRAY)
+	{
+		if (tag->array->length > 1)
+			tag = &tag->array[1];
+	}
+
+	if (tag->type == ZRDR_STRING)
+	{
+		*list = tag->string;
+		return true;
+	}
+
+	if (tag->type == ZRDR_INTEGER && tag->integer == 0)
+	{
+		*list = NULL;
+		return true;
+	}
+
+	return false;
+}
+
 bool zrdr_findreal(_zrdr* reader, const char* name, f32* output, s32 startidx)
 {
 	_zrdr* tag = zrdr_findtag_startidx(reader, name, 1);

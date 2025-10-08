@@ -66,6 +66,8 @@ void zrdr_freearray(_zrdr* array);
 /// @return The string from the found node. If NULL, this means that the tag doesn't exist.
 char* zrdr_findstring(_zrdr* reader, const char* tag);
 
+bool zrdr_findSTRING(_zrdr* reader, const char* tag, const char** list);
+
 /// Finds an integer.
 /// @param reader A zReader array node.
 /// @param tag The name of the tag to find.
