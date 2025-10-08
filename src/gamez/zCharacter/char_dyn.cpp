@@ -1,5 +1,6 @@
 ﻿#include "zchar.h"
 #include "gamez/zEntity/zentity.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zSeal/zseal.h"
 
 void CharacterDynamics::Load(_zrdr* reader)

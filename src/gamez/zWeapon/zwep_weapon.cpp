@@ -1,5 +1,7 @@
 #include "zweapon.h"
 
+#include "gamez/zNode/node_world.h"
+
 CZWeapon::CZWeapon()
 {
 	// AI parameter setup

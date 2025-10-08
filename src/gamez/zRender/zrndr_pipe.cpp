@@ -1,6 +1,7 @@
 #include "zrender.h"
 #include "gamez/zNode/znode.h"
-
+#include "gamez/zNode/node_world.h"
+#include "gamez/zGrid/zgrid.h"
 #include "gamez/zVideo/zvid.h"
 
 u32 numCharactersRendered = 0;

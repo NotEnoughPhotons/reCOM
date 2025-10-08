@@ -5,6 +5,7 @@
 #include "gamez/zEntity/zentity.h"
 #include "gamez/zNode/znode.h"
 #include "gamez/zReader/zrdr.h"
+#include "gamez/zSave/zsave.h"
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zValve/zvalve.h"
 #include "gamez/zUI/zui.h"

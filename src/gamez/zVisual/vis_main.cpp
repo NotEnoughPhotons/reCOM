@@ -3,7 +3,11 @@
 #include "zvis.h"
 
 #include "gamez/zArchive/zar.h"
+
 #include "gamez/zNode/znode.h"
+#include "gamez/zNode/node_model.h"
+#include "gamez/zNode/node_world.h"
+
 #include "gamez/zRender/zrender.h"
 #include "gamez/zShader/zshader.h"
 

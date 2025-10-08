@@ -4,6 +4,7 @@
 
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zIMGUI/zimgui.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zVideo/zvid.h"
 
 char* GetDatabase();

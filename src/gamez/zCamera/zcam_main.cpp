@@ -1,6 +1,7 @@
 #include "zcam.h"
 
 #include "gamez/zMath/zmath.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zSeal/zseal.h"
 
 namespace zdb

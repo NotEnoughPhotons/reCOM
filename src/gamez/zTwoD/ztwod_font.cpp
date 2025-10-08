@@ -1,5 +1,7 @@
 ﻿#include "ztwod.h"
-#include "gamez/zAssetLib/zassetlib.h"
+
+#include "gamez/zNode/node_assetlib.h"
+
 #include "gamez/zVideo/zvid.h"
 
 C2DFont::C2DFont()

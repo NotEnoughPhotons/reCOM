@@ -3,6 +3,7 @@
 #include "gamez/zCharacter/zchar.h"
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zNetwork/znet.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zSeal/zseal.h"
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zVehicle/zvehicle.h"

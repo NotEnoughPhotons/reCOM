@@ -3,6 +3,7 @@
 #include "gamez/zCamera/zcam.h"
 #include "gamez/zGame/zgame.h"
 #include "gamez/zInput/zinput.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zVideo/zvid.h"

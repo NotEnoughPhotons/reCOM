@@ -2,6 +2,7 @@
 
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zGame/zgame.h"
+#include "gamez/zNode/node_world.h"
 #include "gamez/zSeal/zseal.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zVideo/zvid.h"

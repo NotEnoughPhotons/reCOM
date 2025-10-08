@@ -174,18 +174,6 @@ public:
 	}
 };
 
-class CSaveManager
-{
-
-};
-
-class CSaveModule
-{
-public:
-	CSaveModule(const char* module, CSaveManager* mcSaveManager) {}
-public:
-};
-
 class CTTY
 {
 public:

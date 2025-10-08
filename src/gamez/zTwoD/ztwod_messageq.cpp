@@ -1,5 +1,6 @@
 ﻿#include "ztwod.h"
-#include "gamez/zAssetLib/zassetlib.h"
+
+#include "gamez/zNode/node_assetlib.h"
 
 C2DMessage_Q::C2DMessage_Q()
 {
