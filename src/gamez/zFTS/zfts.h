@@ -79,12 +79,16 @@ class CMission : CSaveModule
 public:
 	CMission() : CSaveModule("CMission", NULL) {}
 
+	static char* m_weaponmodelpostfix;
 	static f32 nextFrameDelta;
 
 	bool Init();
 
 	void Open();
 	void PreOpen(const char* db);
+	void OpenVehicleRdr();
+	void CloseVehicleRdr();
+
 	void Read(_zrdr* reader);
 
 	void OnMissionStart();

@@ -11,6 +11,11 @@
 
 CMission theMission;
 
+char** g_arrDefCharTypeNames[32];
+u32 g_iNumUiVehicles = 0;
+
+char* CMission::m_weaponmodelpostfix = NULL;
+
 void UpdateMissionArchive(const char* type, const char* path)
 {
 	std::string pathstr;
@@ -178,8 +183,73 @@ bool CMission::Init()
 	return true;
 }
 
+void UpdateCharWeaponUiVars(u32 index)
+{
+
+}
+
+void CreateCustomCharTypes(CVehicleRdr* reader, _zrdr* start)
+{
+	g_iNumUiVehicles = 0;
+
+	if (_zrdr* vehicles = zrdr_findtag(start, "UiVehicles"))
+	{
+		_zrdr* node = NULL;
+		for (u32 i = 0; node = &vehicles->array[i], i < vehicles->array->integer - 1; i++)
+		{
+			char* name = zrdr_findstring(node, "Name");
+			CVehicleRdrEntry* entry = reader->GetEntryByName(name);
+
+			if (!entry)
+				continue;
+
+			strcpy(*g_arrDefCharTypeNames[i], entry->m_character);
+			CCharacterType* chartype_mod = CCharacterType::GetByNameMod(name);
+			CCharacterType* chartype = CCharacterType::Create(name, chartype_mod, false);
+			chartype->m_istemporary = true;
+
+			entry->SetCharacterName(name);
+			UpdateCharWeaponUiVars(i);
+		}
+	}
+}
+
+void CreateCustomCharTypes(_zrdr* start)
+{
+	g_iNumUiVehicles = 0;
+
+	if (_zrdr* vehicles = zrdr_findtag(start, "UiVehicles"))
+	{
+		_zrdr* node = NULL;
+		for (u32 i = 0; node = &vehicles->array[i], i < vehicles->array->integer - 1; i++)
+		{
+			char* name = zrdr_findstring(node, "Name");
+			CVehicleRdrEntry* entry = NULL; // TODO: replace this
+
+			if (!entry)
+				continue;
+
+			strcpy(*g_arrDefCharTypeNames[i], entry->m_character);
+			CCharacterType* chartype_mod = CCharacterType::GetByNameMod(name);
+			CCharacterType* chartype = CCharacterType::Create(name, chartype_mod, false);
+			chartype->m_istemporary = true;
+
+			entry->SetCharacterName(name);
+			UpdateCharWeaponUiVars(i);
+		}
+	}
+}
+
+void LoadMissionMapVisibilities(_zrdr* start)
+{
+
+}
+
 void CMission::PreOpen(const char* db)
 {
+	extern char** g_arrDefCharTypeNames[32];
+	extern u32 g_iNumUiVehicles;
+
 	if (db && *db != '\0')
 	{
 		UpdateMissionArchive(m_database, db);
@@ -206,7 +276,69 @@ void CMission::PreOpen(const char* db)
 	}
 
 	_zrdr* uivars = zrdr_findtag(mission, "UiVars");
-	u32 idx = 0;
+	_zrdr* node = NULL;
+
+	for (u32 i = 1; node = &uivars->array[i], i < uivars->array->integer - 1; i++)
+	{
+		CUIVariableSpec spec(node);
+		theUIVarManager.Add(spec.m_name, spec.m_array, (UIVAR_LONGEVITY)spec.m_type);
+	}
+
+	_zrdr* valves = zrdr_findtag(mission, "Valves");
+
+	for (u32 i = 1; node = &valves->array[i], i < valves->array->integer - 1; i++)
+	{
+		char* name = zrdr_findstring(node, "NAME");
+
+		VALVE_TYPE vtype = VALVE_TYPE::VTYPE_PERM;
+
+		if (!zrdr_findtag(node, "PERM"))
+			vtype = VALVE_TYPE::VTYPE_TEMP;
+
+		if (zrdr_findtag(node, "PERSIST"))
+			vtype = VALVE_TYPE::VTYPE_PERSIST;
+
+		s32 value = 0;
+		zrdr_findint(node, "VALUE", &value, 1);
+
+		CValve::Create(name, value, vtype);
+	}
+
+	Read(mission);
+
+	const char* weapon_model_postfix[4];
+	weapon_model_postfix[0] = NULL;
+
+	zrdr_findSTRING(mission, "WEAPON_MODEL_POSTFIX", weapon_model_postfix);
+	strncpy(m_weaponmodelpostfix, *weapon_model_postfix, 30);
+
+	CloseVehicleRdr();
+	OpenVehicleRdr();
+
+	for (u32 i = 0; i < 32; i++)
+		g_arrDefCharTypeNames[i] = 0;
+
+	if (!theNetwork.m_bNetwork)
+		CreateCustomCharTypes(m_vehicleRdr, mission);
+	else
+		CreateCustomCharTypes(mission);
+
+	LoadMissionMapVisibilities(mission);
+}
+
+void CMission::OpenVehicleRdr()
+{
+	if (!m_vehicleRdr)
+		return;
+
+	m_vehicleRdr->Open("vehicles.rdr");
+}
+
+void CMission::CloseVehicleRdr()
+{
+	CCharacterType::CleanupTemporary();
+	if (m_vehicleRdr)
+		m_vehicleRdr->Close();
 }
 
 void CMission::Read(_zrdr* reader)
