@@ -1,23 +1,22 @@
-﻿#include "znode.h"
+﻿#include "node_light.h"
+#include "node_saveload.h"
 
 namespace zdb
 {
-    void CNode::SetDynamicLight(bool self_light, bool apply_to_children)
+    CLight::CLight()
     {
-        m_light_dynamic = self_light;
+        m_type = (u32)TYPE::NODE_TYPE_LIGHT;
+        m_invMaxRange = 0.0f;
+        m_maxRange = 0.0f;
+        m_diffuse.x = 128.0f;
+        m_diffuse.y = 128.0f;
+        m_diffuse.z = 128.0f;
+        m_opacity = 64.0f;
+        m_appliedToNode = 0;
+    }
 
-        if (apply_to_children)
-        {
-            auto child_iterator = m_child.begin();
-            while (child_iterator != m_child.end())
-            {
-                CNode* child = *child_iterator;
-
-                child->m_light_dynamic = m_light_dynamic;
-                child->SetDynamicLight(self_light, apply_to_children);
-                
-                ++child_iterator;
-            }
-        }
+    bool CLight::Read(CSaveLoad& sload)
+    {
+        return true;
     }
 }

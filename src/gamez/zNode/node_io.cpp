@@ -1,7 +1,10 @@
 #include "znode.h"
-#include "gamez/zAssetLib/zassetlib.h"
+#include "node_world.h"
+#include "node_light.h"
+#include "node_saveload.h"
+#include "node_lensflare.h"
 
-#include "gamez/zSave/zsave.h"
+#include "gamez/zAssetLib/zassetlib.h"
 
 namespace zdb
 {
@@ -281,47 +284,6 @@ namespace zdb
 			sload.m_zfile.CloseKey(childrenkey);
 		}
 		
-		return true;
-	}
-
-	CModel::CModel(const char* name)
-	{
-		m_AssetLib = NULL;
-		m_type = 7;
-		m_bbox_valid = false;
-		SetName(name);
-		m_variant = 0;
-		m_bForceExport = false;
-	}
-	
-	CModel* CModel::Create(CSaveLoad& sload, CAssetLib* library)
-	{
-		CModel* model = new CModel(NULL);
-
-		if (library && model)
-		{
-			library->AddModel(model);
-		}
-
-		if (!model->Read(sload))
-		{
-			// TODO: Destroy the model after adding to the list. Node data is invalid.
-
-			model = NULL;
-		}
-
-		return model;
-	}
-	
-	bool CModel::Read(CSaveLoad& sload)
-	{
-		zar::CKey* modelkey = sload.m_zfile.GetOpenKey();
-		if (modelkey != NULL)
-		{
-			CNode::Read(sload);
-			SetName(modelkey->GetName());
-		}
-
 		return true;
 	}
 }

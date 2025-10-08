@@ -1,6 +1,10 @@
 #include <algorithm>
 
 #include "znode.h"
+#include "node_model.h"
+#include "node_universe.h"
+
+#include "gamez/zGrid/zgrid.h"
 
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zVisual/zvis.h"
@@ -321,6 +325,25 @@ namespace zdb
 		}
 	}
 
+	void CNode::SetDynamicLight(bool self_light, bool apply_to_children)
+	{
+		m_light_dynamic = self_light;
+
+		if (apply_to_children)
+		{
+			auto child_iterator = m_child.begin();
+			while (child_iterator != m_child.end())
+			{
+				CNode* child = *child_iterator;
+
+				child->m_light_dynamic = m_light_dynamic;
+				child->SetDynamicLight(self_light, apply_to_children);
+
+				++child_iterator;
+			}
+		}
+	}
+
 	f32 CNode::GetRadius() const
 	{
 		f32 radius = 0.0f;
@@ -597,39 +620,4 @@ namespace zdb
 
 		return it != last;
 	}
-
-	CModel* CModelVector::GetModel(const char* name)
-	{
-		CModel* model = NULL;
-		
-		if (name == NULL)
-		{
-			model = NULL;
-		}
-		else
-		{
-			for (auto it = begin(); it != end(); it++)
-			{
-				if (strcmp(name, (*it)->m_name) == 0)
-				{
-					model = *it;
-					break;
-				}
-			}
-		}
-
-		return model;
-	}
 }
-
-//CNodeAction::CNodeAction(zdb::CNode* node, CZAnim* animToPlay, CValve* actionValve, zdb::CTexHandle* handle)
-//{
-//	this->animations = NULL;
-//	this->actionAnimation = NULL;
-//	this->node = node;
-//	this->actionValve = actionValve;
-//	this->typeFlag = 6;
-//	this->iconBitmapHandle = handle;
-//	this->animVector.insert(animVector.begin(), animToPlay);
-//	this->actionList = 0;
-//}

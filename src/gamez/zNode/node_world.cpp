@@ -1,107 +1,17 @@
-#include "znode.h"
+#include "node_world.h"
+#include "node_assetlib.h"
 
 #include "gamez/zAssetLib/zassetlib.h"
 #include "gamez/zCamera/zcam.h"
+#include "gamez/zGrid/zgrid.h"
 #include "gamez/zVisual/zvis.h"
 #include "gamez/zTexture/ztex.h"
 
-#define MIN_POOL_SIZE 3000
-#define POOL_INCREMENT 100
-
 namespace zdb
 {
-	CNodeUniverse* NodeUniverse = NULL;
-
 	CWorld* CWorld::m_world = NULL;
 	f32 CWorld::m_scale = 1.0f;
 	f32 CWorld::m_invscale = 1.0f / CWorld::m_scale;
-
-	bool CNodeUniverse::AddNode(CNode* node)
-	{
-		bool success = false;
-
-		if (!m_locked)
-		{
-			CNode* universeNode = node;
-			int universeSize = size();
-
-			if (universeSize == capacity())
-			{
-				if (capacity() < MIN_POOL_SIZE)
-				{
-					reserve(MIN_POOL_SIZE);
-				}
-				else
-				{
-					reserve(capacity() + POOL_INCREMENT);
-				}
-			}
-
-			insert(begin(), universeNode);
-			success = true;
-		}
-		else
-		{
-			success = false;
-		}
-
-		return success;
-	}
-
-	void CNodeUniverse::RemoveNode(CNode* node)
-	{
-		auto it = begin();
-		while (it != end())
-		{
-			if (*it == node)
-			{
-				break;
-			}
-
-			it++;
-		}
-
-		*it = NULL;
-	}
-
-	CNode* CNodeUniverse::GetElement(s32 index) const
-	{
-		CNode* node;
-
-		if (index < 0)
-		{
-			node = NULL;
-		}
-		else
-		{
-			node = NULL;
-
-			if (index <= size())
-			{
-				node = at(index);
-			}
-		}
-
-		return node;
-	}
-
-	int CNodeUniverse::GetIndex(CNode* node) const
-	{
-		int index = 0;
-		auto it = begin();
-		while (it != end())
-		{
-			if (*it == node)
-			{
-				break;
-			}
-
-			it++;
-			index++;
-		}
-
-		return index;
-	}
 
 	CWorld::CWorld(const char* name)
 	{
