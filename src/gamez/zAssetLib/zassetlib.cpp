@@ -35,9 +35,7 @@ namespace zdb
         m_renderphase = _RenderPhase::WORLD;
 
         if (m_name)
-        {
             zfree(m_name);
-        }
 
         m_name = zstrdup(name);
     }
@@ -46,21 +44,15 @@ namespace zdb
     {
         CTexHandle* handle = NULL;
         
-        auto it = begin();
-
-        while (it != end())
+        for (auto i = begin(); i != end(); i++)
         {
-            handle = (*it)->m_textures.GetHandle(name);
-            
-            if (handle)
-            {
-                break;
-            }
+            CTexHandle* handle = (*i)->m_textures.GetHandle(name);
 
-            ++it;
+            if (handle)
+                return handle;
         }
 
-        return handle;
+        return NULL;
     }
     
     CTexHandle* CTexList::Append(CTexture* texture, bool search)
@@ -69,20 +61,15 @@ namespace zdb
 
         if (search)
         {
-            auto it = begin();
-            
-            while (it != end() && (*it)->m_texture != texture)
+            for (auto i = begin(); i != end(); i++)
             {
-                ++it;
-            }
-            
-            if (it == end())
-            {
-                handle = NULL;
-            }
-            else
-            {
-                handle = *it;
+                CTexHandle* h = *i;
+
+                if (h->m_texture == texture)
+                {
+                    handle = h;
+                    break;
+                }
             }
         }
 
@@ -97,35 +84,21 @@ namespace zdb
 
     bool CAssetLib::AddTexture(const char* name)
     {
-        CTexHandle* handle = NULL;
-        
-        if (m_locked)
-        {
-            return false;
-        }
-
         if (!name)
-        {
             return false;
-        }
 
-        auto it = CAssetMgr::m_assets.begin();
+        if (m_locked)
+            return false;
 
-        while (it != CAssetMgr::m_assets.end())
+        for (auto i = CAssetMgr::m_assets.begin(); i != CAssetMgr::m_assets.end(); i++)
         {
-            handle = (*it)->m_textures.GetHandle(name);
+            CTexHandle* handle = (*i)->m_textures.GetHandle(name);
+
             if (handle)
             {
-                break;
+                AddTexture(handle->m_texture);
+                return true;
             }
-            
-            ++it;
-        }
-
-        if (handle)
-        {
-            AddTexture(handle->m_texture);
-            return true;
         }
 
         return false;
@@ -133,68 +106,49 @@ namespace zdb
     
     bool CAssetLib::AddTexture(CTexture* texture)
     {
-        CTexHandle* handle = NULL;
-        
-        if (m_locked)
-        {
-            return false;
-        }
-
         if (!texture)
-        {
             return false;
-        }
 
-        auto it = CAssetMgr::m_assets.begin();
+        if (m_locked)
+            return false;
 
-        while (it != CAssetMgr::m_assets.end())
+        for (auto i = CAssetMgr::m_assets.begin(); i != CAssetMgr::m_assets.end(); i++)
         {
-            handle = (*it)->m_textures.GetHandle(texture->m_name);
+            CTexHandle* handle = (*i)->m_textures.GetHandle(texture->m_name);
 
             if (handle)
-            {
                 break;
-            }
-
-            ++it;
         }
 
-        if (!handle)
-        {
-            m_textures.Append(texture, true);
-            texture->m_AssetLib = this;
-        }
-        
+        m_textures.Append(texture, true);
+        texture->m_AssetLib = this;
+
         return true;
     }
 
     CModel* CAssetLib::AddModel(CModel* model)
     {
+        char* name = NULL;
+
         CAssetLib* library = NULL;
         CAssetLib* resolved = NULL;
         CModel* asset = NULL;
-        
-        if (m_locked)
-        {
-            return asset;
-        }
 
-        char* name = model->m_name;
-        library = NULL;
+        if (m_locked)
+            return NULL;
+
+        name = model->m_name;
         asset = model;
 
-        auto it = CAssetMgr::m_assets.begin();
-        while (it != CAssetMgr::m_assets.end())
+        for (auto i = CAssetMgr::m_assets.begin(); i != CAssetMgr::m_assets.end(); i++)
         {
-            CModel* m = (*it)->m_models.GetModel(name);
+            CModel* mdl = (*i)->m_models.GetModel(name);
 
-            if (m)
+            if (mdl)
             {
-                library = *it;
+                library = *i;
                 break;
             }
-            
-            ++it;
         }
 
         if (!library)
