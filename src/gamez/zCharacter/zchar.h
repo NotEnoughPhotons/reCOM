@@ -99,9 +99,16 @@ public:
 	};
 	
 	CCharacterType();
+	CCharacterType(const char*, const CCharacterType*);
+
+	static std::list<CCharacterType*> m_char_list;
 
 	static bool Open(const char* path);
-private:
+	static void CleanupTemporary();
+
+	static CCharacterType* Create(const char*, const CCharacterType*, bool);
+	static CCharacterType* GetByNameMod(const char*);
+
 	char* m_name;
 
 	s32 m_ref_count;
