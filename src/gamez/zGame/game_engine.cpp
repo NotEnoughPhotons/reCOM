@@ -4,7 +4,12 @@
 
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zIMGUI/zimgui.h"
+
+#include "gamez/zNetwork/znet.h"
+
 #include "gamez/zNode/node_world.h"
+#include "gamez/zNode/node_assetlib.h"
+
 #include "gamez/zVideo/zvid.h"
 
 char* GetDatabase();
@@ -38,31 +43,40 @@ bool CGame::StartEngine()
 
 bool COurGame::StartEngine()
 {
-	if (CGame::StartEngine())
+	if (!CGame::StartEngine())
+		return false;
+
+	char img_dir[256];
+	sprintf_s(img_dir, 256, "%s/LOADING.RAW", gamez_GameRunPath);
+
+	// Display loading screen
+	CVideo::RestoreImage(img_dir, true);
+
+	// After the image is loaded into the back buffer,
+	// bring it to the main one
+	zVid_Swap(true);
+
+	zdb::CTexManager::m_texmanager->doAddBuffer("default", 0.0f, 0.0f);
+
+	theMission.Init();
+
+	SDL_Time ticks;
+	srand(SDL_GetCurrentTime(&ticks));
+
+	char* db = GetDatabase();
+
+	if (db)
 	{
-		char img_dir[256];
-		sprintf_s(img_dir, 256, "%s/LOADING.RAW", gamez_GameRunPath);
-		CVideo::RestoreImage(img_dir, true);
-		zVid_Swap(true);
-		zdb::CTexManager::m_texmanager->doAddBuffer("default", 0.0f, 0.0f);
-		
-		theMission.Init();
-		
-		SDL_Time ticks;
-		srand(SDL_GetCurrentTime(&ticks));
+		size_t dblen = strlen(db);
 
-		char* db = GetDatabase();
-
-		if (db)
-		{
-			size_t dblen = strlen(db);
-
-			if (dblen != 0)
-			{
-				theMission.PreOpen(db);
-			}
-		}
+		if (dblen != 0)
+			theMission.PreOpen(db);
 	}
+
+	zdb::CAssetLib* fontLib = zdb::CAssetMgr::GetLoadedLibRef("common/assetlib/font");
+	fontLib->m_autoload = false;
+
+	theLobby.Init();
 
 	return true;
 }
