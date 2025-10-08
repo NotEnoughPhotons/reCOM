@@ -106,13 +106,8 @@ void CMenuState::Tick(f32 dT)
 	m_menu->Tick(dT);
 	
 	// The world has to exist in order for nodes to be rendered
-	if (zdb::CWorld::m_world != NULL)
-	{
-		if (zdb::CWorld::m_world->m_camera != NULL)
-		{
-			zdb::CWorld::m_world->m_camera->Update(zdb::tag_ZCAM_TYPE::ZCAM_NORMAL);
-		}
-	}
+	if (zdb::CWorld::m_world != NULL && zdb::CWorld::m_world->m_camera)
+		zdb::CWorld::m_world->m_camera->Update(zdb::tag_ZCAM_TYPE::ZCAM_NORMAL);
 
 	SDL_Event e;
 	SDL_PollEvent(&e);
