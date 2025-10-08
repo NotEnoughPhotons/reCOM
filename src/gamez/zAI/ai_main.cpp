@@ -3,6 +3,11 @@
 
 #include "zai.h"
 
+void AI_PARAMS::Parse(_zrdr* reader)
+{
+
+}
+
 CAiState* CAiState::Create(AI_STATE state)
 {
 	CAiState* aiState;

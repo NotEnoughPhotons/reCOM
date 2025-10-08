@@ -4,6 +4,7 @@
 
 #include "gamez/zMath/zmath.h"
 #include "gamez/zSystem/zsys.h"
+#include "gamez/zReader/zrdr.h"
 
 class CAiMap;
 class CAiAStar;
@@ -233,6 +234,8 @@ enum GOAL_TYPE
 
 struct AI_PARAMS
 {
+	void Parse(_zrdr* node);
+
 	u32 mask;
 	f32 accuracy;
 	f32 courage;
