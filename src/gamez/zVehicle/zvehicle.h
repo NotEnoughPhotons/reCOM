@@ -1,13 +1,26 @@
 ﻿#ifndef ZVEHICLE_H
 #define ZVEHICLE_H
-class CVehicleRdr
-{
+#include <vector>
 
+#include "gamez/zAI/zai.h"
+#include "gamez/zEntity/zentity.h"
+
+class CVehicleRdrEntry;
+
+class CVehicleRdr : public std::vector<CVehicleRdrEntry>
+{
+public:
+    bool Open(const char*);
+    void Close();
+    bool Load(_zrdr*);
+    CVehicleRdrEntry* GetEntryByName(const char*);
 };
 
 class CVehicleRdrEntry
 {
-private:
+public:
+    void SetCharacterName(const char*);
+
     char m_name[32];
     char m_character[48];
     char m_display_name[32];
@@ -23,4 +36,6 @@ private:
     u32 m_unused : 26;
     s32 m_startIndex;
 };
+
+extern CVehicleRdrEntry* _dest;
 #endif
