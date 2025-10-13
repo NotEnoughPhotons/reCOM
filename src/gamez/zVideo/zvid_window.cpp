@@ -5,7 +5,7 @@
 
 void zVid_CreateWindow()
 {
-    auto settings_rdr_file = zrdr_read("./data/zrdr/settings.rdr");
+    auto settings_rdr_file = zrdr_read("./data/zrdr/settings.rdr", NULL, ZRDR_FLAG_RAW);
     theWindow = new CWindow(settings_rdr_file);
 }
 
