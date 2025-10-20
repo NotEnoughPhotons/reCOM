@@ -56,9 +56,12 @@ namespace zdb
 	class CTexPalette : public PALETTE_PARAMS
 	{
 	public:
-		bool Read(CSaveLoad& sload);
-		bool Read(zar::CZAR& archive);
+		CTexPalette(const char* name);
 		
+		bool Read(CSaveLoad& sload);
+		
+		static u32 m_palId;
+
 		CAssetLib* m_AssetLib;
 
 		char* m_name;
