@@ -30,6 +30,7 @@ namespace zdb
 		bool AddTexture(const char* name);
 		bool AddTexture(CTexture* texture);
 		CModel* AddModel(CModel* model);
+		CTexPalette* AddPalette(CTexPalette* palette, bool checkDuplicate);
 
 		bool IsNamed(const char* name) const;
 		char* RootName() const;

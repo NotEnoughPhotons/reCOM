@@ -166,6 +166,23 @@ namespace zdb
 		return asset;
 	}
 
+	CTexPalette* CAssetLib::AddPalette(CTexPalette* palette, bool checkDuplicate)
+	{
+		if (checkDuplicate)
+		{
+			for (auto i = m_palettes.begin(); i != m_palettes.end(); ++i)
+			{
+				if (palette == *i)
+					return NULL;
+			}
+		}
+
+		m_palettes.insert(m_palettes.begin(), palette);
+		palette->m_AssetLib = this;
+		
+		return NULL;
+	}
+
 	CModel* CAssetList::GetModel(const char* name)
 	{
 		if (m_cache_model || name || strcmp(m_cache_model->m_name, name) != 0)
@@ -321,6 +338,7 @@ namespace zdb
 				CSaveLoad sload;
 				CAssetLib* assetlib = new CAssetLib(name);
 				m_assets.insert(m_assets.begin(), assetlib);
+				lib = assetlib;
 				sload.LoadAssetLib(NULL, assetlib, TYPE_ALL);
 			}
 			else
@@ -349,5 +367,4 @@ namespace zdb
 		
 		return lib;
 	}
-
 }
