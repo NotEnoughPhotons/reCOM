@@ -101,7 +101,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_txr");
+			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_txr");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -120,7 +120,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_pal");
+			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_pal");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -139,7 +139,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_mdl");
+			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_mdl");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -179,39 +179,30 @@ namespace zdb
 		s32 renderphase;
 
 		// TODO: fix renderphase enum
-		if (m_zfile.Fetch("renderphase", &renderphase))
+		m_zfile.Fetch("renderphase", &renderphase);
+
+		if (zar::CKey* key = m_zfile.OpenKey("textures"))
 		{
-
-		}
-
-		zar::CKey* key = m_zfile.OpenKey("textures");
-
-		if (key)
-		{
-			auto it = key->begin();
-
-			while (it != key->end())
+			for (auto i = key->begin(); i != key->end(); i++)
 			{
-				zar::CKey* texturekey = m_zfile.OpenKey(*it);
+				zar::CKey* textureKey = m_zfile.OpenKey(*i);
 
-				if (texturekey)
+				if (!textureKey)
+					continue;
+
+				char* name = textureKey->GetName();
+				CTexHandle* handle = CAssetMgr::m_assets.GetTexHandle(name);
+
+				if (!handle && !library->AddTexture(name))
 				{
-					char* name = texturekey->GetName();
-					CTexHandle* handle = CAssetMgr::m_assets.GetTexHandle(name);
-
-					if (!handle && !library->AddTexture(name))
-					{
-						texture = new CTexture(name);
-						texture->Read(*this);
-						library->AddTexture(texture);
-					}
-
-					m_zfile.CloseKey(texturekey);
+					texture = new CTexture(name);
+					texture->Read(*this);
+					library->AddTexture(texture);
 				}
 
-				++it;
+				m_zfile.CloseKey(textureKey);
 			}
-
+			
 			m_zfile.CloseKey(key);
 		}
 
