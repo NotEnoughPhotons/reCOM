@@ -210,6 +210,28 @@ namespace zdb
 		return true;
 	}
 
+	bool CSaveLoad::LoadPalettes_PS2(CAssetLib* library)
+	{
+		if (zar::CKey* paletteKey = m_zfile.OpenKey("palettes"))
+		{
+			for (auto i = paletteKey->begin(); i != paletteKey->end(); ++i)
+			{
+				if (zar::CKey* key = m_zfile.OpenKey(*i))
+				{
+					CTexPalette* palette = new CTexPalette(key->GetName());
+					palette->Read(*this);
+					library->AddPalette(palette, false);
+					
+					m_zfile.CloseKey(key);
+				}
+			}
+			
+			m_zfile.CloseKey(paletteKey);
+		}
+
+		return true;
+	}
+
 	CWorld* CSaveLoad::Load(const char* name)
 	{
 		f32 metersperunit = 0.0f;

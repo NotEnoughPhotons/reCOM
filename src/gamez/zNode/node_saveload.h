@@ -22,7 +22,7 @@ namespace zdb
         CWorld* Load(const char* path);
         bool LoadAssetLib(CWorld* world, CAssetLib* library, u32 type);
         bool LoadAssetLib_PS2(CWorld* world, CAssetLib* library, u32 type);
-        bool LoadPalettes_PS2(CAssetLib* library) { return false; } // TODO: Not implemented
+        bool LoadPalettes_PS2(CAssetLib* library);
         bool LoadTextures_PS2(CAssetLib* library);
     public:
         CWorld* m_world;
