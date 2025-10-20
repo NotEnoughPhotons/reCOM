@@ -16,9 +16,7 @@ int main(int argc, char** argv)
 	SDL_Log("[GameZ] - %s selected as game path.", gamez_GameRunPath);
 	
 	if (dumpLog)
-	{
 		COutput::DumpLog("ftslog.txt");
-	}
 
 	char* log = NULL;
 
@@ -28,8 +26,6 @@ int main(int argc, char** argv)
 	}
 
 	zUtilInit(log);
-
-	SetDatabase("ui");
 	
 	theGame.StartEngine();
 	theGame.StartPlay();
