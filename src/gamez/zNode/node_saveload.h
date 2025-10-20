@@ -9,6 +9,7 @@
 #define TYPE_TEXTURES 1
 #define TYPE_MODELS   2
 #define TYPE_PALETTES 4
+#define TYPE_ALL      255
 
 namespace zdb
 {

@@ -307,9 +307,9 @@ namespace zdb
 			lib = g_assetsRecycle.FindLib(name);
 
 			// Still nothing in the recycle bin
-			// Empty the whole thing
 			if (!lib)
 			{
+				// Empty the whole thing
 				for (auto it = g_assetsRecycle.begin(); it != g_assetsRecycle.end(); ++it)
 				{
 					delete *it;
@@ -317,10 +317,11 @@ namespace zdb
 
 				g_assetsRecycle.erase(g_assetsRecycle.begin(), g_assetsRecycle.end());
 
+				// Attempt to load the asset
 				CSaveLoad sload;
 				CAssetLib* assetlib = new CAssetLib(name);
 				m_assets.insert(m_assets.begin(), assetlib);
-				sload.LoadAssetLib(NULL, assetlib, 255);
+				sload.LoadAssetLib(NULL, assetlib, TYPE_ALL);
 			}
 			else
 			{
