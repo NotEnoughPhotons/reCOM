@@ -54,7 +54,7 @@ const char* zrdr_findfile(const char* file, const char* path);
 /// Frees a zReader object's memory.
 /// @param reader The reader to free.
 /// @return The number of bytes freed.
-s32 zrdr_free(CRdrFile* reader);
+bool zrdr_free(CRdrFile* reader);
 
 /// Frees a node inside of a zReader array.
 /// @param array The array to free.

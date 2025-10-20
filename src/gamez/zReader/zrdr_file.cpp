@@ -25,29 +25,29 @@ const char* zrdr_findfile(const char* name, const char* dir)
 	return name;
 }
 
-int zrdr_free(CRdrFile* file)
+bool zrdr_free(CRdrFile* file)
 {
-	if (file != NULL)
+	if (!file)
+		return false;
+
+	if (file->m_buffer == NULL)
 	{
-		if (file->m_buffer == NULL)
-		{
-			zrdr_freearray(file);
-		}
-		else
-		{
-			zfree(file->m_buffer);
-			file->m_buffer = NULL;
-			file->m_size = 0;
-		}
-
-		// TODO: Implement a proper way to delete the string table
-		// delete &file->m_strings;
-
-		// TODO: Implement destructor for CRdrFile
-		// delete file;
+		zrdr_freearray(file);
+	}
+	else
+	{
+		zfree(file->m_buffer);
+		file->m_buffer = NULL;
+		file->m_size = 0;
 	}
 
-	return 0;
+	// TODO: Implement a proper way to delete the string table
+	// delete &file->m_strings;
+
+	// TODO: Implement destructor for CRdrFile
+	// delete file;
+
+	return false;
 }
 
 bool CRdrFile::ValidateFormat()
@@ -154,12 +154,6 @@ bool CRdrFile::Resolve(bool resolveA)
 	if (!header)
 		return false;
 
-	// Legacy version of zReader supported by the following games:
-	// - Top Gun Hornet's Nest
-	// - MechWarrior 3
-	// - MechWarrior 3 Pirate's Moon
-	// - Recoil
-	// - Crimson Skies
 	if (resolveA)
 	{
 		str = reinterpret_cast<char*>(&header[1]);
