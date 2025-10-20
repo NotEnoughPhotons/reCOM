@@ -39,6 +39,7 @@ namespace zar
 				offset = m_pFile->fread(buf, size);
 				ZAR_SECURE(m_bSecure, buf, size);
 
+				CloseKey(key);
 				return size == offset;
 			}
 		}
@@ -51,7 +52,8 @@ namespace zar
 			{
 				offset = m_pFile->fread(buf, size);
 				ZAR_SECURE(m_bSecure, buf, size);
-
+				
+				CloseKey(key);
 				return size == offset;
 			}
 		}
