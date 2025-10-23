@@ -77,7 +77,7 @@ bool CZIMGUI::Tick_TextureDisplay(f32 dT)
                         auto root = texarchive.OpenKey("textures");
                         auto texkey = texarchive.OpenKey(*it);
                         zdb::CTexture tex;
-                        tex.Read(texarchive);
+                        // tex.Read(texarchive);
                         // LoadTexture(tex);
                         texarchive.CloseKey(texkey);
                         texarchive.CloseKey(root);
@@ -120,11 +120,6 @@ bool CZIMGUI::Tick_TextureDisplay(f32 dT)
                     {
                         auto root = palarchive.OpenKey("palettes");
                         auto palkey = palarchive.OpenKey(*it);
-                        zdb::CTexPalette pal;
-                        pal.Read(palarchive);
-                        // LoadPalette(pal);
-                        palarchive.CloseKey(palkey);
-                        palarchive.CloseKey(root);
                     }
                     ImGui::TreePop();
                 }
