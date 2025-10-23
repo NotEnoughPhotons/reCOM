@@ -24,7 +24,10 @@ The ROM information used in this decompilation project is listed below:
 ## Apps - Application Layer
 | Module | Description |
 | ------ | ----------- |
-| [FTS](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/Apps/FTS) | App specific code such as the game HUD, entry point, and the games database. |
+| [FTS](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/Apps/FTS) | App initialization code, command line arguments |
+| [game](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/Apps/FTS/game) | Game world loading, camera zoom, memory overloads, etc. |
+| [hud](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/Apps/FTS/hud) | Heads-up display modules like the letterbox, lensflares, map, compass, etc. |
+| [state](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/Apps/FTS/state) | Game state classes and functions |
 
 ## gamez - Core Engine
 | Module | Description |
@@ -34,11 +37,13 @@ The ROM information used in this decompilation project is listed below:
 | [zArchive](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zArchive) | GameZ's primary format for storing binary data such as levels, readers, and meshes |
 | [zAssetLib](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zAssetLib) | Asset library that contains models, textures, and palettes |
 | [zBody](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zBody) | Skeleton classes, animation blending, body parts, etc. |
+| [zBone](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zBone) | Armature data types and controls |
 | [zCamera](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zCamera) | Camera behavior, FOV controls, and app-specific camera behavior |
 | [zCharacter](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zCharacter) | NPC setup classes and settings definitions for NPCs |
 | [zEntity](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zEntity) | Generic game entity definitions and interactions |
 | [zFTS](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zFTS) | App foundation that provides implementations, like missions |
 | [zGame](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGame) | Game states and managers |
+| [zGrid](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGrid) | World block map for fast traversal of entities and intersections |
 | [zIMGUI](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zIMGUI) | IMGUI debug interface (is not a part of the original source tree) |
 | [zInput](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zInput) | Input handling for gamepads and keyboards |
 | [zIntersect](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zIntersect) | Raycasts, intersections, and collision logic |
@@ -47,12 +52,12 @@ The ROM information used in this decompilation project is listed below:
 | [zNetwork](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zNetwork) | Network objects and managers for multiplayer, and for Medius |
 | [zNode](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zNode) | GameZ's node-based system and node management |
 | [zParticle](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zParticle) | GPU instanced particle system |
-| [zPhysics](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zPhysics) | Physics engine for GameZ |
+| [zPhysics](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zPhysics) | Physics engine for GameZ (not part of original source tree) |
 | [zReader](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zReader) | LISP processor for compiled and non-compiled data files |
 | [zRender](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zRender) | Main GameZ rendering pipeline; renders nodes, visuals, etc. |
 | [zSave](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zSave) | Saver/loader for GameZ saves and save states |
 | [zSeal](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zSeal) | NPC code, player controller, and AI controller code for NPC objects |
-| [zShader](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zShader) | GLSL/HLSL shader classes |
+| [zShader](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zShader) | GLSL/HLSL shader classes (not part of the original source tree) |
 | [zSoftImage](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zSoftImage) | Autodesk SoftImage script parsers and object parsers |
 | [zSound](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zSound) | Sound management, handling, and playback |
 | [zSystem](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zSystem) | Game system management and memory management |
@@ -65,7 +70,6 @@ The ROM information used in this decompilation project is listed below:
 | [zVideo](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zVideo) | Render control and controls for the main framebuffer |
 | [zVisual](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zVisual) | Interface for dealing with OpenFlight (.FLT) meshes, decals, and sub-meshes |
 | [zWeapon](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zWeapon) | Generic weapon implementation and ammo |
-| [zWorld](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zWorld) | Root parent class, CWorld, for all nodes |
 
 # Background
 Currently, I (adamdev) am the sole contributor to this project. I have been using Ghidra to reverse engineer the binaries of the games, to some luck.
