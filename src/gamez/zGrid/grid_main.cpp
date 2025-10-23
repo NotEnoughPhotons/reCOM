@@ -163,10 +163,55 @@ namespace zdb
         return false;
     }
 
+    void CGrid::SetTraversalBoundary(const CPnt3D* point, s32 tick, bool lineWalk)
+    {
+        // TODO: Implement this function
+
+        SetTraversalExtents(point, tick, lineWalk);
+
+        if (tick == 1)
+        {
+            m_TickNum++;
+            return;
+        }
+
+        for (u32 i = 0; i < m_PntCnt; i++)
+        {
+
+        }
+
+        m_TickNum++;
+    }
+
+    void CGrid::SetTraversalExtents(const CPnt3D* point, s32 tick, bool lineWalk)
+    {
+        // TODO: Implement this function
+    }
+
+    CGridAtom* CGrid::StartTraversal()
+    {
+        m_xx = m_ix;
+        m_zz = m_iz;
+        m_iz_start = m_zz;
+        m_iz_next_row = m_izb;
+        m_NextAtom = NULL;
+        m_zz--;
+        m_RowCellIn = 0;
+        m_CurCellOut = 1;
+        m_iz_dir = 1;
+        return m_NextAtom = GetNextAtom();
+    }
+
     CGridAtom* CGrid::StartTraversalOrdered()
     {
         m_NextAtom = NULL;
         return m_NextAtom = GetNextAtomOrdered();
+    }
+
+    CGridAtom* CGrid::GetNextAtom()
+    {
+        // TODO: Implement this function
+        return m_NextAtom;
     }
 
     CGridAtom* CGrid::GetNextAtomOrdered()
@@ -203,5 +248,13 @@ namespace zdb
         }
         
         return m_NextAtom;
+    }
+
+    CNode* CGridAtom::GetCell()
+    {
+        if (Ent->m_type != (u32)CNode::TYPE::NODE_TYPE_CELL)
+            return NULL;
+
+        return Ent;
     }
 }

@@ -13,6 +13,8 @@ namespace zdb
 	class CGridAtom
 	{
 	public:
+		CNode* GetCell();
+
 		CNode* Ent;
 		CGridAtom* Next;
 		CGridAtom* Prev;
@@ -57,7 +59,11 @@ namespace zdb
 
 		void Insert(CNode* node);
 
+		void SetTraversalBoundary(const CPnt3D* point, s32 tick, bool lineWalk);
+		void SetTraversalExtents(const CPnt3D* point, s32 tick, bool lineWalk);
+		CGridAtom* StartTraversal();
 		CGridAtom* StartTraversalOrdered();
+		CGridAtom* GetNextAtom();
 		CGridAtom* GetNextAtomOrdered();
 
 		static u32 N_ATOMS;
