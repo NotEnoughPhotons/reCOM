@@ -147,6 +147,8 @@ public:
 class CGameDlgDesign
 {
 public:
+	CGameDlgDesign();
+
 	void LoadFromRdr(_zrdr* reader);
 	void LoadModels(_zrdr* reader);
 

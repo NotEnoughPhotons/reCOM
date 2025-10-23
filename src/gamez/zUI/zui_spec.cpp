@@ -2,6 +2,11 @@
 
 #include "gamez/zUtil/util_stable.h"
 
+CGameDlgDesign::CGameDlgDesign()
+{
+    m_useMpeg = false;
+}
+
 CDlgObjSpec* GetObjectSpec(_zrdr* reader, char* name)
 {
     if (!name)
