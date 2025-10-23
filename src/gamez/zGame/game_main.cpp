@@ -3,6 +3,7 @@
 #include "gamez/zRender/zrender.h"
 #include "gamez/zNetwork/znet.h"
 #include "gamez/zVideo/zvid.h"
+#include "gamez/zUI/zui.h"
 
 COurGame theGame;
 
@@ -59,6 +60,26 @@ bool CGame::Tick(f32 dT)
 	return false;
 }
 
+bool CGameMenu::Init(zdb::CTextureRelocMgr* manager, CZAnimZAR* archive)
+{
+	Clear();
+
+	animfile = archive;
+
+	zVid.pcrtcDo = false;
+
+	if (!manager)
+		m_Reloc = NULL;
+	else
+		m_Reloc = manager;
+
+	// m_Reloc->ClearAll();
+
+	// TODO: Implement the rest of this function
+
+	return true;
+}
+
 void CGameMenu::Draw2DOnly()
 {
 	thePipe.m_node = m_pBackplaneNode;
@@ -75,6 +96,11 @@ void CGameMenu::DrawForeplane()
 	thePipe.RenderUINode(m_pForeplaneNode);
 	// Disable orthographic view for UI layer
 	thePipe.m_simpletrans = false;
+}
+
+void CGameMenu::Clear()
+{
+
 }
 
 void CGameMenu::LoadFromDesign(CGameDlgDesign* design, CZAnimZAR* animfile)
