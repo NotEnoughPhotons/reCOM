@@ -9,50 +9,35 @@ namespace zdb
 
 	bool CNodeUniverse::AddNode(CNode* node)
 	{
-		bool success = false;
+		if (m_locked)
+			return false;
 
-		if (!m_locked)
+		CNode* universeNode = node;
+		u32 universeSize = size();
+
+		if (universeSize == capacity())
 		{
-			CNode* universeNode = node;
-			int universeSize = size();
-
-			if (universeSize == capacity())
-			{
-				if (capacity() < MIN_POOL_SIZE)
-				{
-					reserve(MIN_POOL_SIZE);
-				}
-				else
-				{
-					reserve(capacity() + POOL_INCREMENT);
-				}
-			}
-
-			insert(begin(), universeNode);
-			success = true;
-		}
-		else
-		{
-			success = false;
+			if (capacity() < MIN_POOL_SIZE)
+				reserve(MIN_POOL_SIZE);
+			else
+				reserve(capacity() + POOL_INCREMENT);
 		}
 
-		return success;
+		insert(begin(), universeNode);
+
+		return true;
 	}
 
 	void CNodeUniverse::RemoveNode(CNode* node)
 	{
-		auto it = begin();
-		while (it != end())
+		for (auto i = begin(); i != end(); ++i)
 		{
-			if (*it == node)
+			if (*i == node)
 			{
+				*i = NULL;
 				break;
 			}
-
-			it++;
 		}
-
-		*it = NULL;
 	}
 
 	CNode* CNodeUniverse::GetElement(s32 index) const
@@ -60,37 +45,27 @@ namespace zdb
 		CNode* node;
 
 		if (index < 0)
-		{
-			node = NULL;
-		}
-		else
-		{
-			node = NULL;
+			return NULL;
 
-			if (index <= size())
-			{
-				node = at(index);
-			}
-		}
+		if (index <= size())
+			return at(index);
 
-		return node;
+		return NULL;
 	}
 
-	int CNodeUniverse::GetIndex(CNode* node) const
+	u32 CNodeUniverse::GetIndex(CNode* node) const
 	{
-		int index = 0;
-		auto it = begin();
-		while (it != end())
+		u32 index = 0;
+		for (auto i = begin(); i != end(); ++i)
 		{
-			if (*it == node)
-			{
-				break;
-			}
-
-			it++;
 			index++;
+
+			if (*i != node)
+				continue;
+
+			return index;
 		}
 
-		return index;
+		return 0;
 	}
 }
