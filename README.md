@@ -43,7 +43,7 @@ The ROM information used in this decompilation project is listed below:
 | [zEntity](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zEntity) | Generic game entity definitions and interactions |
 | [zFTS](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zFTS) | App foundation that provides implementations, like missions |
 | [zGame](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGame) | Game states and managers |
-| [zGraph](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGraph) | Node visualization as a graph/tree |
+| [zGraph](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGraph) | Node graph for AI pathfinding/traversal |
 | [zGrid](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zGrid) | World block map for fast traversal of entities and intersections |
 | [zIMGUI](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zIMGUI) | IMGUI debug interface (is not a part of the original source tree) |
 | [zInput](https://github.com/Not-Enough-Photons/reCOM/tree/main/src/gamez/zInput) | Input handling for gamepads and keyboards |
