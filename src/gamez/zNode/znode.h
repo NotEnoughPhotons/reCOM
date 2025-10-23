@@ -143,7 +143,7 @@ namespace zdb
 			NODE_TYPE_UNK3,
 			NODE_TYPE_UNK4,
 			NODE_TYPE_UNK5,
-			NODE_TYPE_UNK6,
+			NODE_TYPE_GRID,
 			NODE_TYPE_UNK7,
 			NODE_TYPE_LIGHT,
 			NODE_TYPE_LENSFLARE,
@@ -187,6 +187,8 @@ namespace zdb
 		void SetParentHasVisuals();
 		void SetDynamicLight(bool self_light, bool apply_to_children);
 
+		bool InheritRegionMasks(u32 pmask, u32 cmask);
+
 		virtual s16 Release();
 		bool Rendered();
 		
@@ -199,6 +201,8 @@ namespace zdb
 		void SetRotation(const CQuat& rotation) {};
 		void SetScale(f32 scaleFactor);
 		void SetScale(CPnt3D* scale);
+
+		void TransformToWorld(const CPnt3D& point);
 		
 		CPnt3D* GetRotation(const CPnt3D* rotation) const;
 		CPnt3D* GetScale(CPnt3D* scale) const;

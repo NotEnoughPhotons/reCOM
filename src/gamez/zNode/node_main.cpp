@@ -344,6 +344,22 @@ namespace zdb
 		}
 	}
 
+	bool CNode::InheritRegionMasks(u32 pmask, u32 cmask)
+	{
+		if (m_type == (u32)TYPE::NODE_TYPE_CELL)
+			return false;
+
+		u32 parent = cmask | m_region_mask;
+		u32 child = pmask | 1 << m_region_shift;
+
+		m_region_mask = m_type == (u32)TYPE::NODE_TYPE_LIGHT ? parent : child;
+
+		for (u32 i = 0; i < m_child.size(); i++)
+			m_child[i]->InheritRegionMasks(parent, child);
+
+		return true;
+	}
+
 	f32 CNode::GetRadius() const
 	{
 		f32 radius = 0.0f;
@@ -486,7 +502,7 @@ namespace zdb
 
 	CMatrix& CNode::BuildMTW(CMatrix& mat)
 	{
-		if (m_type == (u32)TYPE::NODE_TYPE_UNK6)
+		if (m_type == (u32)TYPE::NODE_TYPE_GRID)
 		{
 			// set identity matrix
 		}
@@ -538,6 +554,12 @@ namespace zdb
 		{
 			m_nodeEx->OnMove(this);
 		}
+	}
+
+	void CNode::TransformToWorld(const CPnt3D& point)
+	{
+		// TODO:
+		// Implement this function
 	}
 
 	bool CNodeVector::Exists(const CNode* node) const
