@@ -185,24 +185,18 @@ namespace zdb
 		{
 			ReadDataBegin(sload);
 
-			zar::CKey* childrenkey = sload.m_zfile.OpenKey("children");
-
-			if (childrenkey)
+			if (zar::CKey* children = sload.m_zfile.OpenKey("children"))
 			{
-				ReserveChildren(childrenkey->GetSize());
+				ReserveChildren(children->GetSize());
 
-				auto it = childrenkey->begin();
-
-				while (it != childrenkey->end())
+				for (auto i = children->begin(); i != children->end(); ++i)
 				{
-					zar::CKey* key = sload.m_zfile.OpenKey(*it);
+					zar::CKey* key = sload.m_zfile.OpenKey(*i);
 					Read(sload, this);
 					sload.m_zfile.CloseKey(key);
-
-					it++;
 				}
 
-				sload.m_zfile.CloseKey(childrenkey);
+				sload.m_zfile.CloseKey(children);
 			}
 		}
 		else
@@ -211,77 +205,57 @@ namespace zdb
 			SetName(openkey->GetName());
 			sload.m_zfile.Fetch("matrix", &m_matrix, sizeof(CMatrix));
 			sload.m_zfile.Fetch("bbox", &m_bbox, sizeof(CBBox));
-			zar::CKey* visualskey = sload.m_zfile.OpenKey("visuals");
 
 			// If the node has visuals
-			if (visualskey)
+			if (zar::CKey* visuals = sload.m_zfile.OpenKey("visuals"))
 			{
-				ReserveVisuals(visualskey->GetSize());
-				auto it = visualskey->begin();
+				ReserveVisuals(visuals->GetSize());
 
-				while (it != visualskey->end())
+				for (auto i = visuals->begin(); i != visuals->end(); ++i)
 				{
-					zar::CKey* key = sload.m_zfile.OpenKey(*it);
-				
-					if (key)
+					if (zar::CKey* key = sload.m_zfile.OpenKey(*i))
 					{
 						CVisual* vis = CVisual::Create(sload.m_zfile);
 						AddVisual(vis);
 						sload.m_zfile.CloseKey(key);
 					}
-
-					it++;
 				}
 
-				sload.m_zfile.CloseKey(visualskey);
+				sload.m_zfile.CloseKey(visuals);
 			}
 
-			zar::CKey* dikey = sload.m_zfile.OpenKey("di");
-
 			// If the node has collision data
-			if (dikey)
+			if (zar::CKey* di = sload.m_zfile.OpenKey("di"))
 			{
-				ReserveDI(dikey->GetSize());
+				ReserveDI(di->GetSize());
 
-				auto it = dikey->begin();
-
-				while (it != dikey->end())
+				for (auto i = di->begin(); i != di->end(); ++i)
 				{
-					zar::CKey* key = sload.m_zfile.OpenKey(*it);
-
-					if (key)
+					if (zar::CKey* key = sload.m_zfile.OpenKey(*i))
 					{
 						CDI* di = CDI::Create(sload);
 						AddDI(di);
 						sload.m_zfile.CloseKey(key);
 					}
-
-					it++;
 				}
 
-				sload.m_zfile.CloseKey(dikey);
+				sload.m_zfile.CloseKey(di);
 			}
 		}
 
-		zar::CKey* childrenkey = sload.m_zfile.OpenKey("children");
-
 		// If the node has children
-		if (childrenkey)
+		if (zar::CKey* children = sload.m_zfile.OpenKey("children"))
 		{
-			ReserveChildren(childrenkey->GetSize());
+			ReserveChildren(children->GetSize());
 
-			auto it = childrenkey->begin();
-
-			while (it != childrenkey->end())
+			for (auto i = children->begin(); i != children->end(); ++i)
 			{
-				zar::CKey* key = sload.m_zfile.OpenKey(*it);
+				zar::CKey* key = sload.m_zfile.OpenKey(*i);
 				Read(sload, this);
 				sload.m_zfile.CloseKey(key);
-
-				it++;
 			}
 
-			sload.m_zfile.CloseKey(childrenkey);
+			sload.m_zfile.CloseKey(children);
 		}
 		
 		return true;
