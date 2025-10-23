@@ -148,19 +148,19 @@ namespace zdb
 			}
 			else
 			{
-				if (auto key = m_zfile.OpenKey("models"))
+				if (zar::CKey* key = m_zfile.OpenKey("models"))
 				{
-					auto it = key->begin();
-					while (it != key->end())
+					for (auto i = key->begin(); i != key->end(); ++i)
 					{
-						if (auto model_key = m_zfile.OpenKey(*it))
+						if (zar::CKey* modelKey = m_zfile.OpenKey(*i))
 						{
 							CModel* model = CModel::Create(*this, NULL);
-							library->AddModel(model);
-							m_zfile.CloseKey(model_key);
-						}
 
-						++it;
+							if (model)
+								library->AddModel(model);
+
+							m_zfile.CloseKey(modelKey);
+						}
 					}
 
 					m_zfile.CloseKey(key);
@@ -196,8 +196,11 @@ namespace zdb
 				if (!handle && !library->AddTexture(name))
 				{
 					texture = new CTexture(name);
-					texture->Read(*this);
-					library->AddTexture(texture);
+
+					if (!texture->Read(*this))
+						delete texture;
+					else
+						library->AddTexture(texture);
 				}
 
 				m_zfile.CloseKey(textureKey);
@@ -308,38 +311,24 @@ namespace zdb
 		}
 
 		m_world->m_grid->Read(*this);
-
-		zar::CKey* key = m_zfile.OpenKey("assetlibs");
 			
-		if (key)
+		if (zar::CKey* key = m_zfile.OpenKey("assetlibs"))
 		{
-			auto it = key->begin();
-
-			while (it != key->end())
-			{
-				CAssetMgr::GetLoadedLibRef((*it)->GetName());
-				++it;
-			}
+			for (auto i = key->begin(); i != key->end(); ++i)
+				CAssetMgr::GetLoadedLibRef((*i)->GetName());
 
 			m_zfile.CloseKey(key);
 		}
 
-		key = m_zfile.OpenKey("light_list");
-
-		if (key)
+		if (zar::CKey* key = m_zfile.OpenKey("light_list"))
 		{
-			auto it = key->begin();
-			while (it != key->end())
+			for (auto i = key->begin(); i != key->end(); ++i)
 			{
-				zar::CKey* light_key = m_zfile.OpenKey(*it);
-
-				if (light_key)
+				if (zar::CKey* light_key = m_zfile.OpenKey(*i))
 				{
 					CNode::Read(*this, m_world);
 					m_zfile.CloseKey(light_key);
 				}
-				
-				++it;
 			}
 
 			m_zfile.CloseKey(key);
