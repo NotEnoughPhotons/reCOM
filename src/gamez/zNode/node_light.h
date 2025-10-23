@@ -54,4 +54,6 @@ namespace zdb
 
 	};
 }
+
+void LightList_Search(zdb::CNode* node, zdb::CLightList& lightList);
 #endif

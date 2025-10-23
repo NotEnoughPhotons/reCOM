@@ -20,3 +20,18 @@ namespace zdb
         return true;
     }
 }
+
+void LightList_Search(zdb::CNode* node, zdb::CLightList& lightList)
+{
+    if (!node)
+        return;
+
+    if (node->m_type != (u32)zdb::CNode::TYPE::NODE_TYPE_CELL)
+        return;
+
+    if (node->m_type == (u32)zdb::CNode::TYPE::NODE_TYPE_LIGHT)
+        lightList.insert(lightList.begin(), dynamic_cast<zdb::CLight*>(node));
+
+    for (auto i = node->m_child.begin(); i != node->m_child.end(); ++i)
+        LightList_Search(*i, lightList);
+}
