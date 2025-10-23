@@ -215,64 +215,49 @@ namespace zdb
 
 	CNode* CNode::FindChild(CNode* child, bool nested)
 	{
-		if (child)
-		{
+		if (!child)
 			return NULL;
-		}
-		else
-		{
-			for (auto it = m_child.begin(); it != m_child.end(); it++)
-			{
-				if (*it == child)
-				{
-					return *it;
-				}
-			}
 
-			if (nested)
-			{
-				for (auto it = m_child.begin(); it != m_child.end(); it++)
-				{
-					(*it)->FindChild(child, nested);
-				}
-			}
+		for (auto i = m_child.begin(); i != m_child.end(); ++i)
+		{
+			if (*i == child)
+				return *i;
+		}
+
+		if (nested)
+		{
+			for (auto i = m_child.begin(); i != m_child.end(); ++i)
+				return (*i)->FindChild(child, nested);
 		}
 	}
 
 	CNode* CNode::FindChild(const char* name, bool nested)
 	{
-		if (name == 0)
-		{
+		if (!name)
 			return NULL;
-		}
-		else
-		{
-			zdb::CNode* child = NULL;
-			size_t length = strlen(name);
 
-			for (auto it = m_child.begin(); it != m_child.end(); it++)
+		zdb::CNode* child = NULL;
+		size_t length = strlen(name);
+
+		for (auto i = m_child.begin(); i != m_child.end(); ++i)
+		{
+			child = *i;
+
+			size_t childStringLength = strlen(child->m_name);
+
+			if (length == childStringLength && strcmp(child->m_name, name) == 0)
+				child = *i;
+		}
+
+		if (!child && nested)
+		{
+			for (auto i = m_child.begin(); i != m_child.end(); i++)
 			{
-				child = *it;
+				child = *i;
 				size_t childStringLength = strlen(child->m_name);
 
 				if (length == childStringLength && strcmp(child->m_name, name) == 0)
-				{
-					child = *it;
-				}
-			}
-
-			if (child && nested)
-			{
-				for (auto it = m_child.begin(); it != m_child.end(); it++)
-				{
-					child = *it;
-					size_t childStringLength = strlen(child->m_name);
-
-					if (length == childStringLength && strcmp(child->m_name, name) == 0)
-					{
-						child = *it;
-					}
-				}
+					return child->FindChild(name, nested);
 			}
 		}
 	}
