@@ -156,6 +156,48 @@ namespace zdb
 		return true;
 	}
 
+	CLightList& CWorld::GenerateLightList()
+	{
+		LightList_Search(this, m_lights);
+
+		for (auto i = m_lights.begin(); i != m_lights.end(); ++i)
+		{
+			CNode* light = *i;
+
+			CPnt3D worldPos;
+			CPnt3D localPos;
+			CPnt3D gridPos;
+
+			light->TransformToWorld(worldPos);
+
+			light->m_matrix.m_matrix[2][3] = worldPos.x;
+			light->m_matrix.m_matrix[3][0] = worldPos.y;
+			light->m_matrix.m_matrix[3][1] = worldPos.z;
+
+			localPos.y = 0.0f;
+			localPos.x = worldPos.x - light->m_matrix.m_matrix[0][2];
+			localPos.z = worldPos.z - light->m_matrix.m_matrix[0][2];
+
+			gridPos.x = worldPos.x + light->m_matrix.m_matrix[0][2];
+			gridPos.y = 0.0f;
+			gridPos.z = worldPos.z + light->m_matrix.m_matrix[0][2];
+
+			m_grid->SetTraversalBoundary(&localPos, 2, false);
+
+			for (CGridAtom* atom = m_grid->StartTraversal(); atom != NULL; atom = m_grid->GetNextAtom())
+			{
+				CNode* cell = atom->GetCell();
+
+				if (!cell)
+					continue;
+
+				cell->m_child.insert(cell->m_child.begin(), light);
+			}
+		}
+
+		return m_lights;
+	}
+
 	s32 CWorld::GenerateLandmarkList()
 	{
 		CNodeVector landmarks;

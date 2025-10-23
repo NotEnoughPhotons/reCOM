@@ -1,5 +1,6 @@
 #ifndef NODE_WORLD_H
 #define NODE_WORLD_H
+#include "node_light.h"
 #include "node_wind.h"
 
 namespace zdb
@@ -41,6 +42,8 @@ namespace zdb
 
 		bool DismemberWorldModel();
 
+		CLightList& GenerateLightList();
+
 		void ClearLightMapList();
 		void ClearShadowList();
 		void WipeoutTextureAssetCharacters();
@@ -63,6 +66,8 @@ namespace zdb
 		_cellData** m_cellData;
 
 		s32 m_maxOverlap;
+
+		CLightList m_lights;
 
 		// TODO:
 		// implement these two container types
