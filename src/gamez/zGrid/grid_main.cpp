@@ -163,6 +163,39 @@ namespace zdb
         return false;
     }
 
+    void CGrid::Update(CNode* node)
+    {
+        for (u32 i = 0; i < node->m_AtomCnt; i++)
+        {
+            CGridAtom* atom = node->GetAtom(i);
+
+            if (!atom->Next)
+            {
+                atom->Prev->Next = NULL;
+            }
+            else
+            {
+                atom->Prev->Next = atom->Next;
+                atom->Next->Prev = atom->Prev;
+            }
+
+            if (m_AtomFreePtr < m_AtomFreeCnt - 1)
+            {
+                atom->Ent = NULL;
+                atom->Next = NULL;
+                atom->Prev = NULL;
+
+                u32 ptr = m_AtomFreePtr;
+
+                m_AtomFreePtr = ptr + 1;
+                m_FreeAtoms[ptr] = atom;
+            }
+        }
+
+        node->SetAtomCnt(0);
+        gridAddNodeToGrids(node);
+    }
+
     void CGrid::SetTraversalBoundary(const CPnt3D* point, s32 tick, bool lineWalk)
     {
         // TODO: Implement this function

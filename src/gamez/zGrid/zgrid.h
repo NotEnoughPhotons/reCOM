@@ -58,6 +58,7 @@ namespace zdb
 		bool Read(CSaveLoad& sload);
 
 		void Insert(CNode* node);
+		void Update(CNode* node);
 
 		void SetTraversalBoundary(const CPnt3D* point, s32 tick, bool lineWalk);
 		void SetTraversalExtents(const CPnt3D* point, s32 tick, bool lineWalk);
@@ -65,6 +66,9 @@ namespace zdb
 		CGridAtom* StartTraversalOrdered();
 		CGridAtom* GetNextAtom();
 		CGridAtom* GetNextAtomOrdered();
+
+		// TODO: Implement this function
+		void gridAddNodeToGrids(CNode* node) { }
 
 		static u32 N_ATOMS;
 	private:
