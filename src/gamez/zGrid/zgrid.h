@@ -69,6 +69,7 @@ namespace zdb
 
 		// TODO: Implement this function
 		void gridAddNodeToGrids(CNode* node) { }
+		void gridRemoveNodeFromGrids(CNode* node);
 		bool gridGetNextIndex();
 
 		static u32 N_ATOMS;
