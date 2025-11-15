@@ -529,6 +529,18 @@ namespace zdb
 		m_AtomAlloc = 0;
 	}
 
+	bool CNode::UpdateGrid()
+	{
+		if (!m_parent)
+			return false;
+
+		if (m_type != (u32)TYPE::NODE_TYPE_GRID)
+			return false;
+
+		((CGrid*)m_parent)->Update(this);
+		return true;
+	}
+
 	void CNode::ShrinkAtomBasePtrs()
 	{
 		if (m_AtomCnt > m_AtomAlloc)
@@ -539,6 +551,11 @@ namespace zdb
 		zfree(m_Atom);
 		m_Atom = atom;
 		m_AtomAlloc = m_AtomCnt;
+	}
+
+	void CNode::SetAtomCnt(u16 count)
+	{
+		m_AtomCnt = count;
 	}
 
 	CMatrix& CNode::BuildMTW(CMatrix& mat)
