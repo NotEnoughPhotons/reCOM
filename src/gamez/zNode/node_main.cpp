@@ -529,6 +529,18 @@ namespace zdb
 		m_AtomAlloc = 0;
 	}
 
+	void CNode::ShrinkAtomBasePtrs()
+	{
+		if (m_AtomCnt > m_AtomAlloc)
+			return;
+
+		CGridAtom** atom = (CGridAtom**)zmalloc(m_AtomCnt << 2);
+		memcpy(atom, m_Atom, m_AtomCnt << 2);
+		zfree(m_Atom);
+		m_Atom = atom;
+		m_AtomAlloc = m_AtomCnt;
+	}
+
 	CMatrix& CNode::BuildMTW(CMatrix& mat)
 	{
 		if (m_type == (u32)TYPE::NODE_TYPE_GRID)
