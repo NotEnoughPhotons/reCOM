@@ -33,6 +33,7 @@ namespace zdb
 		void AddLandmark(CNode* landmark);
 		void AddTextureAssetCharacter(const CNode& textureAsset);
 		void ReserveChildren(s32 count);
+		void GarbageCollect();
 
 		s32 GenerateLandmarkList();
 		void LandmarkList_Search(CNode* node, CStack& matstack, CNodeVector& landmarks);

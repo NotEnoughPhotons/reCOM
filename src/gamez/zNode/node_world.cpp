@@ -156,6 +156,17 @@ namespace zdb
 		return true;
 	}
 
+	void CWorld::GarbageCollect()
+	{
+		for (auto i = m_child.begin(); i != m_child.end(); ++i)
+		{
+			zdb::CNode* node = dynamic_cast<CCell*>(*i);
+
+			if (!node)
+				(*i)->ShrinkAtomBasePtrs();
+		}
+	}
+
 	CLightList& CWorld::GenerateLightList()
 	{
 		LightList_Search(this, m_lights);
