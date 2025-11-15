@@ -315,6 +315,32 @@ namespace zdb
         node->SetAtomCnt(0);
     }
 
+    CGridAtom** CGrid::gridGetAtomBasePtr(s32 x, s32 y)
+    {
+        u32 xCellCount = 0;
+        u32 yCellCount = 0;
+        u32 cellLength = 0;
+
+        if (x < 0)
+            x = 0;
+
+        xCellCount = m_CellCount.cx;
+        cellLength = xCellCount - 1;
+
+        if (x <= cellLength)
+            cellLength = x;
+
+        if (y < 0)
+            y = 0;
+
+        yCellCount = m_CellCount.cy - 1;
+
+        if (y <= yCellCount)
+            yCellCount = y;
+
+        return m_Atoms + cellLength + yCellCount * xCellCount;
+    }
+
     bool CGrid::gridGetNextIndex()
     {
         bool valid = false;
