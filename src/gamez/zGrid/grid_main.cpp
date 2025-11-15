@@ -283,6 +283,83 @@ namespace zdb
         return m_NextAtom;
     }
 
+    bool CGrid::gridGetNextIndex()
+    {
+        bool valid = false;
+
+        if (m_PntCnt < 3)
+        {
+            if (m_zz < m_izb - 1)
+            {
+                valid = true;
+                m_zz++;
+            }
+            else if (m_xx < m_ixb - 1)
+            {
+                valid = true;
+                m_xx++;
+                m_zz = m_iz;
+                m_RowCellIn = 0;
+            }
+        }
+        else
+        {
+            if (m_CurCellOut == 0 && m_zz < m_iz_next_row)
+                m_iz_next_row = m_zz;
+
+            if (m_iz_dir < 0)
+            {
+                if (m_CurCellOut == 0 && m_iz < m_zz)
+                {
+                    m_zz--;
+                    return true;
+                }
+
+                m_zz = m_iz_start;
+                m_iz_dir = 1;
+                m_CurCellOut = 0;
+            }
+
+            if (m_RowCellIn == 0 || m_CurCellOut == 0 && m_zz < m_izb - 1)
+            {
+                valid = true;
+                m_zz++;
+            }
+            else if (m_xx < m_ixb - 1)
+            {
+                m_xx++;
+
+                if (m_iz_next_row == m_izb)
+                {
+                    m_zz = m_iz;
+                    m_iz_dir = 1;
+                }
+                else
+                {
+                    m_zz = m_iz_next_row;
+
+                    if (m_iz < m_zz)
+                        m_zz++;
+
+                    m_iz_dir = -1;
+                }
+
+                valid = true;
+                m_iz_next_row = m_izb;
+                m_iz_start = m_zz;
+                m_RowCellIn = 0;
+            }
+            else
+            {
+                m_RowCellIn = 0;
+                m_CurCellOut = 0;
+                valid = false;
+            }
+        }
+
+        return valid;
+    }
+
     CNode* CGridAtom::GetCell()
     {
         if (Ent->m_type != (u32)CNode::TYPE::NODE_TYPE_CELL)
