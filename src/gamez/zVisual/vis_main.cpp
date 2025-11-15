@@ -131,7 +131,7 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 		zdb::CNode* parent = *i;
 		zdb::CNode* child = NULL;
 
-		if (parent->m_type == (u32)zdb::CNode::TYPE::NODE_TYPE_CHILD)
+		if (parent->m_type == (u32)zdb::CNode::TYPE::NODE_TYPE_PARENT)
 			child = parent;
 
 		if (!child)

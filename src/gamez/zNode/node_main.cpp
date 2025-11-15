@@ -159,7 +159,7 @@ namespace zdb
 		if (node && parent != this)
 		{
 			CNode* child = node;
-			if (m_type != (u32)TYPE::NODE_TYPE_UNK3)
+			if (m_type != (u32)TYPE::NODE_TYPE_CHILD)
 			{
 				if (parent)
 				{
@@ -185,7 +185,7 @@ namespace zdb
 
 		if (m_child.Exists(child))
 		{
-			if (m_type == (u32)TYPE::NODE_TYPE_UNK3)
+			if (m_type == (u32)TYPE::NODE_TYPE_CHILD)
 			{
 				m_child.Remove(child);
 				count = -1;

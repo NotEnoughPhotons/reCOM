@@ -83,7 +83,7 @@ namespace zdb
 
 			switch ((CNode::TYPE)nparams.m_type)
 			{
-			case TYPE::NODE_TYPE_CHILD:
+			case TYPE::NODE_TYPE_PARENT:
 				isChild = true;
 				break;
 			case TYPE::NODE_TYPE_GENERIC:
