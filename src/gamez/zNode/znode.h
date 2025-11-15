@@ -220,7 +220,7 @@ namespace zdb
 
 		bool SetActive(bool active);
 		void SetName(const char* name);
-		void SetModel(CModel* model);
+		bool SetModel(CModel* model);
 		void SetModelname(const char* name);
 
 		CNode* m_parent;

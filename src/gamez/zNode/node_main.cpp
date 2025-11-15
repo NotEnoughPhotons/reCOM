@@ -434,9 +434,28 @@ namespace zdb
 		return m_active;
 	}
 
-	void CNode::SetModel(CModel* model)
+	bool CNode::SetModel(CModel* model)
 	{
+		if (m_type != (u32)TYPE::NODE_TYPE_CHILD || m_type != (u32)TYPE::NODE_TYPE_INSTANCE)
+		{
+			return false;
+		}
 
+		if (model)
+			DeleteChildren();
+
+		AddChild(model);
+
+		char* name;
+		m_model = model;
+
+		if (!model)
+			name = NULL;
+		else
+			name = model->m_name;
+
+		SetModelname(name);
+		return true;
 	}
 
 	void CNode::SetModelname(const char* name)
