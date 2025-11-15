@@ -185,8 +185,11 @@ namespace zdb
 
 	CModel* CAssetList::GetModel(const char* name)
 	{
-		if (m_cache_model || name || strcmp(m_cache_model->m_name, name) != 0)
-			return m_cache_model;
+		if (m_cache_model)
+		{
+			if (name && strcmp(m_cache_model->m_name, name) != 0)
+				return m_cache_model;
+		}
 
 		for (auto i = begin(); i != end(); i++)
 		{
