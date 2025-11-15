@@ -153,6 +153,17 @@ namespace zdb
 		return false;
 	}
 
+	CNode* CNode::Copy() const
+	{
+		return _Copy(NULL);
+	}
+
+	// TODO: Implement this function
+	CNode* CNode::_Copy(CNode* other) const
+	{
+		return NULL;
+	}
+
 	void CNode::AddChild(CNode* node)
 	{
 		CNode* parent = node->m_parent;

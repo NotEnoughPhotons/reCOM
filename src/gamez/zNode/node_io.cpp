@@ -1,4 +1,5 @@
 #include "znode.h"
+#include "node_model.h"
 #include "node_world.h"
 #include "node_light.h"
 #include "node_saveload.h"
@@ -52,14 +53,56 @@ namespace zdb
 		return node;
 	}
 	
-	CNode* CNode::CreateInstance(const char* name, const CPnt3D* position, const CPnt3D* rotation)
+	CNode* CNode::CreateInstance(const char* name, const CPnt3D* position, const CQuat* rotation)
 	{
-		return NULL;
+		if (!name)
+			return NULL;
+
+		if (!CWorld::m_world)
+			return NULL;
+
+		CModel* model = CWorld::GetModel(name);
+
+		if (!model)
+			return NULL;
+
+		CNode* instance = model->Copy();
+
+		if (position)
+			instance->SetPosition(position->x, position->y, position->z);
+
+		if (rotation)
+			instance->SetRotation(rotation);
+
+		model->m_child.insert(model->m_child.begin(), instance);
+		model->m_parent = instance;
+		instance->m_model = model;
+		instance->SetModelname(model->m_name);
+		instance->m_type = (u32)TYPE::NODE_TYPE_INSTANCE;
+
+		return instance;
 	}
 
-	CNode* CNode::CreateInstance(CModel* model, const CPnt3D* position, const CPnt3D* rotation)
+	CNode* CNode::CreateInstance(CModel* model, const CPnt3D* position, const CQuat* rotation)
 	{
-		return NULL;
+		if (!model)
+			return NULL;
+
+		CNode* instance = model->Copy();
+
+		if (position)
+			instance->SetPosition(position->x, position->y, position->z);
+
+		if (rotation)
+			instance->SetRotation(rotation);
+
+		model->m_child.insert(model->m_child.begin(), instance);
+		model->m_parent = instance;
+		instance->m_model = model;
+		instance->SetModelname(model->m_name);
+		instance->m_type = (u32)TYPE::NODE_TYPE_INSTANCE;
+
+		return instance;
 	}
 
 	CNode* CNode::Read(CSaveLoad& sload, CNode* parent)
@@ -83,7 +126,7 @@ namespace zdb
 
 			switch ((CNode::TYPE)nparams.m_type)
 			{
-			case TYPE::NODE_TYPE_PARENT:
+			case TYPE::NODE_TYPE_INSTANCE:
 				isChild = true;
 				break;
 			case TYPE::NODE_TYPE_GENERIC:

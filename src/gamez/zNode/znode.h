@@ -139,7 +139,7 @@ namespace zdb
 		{
 			NODE_TYPE_UNKNOWN,
 			NODE_TYPE_GENERIC,
-			NODE_TYPE_PARENT,
+			NODE_TYPE_INSTANCE,
 			NODE_TYPE_CHILD,
 			NODE_TYPE_UNK4,
 			NODE_TYPE_UNK5,
@@ -153,14 +153,16 @@ namespace zdb
 		CNode();
 
 		static CNode* CreateInstance(CSaveLoad& sload);
-		static CNode* CreateInstance(const char* name, const CPnt3D* position, const CPnt3D* rotation);
-		static CNode* CreateInstance(CModel* model, const CPnt3D* position, const CPnt3D* rotation);
+		static CNode* CreateInstance(const char* name, const CPnt3D* position, const CQuat* rotation);
+		static CNode* CreateInstance(CModel* model, const CPnt3D* position, const CQuat* rotation);
 		
 		CNode* Create(const char* name);
 
 		static CNode* Read(CSaveLoad& sload, CNode* node);
 		virtual bool Read(CSaveLoad& sload);
 		bool ReadDataBegin(CSaveLoad& sload);
+		CNode* Copy() const;
+		CNode* _Copy(CNode* other) const;
 		
 		void AddChild(CNode* child);
 		s32 DeleteChild(CNode* child);
@@ -198,7 +200,7 @@ namespace zdb
 
 		void SetMatrix(const CMatrix* matrix);
 		void SetPosition(f32 x, f32 y, f32 z);
-		void SetRotation(const CQuat& rotation) {};
+		void SetRotation(const CQuat* rotation) {};
 		void SetScale(f32 scaleFactor);
 		void SetScale(CPnt3D* scale);
 
