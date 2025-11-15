@@ -439,6 +439,20 @@ namespace zdb
 
 	}
 
+	void CNode::SetModelname(const char* name)
+	{
+		if (m_modelname)
+		{
+			zfree(m_modelname);
+			m_modelname = NULL;
+		}
+
+		if (!name)
+			return;
+
+		m_modelname = zstrdup(name);
+	}
+
 	CBBox* CNode::GetBBox()
 	{
 		if (m_use_parent_bbox)
