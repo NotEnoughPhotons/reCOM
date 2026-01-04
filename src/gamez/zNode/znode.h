@@ -156,6 +156,9 @@ namespace zdb
 		static CNode* CreateInstance(const char* name, const CPnt3D* position, const CQuat* rotation);
 		static CNode* CreateInstance(CModel* model, const CPnt3D* position, const CQuat* rotation);
 		
+		static CNode* CreateXRef();
+		static CNode* CreateXRef(CModel* model, const CPnt3D* position, const CQuat* rotation);
+
 		CNode* Create(const char* name);
 
 		static CNode* Read(CSaveLoad& sload, CNode* node);

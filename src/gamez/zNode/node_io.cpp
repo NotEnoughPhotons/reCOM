@@ -222,6 +222,32 @@ namespace zdb
 		return node;
 	}
 
+	CNode* CNode::CreateXRef()
+	{
+		CNode* xref = new CNode();
+		xref->m_type = static_cast<u32>(TYPE::NODE_TYPE_CHILD);
+		xref->SetName("XRef");
+		return xref;
+	}
+
+	CNode* CNode::CreateXRef(CModel* model, const CPnt3D* position, const CQuat* rotation)
+	{
+		if (!model)
+			return NULL;
+
+		CNode* xref = new CNode();
+
+		if (position)
+			xref->SetPosition(position->x, position->y, position->z);
+
+		if (rotation)
+			xref->SetRotation(rotation);
+
+		xref->m_type = static_cast<u32>(TYPE::NODE_TYPE_CHILD);
+		xref->SetName("XRef");
+		xref->AddChild(model);
+	}
+
 	bool CNode::Read(CSaveLoad& sload)
 	{
 		if (sload.m_version == 1)
