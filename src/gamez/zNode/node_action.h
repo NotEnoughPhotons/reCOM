@@ -28,7 +28,7 @@ public:
 	CNodeAction* GetActionById(s32 id) const;
 	const char* GetActionType(ACTION_TYPE type) const;
 	CNodeAction* GetClosestAction(const CPnt3D* position, f32 radius) const;
-
+	const char* GetUIString();
 	// bool ExecuteAction(CZSealBody* seal, unsigned int actionFlags) const;
 
 	template<class T>
@@ -36,12 +36,15 @@ public:
 private:
 	static std::vector<CNodeAction> m_actions;
 
+	ACTION_TYPE m_actionType;
+
 	CNodeAction** actionList;
 
 	zdb::CNode* node;
 	// CZAnim** animations;
 	// std::vector<CZAnim*> animVector;
 	// CZAnim* actionAnimation;
+	std::vector<char*> m_uiVars;
 	CValve* m_valve;
 	zdb::CTexHandle* m_actionBitmap;
 
