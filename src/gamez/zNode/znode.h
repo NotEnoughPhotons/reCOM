@@ -175,6 +175,7 @@ namespace zdb
 		bool UpdateGrid();
 		void ShrinkAtomBasePtrs();
 		void SetAtomCnt(u16 count);
+		void AllocateAtomBasePtrs(s32 x, s32 y);
 
 		CNode* FindChild(CNode* child, bool nested);
 		CNode* FindChild(const char* child, bool nested);

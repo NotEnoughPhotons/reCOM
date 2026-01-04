@@ -620,6 +620,32 @@ namespace zdb
 		// Implement this function
 	}
 
+	void CNode::AllocateAtomBasePtrs(s32 x, s32 y)
+	{
+		u16 allocCnt = 0;
+
+		if (m_mtx_is_identity)
+		{
+			if (m_clutter)
+				allocCnt = (x + 1) * (y + 1);
+			else
+				allocCnt = (x * y);
+		}
+		else
+			allocCnt = (x * y);
+
+		if (!m_Atom)
+		{
+			m_AtomAlloc = allocCnt;
+			m_Atom = static_cast<CGridAtom**>(zmalloc(m_AtomAlloc << 2));
+		}
+		else if (m_AtomAlloc < allocCnt)
+		{
+			m_AtomAlloc = allocCnt;
+			m_Atom = static_cast<CGridAtom**>(zrealloc(m_Atom, allocCnt << 2));
+		}
+	}
+
 	bool CNodeVector::Exists(const CNode* node) const
 	{
 		auto it = begin();
