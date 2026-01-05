@@ -166,6 +166,7 @@ namespace zdb
 		bool ReadDataBegin(CSaveLoad& sload);
 		CNode* Copy() const;
 		CNode* _Copy(CNode* other) const;
+		bool Delete();
 		
 		void AddChild(CNode* child);
 		s32 DeleteChild(CNode* child);

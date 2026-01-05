@@ -164,6 +164,34 @@ namespace zdb
 		return NULL;
 	}
 
+	bool CNode::Delete()
+	{
+		if (m_type == static_cast<u32>(TYPE::NODE_TYPE_UNK4))
+		{
+			if (m_child.size() != 0)
+			{
+				CNode* child = *m_child.data();
+				RemoveFromParent();
+
+				if (m_parent)
+					m_parent->AddChild(child);
+			}
+		}
+		else if (m_type == static_cast<u32>(TYPE::NODE_TYPE_INSTANCE))
+		{
+			m_model->m_list.remove_if(this);
+
+			if (m_model->m_parent == this)
+				m_model->m_parent = NULL;
+
+			RemoveFromParent();
+		}
+		
+		// Very bad. Only putting this here because of 
+		// the decompilation output.
+		delete this;
+	}
+
 	void CNode::AddChild(CNode* node)
 	{
 		CNode* parent = node->m_parent;
