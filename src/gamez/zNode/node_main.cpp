@@ -152,6 +152,18 @@ namespace zdb
 
 		return false;
 	}
+	
+	s32 CNode::DeleteVisuals()
+	{
+		for (auto i = m_visual.begin(); i != m_visual.end(); ++i)
+		{
+			(*i)->Release();
+			delete (*i);
+		}
+
+		m_visual.clear();
+		m_hasVisuals = false;
+	}
 
 	CNode* CNode::Copy() const
 	{

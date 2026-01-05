@@ -193,6 +193,8 @@ namespace zdb
 		bool AddVisual(CVisual* visual);
 		bool AddDI(CDI* di);
 		
+		s32 DeleteVisuals();
+
 		void SetParentHasVisuals();
 		void SetDynamicLight(bool self_light, bool apply_to_children);
 
