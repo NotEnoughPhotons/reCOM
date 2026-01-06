@@ -315,16 +315,10 @@ namespace zdb
 
 	void CNode::DeleteChildren()
 	{
-		while (!m_child.empty())
+		for (auto i = m_child.begin(); i != m_child.end(); ++i)
 		{
-			CNode* current = m_child.front();
-
-			s32 count = DeleteChild(current);
-
-			if (count == 0 && current != NULL)
-			{
-				// current->~CNode();
-			}
+			DeleteChild(*i);
+			delete* i;
 		}
 	}
 
