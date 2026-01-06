@@ -118,6 +118,7 @@ public:
 	void RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV* fovTag);
 	void RenderUINode(zdb::CNode* node);
 	void RenderUINodeRecursive(zdb::CNode* node);
+	bool RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov);
 	u32 RenderWorld(zdb::CWorld* world);
 	void Flush();
 

@@ -72,7 +72,8 @@ namespace zdb
 		// Figure out the rest of the struct
 		u32 m_parent_has_visuals : 1;
 		u32 m_field1 : 1;
-		u32 m_unused : 30;
+		u32 m_doFog : 1;
+		u32 m_unused : 29;
 		CPnt4D m_field2;
 	};
 
@@ -178,15 +179,19 @@ namespace zdb
 		static s32 custom;
 
 		static f32 m_opacity;
+		static f32 m_rangeSqdToCamera;
 
 		static f32 m_adjustBilinearRange;
 
+		bool m_useLOD;
 		bool m_has_lods;
+
+		CPnt3D m_centroid;
 		
 		std::vector<CVisual*> m_vis_child;
 
 		u32 m_refcount;
-		void* m_detail_buff;
+		CVisual* m_detail_buff;
 		u32 m_detail_cnt;
 		size_t m_detail_size;
 
@@ -198,6 +203,8 @@ namespace zdb
 		s32 m_decal_idx;
 
 		s32 m_renderState;
+
+		f32 m_range_sqd_to_camera;
 
 		CShader* m_shader;
 
