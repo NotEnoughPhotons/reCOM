@@ -151,7 +151,7 @@ private:
 class CSched_Manager : public std::list<CSched_Task*>
 {
 public:
-	void AddTask(const char* name, bool(*task)(f32, void*), f32 delta, void* buf);
+	void AddTask(const char* name, bool(*task)(f32, void*), f32 priority, void* registrar);
 	CSched_Task* GetTask(u32 index);
 	bool RemoveTask(CSched_Task* buf, bool child);
 	bool RemoveTask(const char* taskName, bool child);

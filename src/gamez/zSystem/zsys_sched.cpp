@@ -2,7 +2,7 @@
 
 CSched_Manager zTaskScheduler;
 
-void CSched_Manager::AddTask(const char* name, bool(*func)(f32, void*), f32 dT, void* registrar)
+void CSched_Manager::AddTask(const char* name, bool(*func)(f32, void*), f32 priority, void* registrar)
 {
 	CSched_Task* task = NULL;
 
@@ -34,7 +34,7 @@ void CSched_Manager::AddTask(const char* name, bool(*func)(f32, void*), f32 dT, 
 		task->m_name = zstrdup(name);
 
 	task->m_removed = false;
-	task->m_priority = dT;
+	task->m_priority = priority;
 	task->m_func = func;
 	task->m_registrar = registrar;
 
