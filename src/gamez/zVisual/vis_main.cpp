@@ -12,6 +12,7 @@
 #include "gamez/zShader/zshader.h"
 
 s32 node_index = 0;
+zdb::CVisData* _vdataTex = NULL;
 
 void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 {
@@ -243,7 +244,7 @@ namespace zdb
 			return false;
 
 		archive.Fetch("detail_size", &detail_size);
-		m_detail_buff = zmalloc(detail_size);
+		m_detail_buff = static_cast<zdb::CVisual*>(zmalloc(detail_size));
 		archive.Fetch("detail_buff", m_detail_buff, detail_size);
 
 		for (u32 i = 0; i < m_detail_cnt; i++)

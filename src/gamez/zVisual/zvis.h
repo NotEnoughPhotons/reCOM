@@ -19,7 +19,8 @@ namespace zdb
 	
 	class CNode;
 	class CModel;
-
+	
+	class CVisData;
 	class CVisBase;
 	class CVisual;
 	class CMesh;
@@ -37,6 +38,7 @@ void hookupVisuals(zar::CZAR* archive, zdb::CModel* model);
 void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CModel* model, zdb::CVisBase* vis);
 
 extern s32 node_index;
+extern zdb::CVisData* _vdataTex;
 
 // Header for OpenFlight models.
 struct tag_ObjectHeader
@@ -73,7 +75,9 @@ namespace zdb
 		u32 m_parent_has_visuals : 1;
 		u32 m_field1 : 1;
 		u32 m_doFog : 1;
-		u32 m_unused : 29;
+		u32 m_bilinear : 1;
+		u32 m_ui : 1;
+		u32 m_unused : 27;
 		CPnt4D m_field2;
 	};
 
@@ -198,7 +202,10 @@ namespace zdb
 		u32 m_instance_cnt;
 
 		_word128* m_dmaBuf;
+		_word128* m_gifSelect;
 		
+		CDynTexList m_dyntexList;
+
 		std::vector<CDecal*> m_decals;
 		s32 m_decal_idx;
 
