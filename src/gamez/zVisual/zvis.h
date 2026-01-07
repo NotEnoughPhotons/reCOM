@@ -156,7 +156,7 @@ namespace zdb
 		
 		u32 Release();
 
-		static std::deque<CVisual*> m_stack_vid;
+		static std::deque<u32> m_stack_vid;
 
 		static std::vector<CPnt3D*> m_lightMapList;
 		static std::vector<CPnt3D*> m_shadowMapList;

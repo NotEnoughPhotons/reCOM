@@ -11,6 +11,7 @@
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zTexture/ztex.h"
+#include "gamez/zVisual/zvis.h"
 
 class CPipe;
 
@@ -84,11 +85,13 @@ struct BLENDMODE
 class CStack
 {
 public:
-	static void Multiply(const CMatrix* matrix, bool other);
+	static CMatrix* Multiply(const CMatrix* matrix, bool other);
 	
 	static CMatrix* m_top;
 	static CMatrix* m_pointer;
 };
+
+extern CStack stack;
 
 class LODVec : public std::vector<LOD*> {};
 
@@ -119,9 +122,10 @@ public:
 	static void Init();
 
 	void RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV* fovTag);
-	void RenderUINode(zdb::CNode* node);
-	void RenderUINodeRecursive(zdb::CNode* node);
+	void RenderUiNode(zdb::CNode* node);
+	void RenderUiNodeRecursive(zdb::CNode* node);
 	bool RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov);
+	void RenderMesh(zdb::CNode* node, zdb::CMesh* mesh, CMatrix* mvp, zdb::tag_ZVIS_FOV fov);
 	u32 RenderWorld(zdb::CWorld* world);
 	void Flush();
 

@@ -9,6 +9,7 @@
 u32 numCharactersRendered = 0;
 f32 bilinearDistance = 0.0f;
 bool FirstVisDrawn = false;
+CStack stack;
 
 void BuildNodeLocalLightList(zdb::CNode* node, zdb::CNode* light)
 {
@@ -156,9 +157,66 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 	return true;
 }
 
-void CPipe::RenderUINode(zdb::CNode* node)
+void CPipe::RenderUiNode(zdb::CNode* node)
 {
+	CStack::m_top++;
+	CStack::m_pointer++;
+	// vu0CopyMatrix(CStack::m_top->m_matrix, CMatrix::identity.m_matrix);
+	RenderUiNodeRecursive(node);
+	CStack::m_pointer--;
+	CStack::m_top--;
+}
 
+void CPipe::RenderUiNodeRecursive(zdb::CNode* node)
+{
+	bool doAlpha = false;
+
+	if (node->m_active)
+		return;
+
+	// CBench::countNodes++;
+
+	zdb::CVisual::m_stack_vid.push_back(node->m_vid);
+	stack.Multiply(&node->m_matrix, true);
+
+	if (node->m_Opacity < 0.99f)
+	{
+		m_opacity_stack_index++;
+		if (m_opacity_stack_index == m_opacity_stack_size)
+		{
+			m_opacity_stack = static_cast<f32*>(zrealloc(m_opacity_stack, (m_opacity_stack_size + 1) * 4));
+			m_opacity_stack_size++;
+		}
+
+		doAlpha = true;
+
+		m_opacity_stack[m_opacity_stack_index] = node->m_Opacity * m_opacity_stack[m_opacity_stack_index - 1];
+	}
+
+	if (node->m_visual.size())
+		RenderVisual(node, zdb::tag_ZVIS_FOV::ZVIS_FOV_CLIP);
+
+	for (auto i = node->m_child.begin(); i != node->m_child.end(); ++i)
+	{
+		zdb::CNode* node = *i;
+		if (!node->m_hasMesh)
+			RenderUiNodeRecursive(node);
+		else
+			RenderMesh(node, NULL, NULL, zdb::tag_ZVIS_FOV::ZVIS_FOV_CLIP);
+	}
+
+	if (node)
+	{
+		CStack::m_pointer--;
+		CStack::m_top--;
+	}
+
+	if (doAlpha)
+	{
+		m_opacity_stack_index--;
+	}
+
+	zdb::CVisual::m_stack_vid.pop_back();
 }
 
 void CPipe::Flush()
