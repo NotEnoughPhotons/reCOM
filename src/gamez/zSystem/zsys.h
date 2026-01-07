@@ -142,8 +142,8 @@ class CSched_Task
 	friend class CSched_Manager;
 private:
 	char* m_name;
-	bool m_active;
-	f32 m_dT;
+	bool m_removed;
+	f32 m_priority;
 	bool(*m_func)(float, void*);
 	void* m_registrar;
 };
@@ -152,8 +152,8 @@ class CSched_Manager : public std::list<CSched_Task*>
 {
 public:
 	void AddTask(const char* name, bool(*task)(f32, void*), f32 delta, void* buf);
-	ScheduledTask GetTask(s32 index);
-	bool RemoveTask(void* buf, bool child);
+	CSched_Task* GetTask(u32 index);
+	bool RemoveTask(CSched_Task* buf, bool child);
 	bool RemoveTask(const char* taskName, bool child);
 
 	void Clear();
