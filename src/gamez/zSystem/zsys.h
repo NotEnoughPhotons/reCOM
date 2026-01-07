@@ -137,7 +137,15 @@ public:
 	f32 timerScale;
 };
 
-class CSched_Manager : public std::list<ScheduledTask>
+typedef struct {
+	char* name;
+	bool active;
+	f32 dT;
+	bool(*func)(float, void*);
+	void* registrar;
+} _task;
+
+class CSched_Manager : public std::list<_task*>
 {
 public:
 	void AddTask(const char* name, bool(*task)(f32, void*), f32 delta, void* buf);
