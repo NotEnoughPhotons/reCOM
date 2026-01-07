@@ -137,15 +137,18 @@ public:
 	f32 timerScale;
 };
 
-typedef struct {
-	char* name;
-	bool active;
-	f32 dT;
-	bool(*func)(float, void*);
-	void* registrar;
-} _task;
+class CSched_Task
+{
+	friend class CSched_Manager;
+private:
+	char* m_name;
+	bool m_active;
+	f32 m_dT;
+	bool(*m_func)(float, void*);
+	void* m_registrar;
+};
 
-class CSched_Manager : public std::list<_task*>
+class CSched_Manager : public std::list<CSched_Task*>
 {
 public:
 	void AddTask(const char* name, bool(*task)(f32, void*), f32 delta, void* buf);
@@ -160,7 +163,7 @@ public:
 private:
 	bool m_inTick;
 	f32 m_priority;
-	std::list<_task*> m_FreeList;
+	std::list<CSched_Task*> m_FreeList;
 };
 
 class CSaferStr : public std::basic_string<const char*>

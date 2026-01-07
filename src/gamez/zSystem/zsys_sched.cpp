@@ -4,17 +4,17 @@ CSched_Manager zTaskScheduler;
 
 void CSched_Manager::AddTask(const char* name, bool(*func)(f32, void*), f32 dT, void* registrar)
 {
-	_task* task = NULL;
+	CSched_Task* task = NULL;
 
 	// Create a new task if pool is empty
 	if (size() == 0)
 	{
-		task = new _task();
-		task->name = NULL;
-		task->active = false;
-		task->dT = 0.0f;
-		task->func = NULL;
-		task->registrar = NULL;
+		task = new CSched_Task();
+		task->m_name = NULL;
+		task->m_active = false;
+		task->m_dT = 0.0f;
+		task->m_func = NULL;
+		task->m_registrar = NULL;
 	}
 	else
 	{
@@ -23,20 +23,20 @@ void CSched_Manager::AddTask(const char* name, bool(*func)(f32, void*), f32 dT, 
 		pop_front();
 	}
 
-	if (task->name)
-		zfree(task->name);
+	if (task->m_name)
+		zfree(task->m_name);
 
-	task->name = NULL;
+	task->m_name = NULL;
 
 	if (!name)
-		task->name = NULL;
+		task->m_name = NULL;
 	else
-		task->name = zstrdup(name);
+		task->m_name = zstrdup(name);
 
-	task->active = false;
-	task->dT = dT;
-	task->func = func;
-	task->registrar = registrar;
+	task->m_active = false;
+	task->m_dT = dT;
+	task->m_func = func;
+	task->m_registrar = registrar;
 
 	insert(begin(), task);
 }
