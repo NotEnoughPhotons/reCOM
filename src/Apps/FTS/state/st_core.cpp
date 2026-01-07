@@ -3,6 +3,7 @@
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zGame/zgame.h"
 #include "gamez/zNode/node_world.h"
+#include "gamez/zMath/zmath_vu.h"
 #include "gamez/zSeal/zseal.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zVideo/zvid.h"
@@ -12,8 +13,8 @@ CCoreState::CCoreState()
 	m_name = zstrdup("CoreState");
 	m_loading = false;
 	m_loadstarted = false;
-	// objMtx1 = CMatrix::identity;
-	// objMtx2 = CMatrix::identity;
+	zMathUnitMatrix(objMtx1);
+	zMathUnitMatrix(objMtx2);
 	m_skip_swap = 0;
 }
 
