@@ -160,7 +160,7 @@ public:
 private:
 	bool m_inTick;
 	f32 m_priority;
-	std::list<ScheduledTask> m_FreeList;
+	std::list<_task*> m_FreeList;
 };
 
 class CSaferStr : public std::basic_string<const char*>
