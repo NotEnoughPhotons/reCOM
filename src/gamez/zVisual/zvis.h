@@ -4,6 +4,7 @@
 
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
+#include "gamez/zTexture/ztex.h"
 
 class CShader;
 class CTextureRelocMgr;

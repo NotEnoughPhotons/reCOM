@@ -13,6 +13,11 @@
 
 s32 node_index = 0;
 zdb::CVisData* _vdataTex = NULL;
+std::deque<u32> zdb::CVisual::m_stack_vid;
+bool zdb::CVisual::m_applyDetailTexture = false;
+bool zdb::CVisual::m_applyLocalLights = false;
+bool zdb::CVisual::m_fogEnable = false;
+f32 zdb::CVisual::m_rangeSqdToCamera = 1.0f;
 
 void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 {

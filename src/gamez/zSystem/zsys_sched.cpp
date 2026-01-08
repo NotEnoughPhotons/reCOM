@@ -101,4 +101,5 @@ bool CSched_Manager::Tick(f32 dT)
 		}
 	}
 	m_inTick = false;
+	return true;
 }

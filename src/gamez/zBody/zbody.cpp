@@ -37,6 +37,6 @@ void CZBodyPart::Orient()
 
 	if (&m_rot != NULL)
 	{
-		m_node->SetRotation(m_rot);
+		m_node->SetRotation(&m_rot);
 	}
 }

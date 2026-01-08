@@ -42,6 +42,7 @@ bool CCoreState::Init()
 	CRdrArchive::RemoveArchive("readerm.zar", "database");
 
 	zTaskScheduler.AddTask("UnitTick", CSealUnit::TickAll, 0.8f, NULL);
+	// zTaskScheduler.AddTask("ai_pre_tick", CSealCtrlAi::PreTick, 0.9, NULL);
 
 	theMission.OnMissionStart();
 	theMission.m_winlosstimer = -1.0f;

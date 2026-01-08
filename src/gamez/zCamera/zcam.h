@@ -177,7 +177,7 @@ namespace zdb
 		
 		void Update(tag_ZCAM_TYPE type);
 
-		f32 GetScaledRangeSquared(const CPnt3D& point);
+		f32 GetScaledRangeSquared(const CPnt3D& point) { return 0.0f; }
 
 		void SetHalfHorizontalFOVRadians(f32 radians);
 		void SetFarClip(f32 farclip);

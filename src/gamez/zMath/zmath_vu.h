@@ -15,34 +15,34 @@
 /// https://github.com/ps2dev/ps2sdk
 /// -----------------------------
 
-static void zMathCopyVector(PNT3D& out, PNT3D& in);
-static void zMathAddVector(PNT3D& sum, PNT3D& addend, PNT3D& summand);
-static void zMathSubVector(PNT3D& diff, PNT3D& subend, PNT3D& diffand);
-static void zMathScaleVector();
-static void zMathFTOI0Vector();
-static void zMathFTOI4Vector();
-static void zMathInnerVector();
+extern void zMathCopyVector(PNT3D& out, PNT3D& in);
+extern void zMathAddVector(PNT3D& sum, PNT3D& addend, PNT3D& summand);
+extern void zMathSubVector(PNT3D& diff, PNT3D& subend, PNT3D& diffand);
+extern void zMathScaleVector();
+extern void zMathFTOI0Vector();
+extern void zMathFTOI4Vector();
+extern void zMathInnerVector();
 
-static void zMathInnerProduct();
-static void zMathOuterProduct();
-static void zMathNormalize();
+extern void zMathInnerProduct();
+extern void zMathOuterProduct();
+extern void zMathNormalize();
 
-static void zMathRotTransPers();
+extern void zMathRotTransPers();
 
-static void zMathClipBBox();
+extern void zMathClipBBox();
 
-static void zMathCopyMatrix();
-static void zMathApplyMatrix();
-static void zMathUnitMatrix(CMatrix& mat);
-static void zMathMulMatrix();
-static void zMathCameraMatrix();
-static void zMathViewScreenMatrix();
-static void zMathTransMatrix();
-static void zMathTransposeMatrix();
-static void zMathInverseMatrix();
-static void zMathRotMatrixX();
-static void zMathRotMatrixY();
-static void zMathRotMatrixZ();
-static void zMathLightColorMatrix();
-static void zMathNormalLightMatrix();
+extern void zMathCopyMatrix();
+extern void zMathApplyMatrix();
+extern void zMathUnitMatrix(CMatrix& mat);
+extern void zMathMulMatrix();
+extern void zMathCameraMatrix();
+extern void zMathViewScreenMatrix();
+extern void zMathTransMatrix();
+extern void zMathTransposeMatrix();
+extern void zMathInverseMatrix();
+extern void zMathRotMatrixX();
+extern void zMathRotMatrixY();
+extern void zMathRotMatrixZ();
+extern void zMathLightColorMatrix();
+extern void zMathNormalLightMatrix();
 #endif

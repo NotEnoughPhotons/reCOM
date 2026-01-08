@@ -163,6 +163,8 @@ namespace zdb
 
 		m_visual.clear();
 		m_hasVisuals = false;
+
+		return 0;
 	}
 
 	CNode* CNode::Copy() const
@@ -191,7 +193,7 @@ namespace zdb
 		}
 		else if (m_type == static_cast<u32>(TYPE::NODE_TYPE_INSTANCE))
 		{
-			m_model->m_list.remove_if(this);
+			// m_model->m_list.remove_if(this);
 
 			if (m_model->m_parent == this)
 				m_model->m_parent = NULL;
@@ -202,6 +204,8 @@ namespace zdb
 		// Very bad. Only putting this here because of 
 		// the decompilation output.
 		delete this;
+
+		return true;
 	}
 
 	void CNode::AddChild(CNode* node)

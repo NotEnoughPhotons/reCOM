@@ -4,6 +4,8 @@
 #include "node_model.h"
 #include "node_saveload.h"
 
+#include "gamez/zSystem//zsys.h"
+
 void HookupLib(zdb::CAssetLib lib)
 {
 	zdb::CGSTexBuffer texbuf;
@@ -152,6 +154,9 @@ namespace zdb
 
 			if (mdl)
 			{
+#if DEBUG
+				SDL_Log("Model added: %s", mdl->m_name);
+#endif
 				library = *i;
 				break;
 			}

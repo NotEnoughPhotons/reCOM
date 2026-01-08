@@ -171,7 +171,7 @@ namespace zdb
 		void AddChild(CNode* child);
 		s32 DeleteChild(CNode* child);
 		void DeleteChildren();
-		void RemoveFromParent();
+		void RemoveFromParent() {}
 
 		CGridAtom* GetAtom(s16 index);
 		void InsertAtom(CGridAtom* atom);

@@ -247,6 +247,9 @@ void LoadMissionMapVisibilities(_zrdr* start)
 
 void CMission::PreOpen(const char* db)
 {
+#if DEBUG
+	SDL_Log("[GameZ] - (%s) CMission::PreOpen", db);
+#endif
 	extern char** g_arrDefCharTypeNames[32];
 	extern u32 g_iNumUiVehicles;
 
@@ -302,6 +305,11 @@ void CMission::PreOpen(const char* db)
 		zrdr_findint(node, "VALUE", &value, 1);
 
 		CValve::Create(name, value, vtype);
+
+
+#if DEBUG
+		SDL_Log("[GameZ] - (%s) Created valve %s", db, name);
+#endif
 	}
 
 	Read(mission);
@@ -310,7 +318,9 @@ void CMission::PreOpen(const char* db)
 	weapon_model_postfix[0] = NULL;
 
 	zrdr_findSTRING(mission, "WEAPON_MODEL_POSTFIX", weapon_model_postfix);
-	strncpy(m_weaponmodelpostfix, *weapon_model_postfix, 30);
+
+	if (weapon_model_postfix[0] != NULL)
+		strncpy(m_weaponmodelpostfix, *weapon_model_postfix, 30);
 
 	CloseVehicleRdr();
 	OpenVehicleRdr();

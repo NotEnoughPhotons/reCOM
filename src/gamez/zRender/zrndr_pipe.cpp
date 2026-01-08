@@ -3,6 +3,7 @@
 #include "gamez/zNode/znode.h"
 #include "gamez/zNode/node_world.h"
 #include "gamez/zGrid/zgrid.h"
+#include "gamez/zSystem/zsys_bench.h"
 #include "gamez/zVisual/zvis.h"
 #include "gamez/zVideo/zvid.h"
 
@@ -16,6 +17,11 @@ void BuildNodeLocalLightList(zdb::CNode* node, zdb::CNode* light)
 	// TODO: Implement this function.
 	// It should gather up a list of local lights
 	// and add them to the visual instances list.
+}
+
+void CPipe::RenderAtom(zdb::CNode* atomNode)
+{
+	m_node = atomNode;
 }
 
 u32 CPipe::RenderWorld(zdb::CWorld* world)
@@ -52,7 +58,7 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 {
 	CMatrix mat = *CStack::m_top;
-	// CBench::countRenderNodes++;
+	CBench::countRenderNodes++;
 
 	f32 opacity = m_opacity_stack[m_opacity_stack_index];
 
@@ -120,7 +126,7 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 				// CVisual::VuUpdate. What???
 				// Expected: visual->Render(mat);
 				visual->Render();
-				// CBench::countVisuals++;
+				CBench::countVisuals++;
 			}
 			else if (opacity >= 0.0078125f)
 			{
@@ -174,7 +180,7 @@ void CPipe::RenderUiNodeRecursive(zdb::CNode* node)
 	if (node->m_active)
 		return;
 
-	// CBench::countNodes++;
+	CBench::countNodes++;
 
 	zdb::CVisual::m_stack_vid.push_back(node->m_vid);
 	stack.Multiply(&node->m_matrix, true);

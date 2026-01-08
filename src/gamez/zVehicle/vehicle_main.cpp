@@ -30,7 +30,7 @@ bool CVehicleRdr::Load(_zrdr* file)
 
 	resize(file->array->integer - 1);
 
-	for (u32 i = 0; node = &file->array[i], i < file->array->integer - 1; i++)
+	for (u32 i = 1; node = &file->array[i], i < file->array->integer - 1; i++)
 	{
 		_dest = &data()[i];
 

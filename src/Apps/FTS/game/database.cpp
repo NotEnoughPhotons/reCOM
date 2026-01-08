@@ -22,6 +22,9 @@ extern char* GetDatabase()
 
 extern char* SetDatabase(const char* db)
 {
+#ifdef DEBUG
+	SDL_Log("Set database to %s", db);
+#endif
 	return strcpy(database, db);
 }
 
