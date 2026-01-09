@@ -278,17 +278,16 @@ namespace zdb
 	void CVisual::SetBuffer(_word128* wvis, u32 bufferidx, CVisBase* visdata)
 	{
 		visdata->m_buffer_count++;
-		void* vis_buffer = visdata->m_data_buffer;
-		m_dmaBuf->u128 = wvis->u128;
-
-		u32 type = m_dmaBuf->u32[bufferidx];
-
-		if (type == 0)
-		{
-			
-		}
 	}
 	
+	bool CVisual::GetChainData()
+	{
+		u32 stackidx = m_stack_vid.size() - 1;
+		_word128** tag = m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
+		m_dmaChain = &tag[1];
+		m_dmaQwc = *tag[0]->u8;
+	}
+
 	void CVisual::Render()
 	{
 		if (m_renderState != 0)
@@ -297,7 +296,7 @@ namespace zdb
 
 	void CVisual::VuUpdate(f32 opacity)
 	{
-
+		GetChainData();
 	}
 
 	CTexture* CVisual::ResolveTextureName(_word128* wtexture, _word128* wname)

@@ -148,6 +148,7 @@ namespace zdb
 		void ApplyDecal(CDecal* decal);
 
 		void SetBuffer(_word128* wvis, u32 size, CVisBase* visdata);
+		bool GetChainData();
 		
 		bool DrawLOD(CLOD_band* lod, f32 range, f32* distance);
 		void Render();
@@ -162,6 +163,9 @@ namespace zdb
 		static std::vector<CPnt3D*> m_lightMapList;
 		static std::vector<CPnt3D*> m_shadowMapList;
 		static std::vector<CPnt3D*> m_projectedMapList;
+
+		static _word128** m_dmaChain; // Pointer to packet list containing texture/vertex data
+		static u32 m_dmaQwc; // Amount of quadwords/packets in the chain
 
 		static void* localLightBuf;
 		static CLight* localLightPtr;
@@ -202,7 +206,7 @@ namespace zdb
 
 		u32 m_instance_cnt;
 
-		_word128* m_dmaBuf;
+		_word128*** m_chainPtr;
 		_word128* m_gifSelect;
 		
 		CDynTexList m_dyntexList;
