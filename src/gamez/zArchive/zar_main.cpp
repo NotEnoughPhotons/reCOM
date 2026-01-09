@@ -66,7 +66,7 @@ namespace zar
 		{
 			CKey* archiveKey = archive->NewKey(NULL);
 			archiveKey->Read(archive, buffer, stableOffset);
-			insert(end(), archiveKey);
+			insert(begin(), archiveKey);
 			key_t.m_count--;
 		}
 

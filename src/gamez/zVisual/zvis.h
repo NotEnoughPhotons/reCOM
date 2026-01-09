@@ -62,11 +62,20 @@ namespace zdb
 		ZVIS_FOV_NUM
 	};
 
-	struct vertex
+	enum class tag_VIS_PKTTYPE
 	{
-		CPnt3D pos;
-		CPnt3D col;
-		CPnt3D tcoords;
+		PKT_00,
+		PKT_01,
+		PKT_VERTEX_DATA,
+		PKT_TEX_OFS,
+		PKT_04,
+		PKT_TEX_FIXUP,
+		PKT_TEX_RESOLVE
+	};
+
+	struct tag_VIS_PACKET
+	{
+		
 	};
 
 	struct tag_VIS_PARAMS
@@ -164,7 +173,7 @@ namespace zdb
 		static std::vector<CPnt3D*> m_shadowMapList;
 		static std::vector<CPnt3D*> m_projectedMapList;
 
-		static _word128** m_dmaChain; // Pointer to packet list containing texture/vertex data
+		static _word128* m_dmaChain; // Pointer to packet list containing texture/vertex data
 		static u32 m_dmaQwc; // Amount of quadwords/packets in the chain
 
 		static void* localLightBuf;
@@ -206,7 +215,7 @@ namespace zdb
 
 		u32 m_instance_cnt;
 
-		_word128*** m_chainPtr;
+		_word128** m_chainPtr;
 		_word128* m_gifSelect;
 		
 		CDynTexList m_dyntexList;

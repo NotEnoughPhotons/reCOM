@@ -102,7 +102,7 @@ class CAlpha
 {
 	friend class CPipe;
 public:
-	void Add(zdb::CNode* parent, zdb::CNode* child, zdb::CVisual* visual, zdb::tag_ZVIS_FOV fov, f32 alpha);
+	void Add(zdb::CNode* parent, zdb::CNode* child, zdb::CVisual* visual, zdb::tag_ZVIS_FOV fov, f32 alpha) {}
 private:
 	zdb::CCamera* m_camera;
 	void* m_visualList;

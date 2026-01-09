@@ -4,7 +4,10 @@
 
 #include "gamez/zArchive/zar.h"
 
+#include "gamez/zAssetLib/assetlib_vector.h"
+
 #include "gamez/zNode/znode.h"
+#include "gamez/zNode/node_assetlib.h"
 #include "gamez/zNode/node_model.h"
 #include "gamez/zNode/node_world.h"
 
@@ -18,6 +21,8 @@ bool zdb::CVisual::m_applyDetailTexture = false;
 bool zdb::CVisual::m_applyLocalLights = false;
 bool zdb::CVisual::m_fogEnable = false;
 f32 zdb::CVisual::m_rangeSqdToCamera = 1.0f;
+_word128* zdb::CVisual::m_dmaChain = NULL;
+u32 zdb::CVisual::m_dmaQwc = 0;
 
 void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 {
@@ -46,13 +51,14 @@ void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 	}
 }
 
-void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CModel* model, zdb::CVisBase* vis)
+void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CModel* model, zdb::CVisBase* vbase)
 {
 	char node_name[1024];
 	char node_light_name[1024];
 
 	u32 bufidx = 0;
-	u32 vis_id, child_vis_id = 0;
+	u32 vis_id = 0;
+	u32 child_vis_id = 0;
 	u32 node_ofs = 0;
 	
 	if (!node)
@@ -67,9 +73,9 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 		node_index++;
 	}
 
-	for (auto i = model->m_child.begin(); i != model->m_child.end(); i++)
+	for (auto i = model->m_list.begin(); i != model->m_list.end(); i++)
 	{
-		zdb::CNode* n = *i;
+		zdb::CNode* n = static_cast<zdb::CModel*>((*i)->m_model_buffer);
 		zdb::CNode* child = n->FindChild(node->m_name, true);
 
 		if (!child)
@@ -83,52 +89,62 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 
 			sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
 			strcpy(node_light_name, node_name);
-			strcat(node_light_name, "L");
+			strcat(node_light_name, "_L");
 
-			if (archive->Fetch(node_light_name, &node_ofs, sizeof(u32)))
+			bool found = archive->Fetch(node_light_name, &node_ofs, sizeof(u32));
+
+			if (!found)
+				found = archive->Fetch(node_name, &node_ofs, sizeof(u32));
+			else
 				child->SetDynamicLight(true, false);
-			else if (archive->Fetch(node_name, &node_ofs, sizeof(u32)))
+
+			if (found)
 			{
-				vis->m_node_ofs = node_ofs;
-				visual->SetBuffer(&vis->m_data_buffer[vis->m_node_ofs], bufidx, vis);
+				vbase->m_node_ofs = node_ofs;
+				visual->SetBuffer(&vbase->m_data_buffer[vbase->m_node_ofs], bufidx, vbase);
 			}
 		}
 
 		bufidx++;
 	}
 
-	if (&model->m_list == NULL || model->m_bForceExport)
+	if (model->m_list.size() == 0 || model->m_bForceExport)
 	{
 		zdb::CMesh* mesh = model->GetMesh();
 
-		for (auto i = model->m_child.begin(); i != model->m_child.end(); i++)
+		for (u32 i = 0; i != node->m_visual.size(); i++)
 		{
-			zdb::CNode* n = *i;
-			zdb::CNode* child = n->FindChild(node->m_name, true);
+			zdb::CVisual* visual = node->m_visual[i];
 
-			if (!child)
-				child = n;
+			sprintf(node_name, "N%03d_I%03d_V%02d", node_index, 0, i);
+			strcpy(node_light_name, node_name);
+			strcat(node_light_name, "_L");
 
-			child->m_vid = vis_id;
+			bool found = archive->Fetch(node_light_name, &node_ofs, sizeof(u32));
 
-			for (auto j = node->m_visual.begin(); j != node->m_visual.end(); j++)
+			if (!found)
+				found = archive->Fetch(node_name, &node_ofs, sizeof(u32));
+			else
+				node->SetDynamicLight(true, false);
+
+			if (!found)
 			{
-				zdb::CVisual* visual = *j;
-
-				sprintf(node_name, "N%03d_I%03d_V%02d", node_index, vis_id, child_vis_id);
+				sprintf(node_name, "N%03d_%03d", node_index, i);
 				strcpy(node_light_name, node_name);
-				strcat(node_light_name, "L");
+				strcat(node_light_name, "_L");
 
-				if (archive->Fetch(node_light_name, &node_ofs, sizeof(u32)))
-					child->SetDynamicLight(true, false);
-				else if (archive->Fetch(node_name, &node_ofs, sizeof(u32)))
+				if (!found)
+					found = archive->Fetch(node_name, &node_ofs, sizeof(u32));
+				else
+					node->SetDynamicLight(true, false);
+
+				if (found)
 				{
-					vis->m_node_ofs = node_ofs;
-					visual->SetBuffer(&vis->m_data_buffer[vis->m_node_ofs], bufidx, vis);
+					vbase->m_node_ofs = node_ofs;
+					visual->m_chainPtr = (_word128**)((u8*)vbase->m_data_buffer + vbase->m_node_ofs);
+					visual->SetBuffer(*visual->m_chainPtr, 0, vbase);
 				}
 			}
-
-			bufidx++;
 		}
 	}
 
@@ -141,7 +157,7 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 			child = parent;
 
 		if (!child)
-			hookupVisuals(archive, key, parent, model, vis);
+			hookupVisuals(archive, key, parent, model, vbase);
 	}
 }
 
@@ -161,7 +177,7 @@ void hookupVisuals(zar::CZAR* archive, zdb::CModel* model)
 	{
 		vis = new zdb::CVisBase(key->GetSize());
 
-		if (!archive->FetchLIP(key, reinterpret_cast<void**>(&vis)))
+		if (!archive->FetchLIP(key, reinterpret_cast<void**>(vis)))
 		{
 			if (!vis->m_active)
 			{
@@ -174,7 +190,8 @@ void hookupVisuals(zar::CZAR* archive, zdb::CModel* model)
 			zdb::CVisBase::m_instance_count--;
 			delete vis;
 		}
-		else hookupVisuals(archive, key, model, model, vis);
+		else 
+			hookupVisuals(archive, key, model, model, vis);
 
 		archive->CloseKey(key);
 	}
@@ -275,17 +292,22 @@ namespace zdb
 		return true;
 	}
 
-	void CVisual::SetBuffer(_word128* wvis, u32 bufferidx, CVisBase* visdata)
+	void CVisual::SetBuffer(_word128* chain, u32 idx, CVisBase* vbase)
 	{
-		visdata->m_buffer_count++;
+		vbase->m_buffer_count++;
+		_word128* buffer = vbase->m_data_buffer;
+		m_chainPtr[idx] = chain;
+		_word128* packet = m_chainPtr[idx];
 	}
 	
 	bool CVisual::GetChainData()
 	{
 		u32 stackidx = m_stack_vid.size() - 1;
-		_word128** tag = m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
+		_word128* tag = m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
 		m_dmaChain = &tag[1];
-		m_dmaQwc = *tag[0]->u8;
+		m_dmaQwc = *tag[0].u8;
+
+		return true;
 	}
 
 	void CVisual::Render()

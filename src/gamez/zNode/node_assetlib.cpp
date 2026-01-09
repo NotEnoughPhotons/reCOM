@@ -212,7 +212,7 @@ namespace zdb
 	{
 		bool isnamed = false;
 
-		if (strcmp(name, m_name) != 0)
+		if (!strcmp(name, m_name))
 			return true;
 
 		size_t length = strlen(name);

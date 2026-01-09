@@ -13,11 +13,7 @@ namespace zdb
 	class CModel;
 	class CTexture;
 	class CTexPalette;
-
-	class CAssetLib;
 }
-
-extern void HookupLib(zdb::CAssetLib* lib);
 
 namespace zdb
 {
@@ -71,4 +67,6 @@ namespace zdb
 		static CAssetList m_assets;
 	};
 }
+
+extern void HookupLib(zdb::CAssetLib* lib);
 #endif
