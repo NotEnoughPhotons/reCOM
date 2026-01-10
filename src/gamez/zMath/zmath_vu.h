@@ -34,7 +34,7 @@ extern void zMathClipBBox();
 extern void zMathCopyMatrix();
 extern void zMathApplyMatrix();
 extern void zMathUnitMatrix(CMatrix& mat);
-extern void zMathMulMatrix();
+extern void zMathMulMatrix(CMatrix* m0, CMatrix* m1, CMatrix* out);
 extern void zMathCameraMatrix();
 extern void zMathViewScreenMatrix();
 extern void zMathTransMatrix();
