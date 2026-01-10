@@ -215,7 +215,7 @@ namespace zdb
 
 		u32 m_instance_cnt;
 
-		_word128** m_chainPtr;
+		_word128* m_chainPtr;
 		_word128* m_gifSelect;
 		
 		CDynTexList m_dyntexList;

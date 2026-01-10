@@ -141,8 +141,8 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 				if (found)
 				{
 					vbase->m_node_ofs = node_ofs;
-					visual->m_chainPtr = (_word128**)((u8*)vbase->m_data_buffer + vbase->m_node_ofs);
-					visual->SetBuffer(*visual->m_chainPtr, 0, vbase);
+					visual->m_chainPtr = (_word128*)((u8*)vbase->m_data_buffer + vbase->m_node_ofs);
+					visual->SetBuffer(visual->m_chainPtr, 0, vbase);
 				}
 			}
 		}
@@ -202,11 +202,11 @@ namespace zdb
 	u32 CVisBase::m_instance_count = 0;
 
 	CPnt4D CVisual::m_basefog_color = CPnt4D::zero;
-	
+
 	CCamera* CVisual::m_camera = NULL;
 
 	f32 CVisual::m_adjustBilinearRange = 0.0f;
-	
+
 	CVisBase::CVisBase(size_t size)
 	{
 		m_data_buffer = NULL;
@@ -223,7 +223,7 @@ namespace zdb
 			m_nextGif++;
 		}
 	}
-	
+
 	CVisual* CVisual::Create(zar::CZAR& archive)
 	{
 		CVisual* visual = NULL;
@@ -261,7 +261,7 @@ namespace zdb
 		m_detail_cnt = 0;
 
 		archive.Fetch("detail_cnt", &m_detail_cnt);
-		
+
 		if (!m_detail_cnt)
 			return false;
 
@@ -271,7 +271,7 @@ namespace zdb
 
 		for (u32 i = 0; i < m_detail_cnt; i++)
 		{
-			
+
 		}
 
 		return true;
@@ -296,14 +296,49 @@ namespace zdb
 	{
 		vbase->m_buffer_count++;
 		_word128* buffer = vbase->m_data_buffer;
-		m_chainPtr[idx] = chain;
-		_word128* packet = m_chainPtr[idx];
+		m_chainPtr[idx] = *chain;
+		_word128* packet = &m_chainPtr[idx];
+
+		// Check a flag? Maybe if the chain has its buffer set?
+		if (packet->u8[2] == 0)
+		{
+			// Store pointer to visual data
+			packet->u32[2] = reinterpret_cast<u32>(&vbase);
+
+			// Number of quadwords to loop over
+			u8 qwc = packet->u8[0];
+
+			for (u32 i = 1; i < qwc + 1; i++)
+			{
+				_word128& chainPkt = m_chainPtr[i];
+				u8 type = chainPkt.u8[2];
+
+				u32 pktOffset = chainPkt.u32[1];
+				u32 address = reinterpret_cast<u32>(&*vbase->m_data_buffer);
+
+				switch (type)
+				{
+				case 1:
+				case 2:
+				case 4:
+				case 7:
+					chainPkt.u32[1] = address + pktOffset;
+					break;
+				case 3:
+					break;
+				case 5:
+					break;
+				case 6:
+					break;
+				}
+			}
+		}
 	}
 	
 	bool CVisual::GetChainData()
 	{
 		u32 stackidx = m_stack_vid.size() - 1;
-		_word128* tag = m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
+		_word128* tag = &m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
 		m_dmaChain = &tag[1];
 		m_dmaQwc = *tag[0].u8;
 
