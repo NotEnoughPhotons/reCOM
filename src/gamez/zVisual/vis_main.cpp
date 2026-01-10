@@ -300,37 +300,44 @@ namespace zdb
 		_word128* packet = &m_chainPtr[idx];
 
 		// Check a flag? Maybe if the chain has its buffer set?
-		if (packet->u8[2] == 0)
+		if (packet->u8[2] != 0)
+			return;
+
+		// Store pointer to visual data
+		packet->u32[2] = reinterpret_cast<u32>(&vbase);
+
+		// Number of quadwords to loop over
+		u8 qwc = packet->u8[0];
+
+		for (u32 i = 1; i < qwc + 1; i++)
 		{
-			// Store pointer to visual data
-			packet->u32[2] = reinterpret_cast<u32>(&vbase);
+			_word128& chainPkt = m_chainPtr[i];
+			u8 type = chainPkt.u8[2];
 
-			// Number of quadwords to loop over
-			u8 qwc = packet->u8[0];
+			u32 pktOffset = chainPkt.u32[1];
+			u32 address = reinterpret_cast<u32>(&*buffer);
 
-			for (u32 i = 1; i < qwc + 1; i++)
+			switch (type)
 			{
-				_word128& chainPkt = m_chainPtr[i];
-				u8 type = chainPkt.u8[2];
+			case 1:
+			case 2:
+			case 4:
+			case 7:
+				chainPkt.u32[1] = address + pktOffset;
+				break;
+			case 3:
+				break;
+			case 5:
+				break;
+			case 6:
+				CTexture* texture = ResolveTextureName(&*buffer, pktOffset);
 
-				u32 pktOffset = chainPkt.u32[1];
-				u32 address = reinterpret_cast<u32>(&*vbase->m_data_buffer);
-
-				switch (type)
+				// TODO: do some DMA ref BS down here
+				if (texture)
 				{
-				case 1:
-				case 2:
-				case 4:
-				case 7:
-					chainPkt.u32[1] = address + pktOffset;
-					break;
-				case 3:
-					break;
-				case 5:
-					break;
-				case 6:
-					break;
+					
 				}
+				break;
 			}
 		}
 	}
@@ -356,11 +363,28 @@ namespace zdb
 		GetChainData();
 	}
 
-	CTexture* CVisual::ResolveTextureName(_word128* wtexture, _word128* wname)
+	CTexture* CVisual::ResolveTextureName(_word128* packet, s32 offset)
+	{
+		if (CTexHandle* handle = CWorld::GetTexHandle(reinterpret_cast<char*>(packet->u8 + offset)))
+		{
+			m_dyntexList.Add(handle, true);
+
+			if (handle->m_texture->m_palette)
+				m_dyntexList.Add(handle->m_texture->m_palette, true);
+
+			return handle->m_texture;
+		}
+		else
+			return CWorld::GetTexHandle("null_xmas.bmp")->m_texture;
+
+		return NULL;
+	}
+
+	CTexture* CVisual::ResolveTextureName(_word128* packet, _word128* offset)
 	{
 		CTexture* texture = NULL;
 
-		CTexHandle* handle = CWorld::GetTexHandle((char*)(wtexture->u8 + wname->u32[1]));
+		CTexHandle* handle = CWorld::GetTexHandle((char*)(packet->u8 + offset->u32[1]));
 
 		if (!handle)
 		{
@@ -383,11 +407,11 @@ namespace zdb
 			f32 r = texture->m_dmaRefVu.f32[1];
 			f32 g = texture->m_dmaRefVu.f32[2];
 			f32 b = texture->m_dmaRefVu.f32[3];
-			wname->u128 = texture->m_dmaRefVu.u128;
-			wname->f32[1] = r;
-			wname->f32[2] = g;
-			wname->f32[3] = b;
-			wname->u8[2] = 5;
+			offset->u128 = texture->m_dmaRefVu.u128;
+			offset->f32[1] = r;
+			offset->f32[2] = g;
+			offset->f32[3] = b;
+			offset->u8[2] = 5;
 		}
 
 		return texture;

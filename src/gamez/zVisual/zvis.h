@@ -163,7 +163,8 @@ namespace zdb
 		void Render();
 		void VuUpdate(f32 opacity);
 
-		CTexture* ResolveTextureName(_word128* wtexture, _word128* wname);
+		CTexture* ResolveTextureName(_word128* packet, s32 offset);
+		CTexture* ResolveTextureName(_word128* packet, _word128* offset);
 		
 		u32 Release();
 

@@ -62,17 +62,17 @@ namespace zdb
 
 	bool CTexture::Read(zdb::CSaveLoad& sload)
 	{
-		_word128 texGifPtrs;
+		_word128 texturePacket;
 		bool success = false;
 
 		if (zar::CKey* dataKey = sload.m_zfile.FindKey("texdat"))
 		{
-			sload.m_zfile.FetchLIP(dataKey, reinterpret_cast<void**>(&texGifPtrs));
+			success = true;
+			sload.m_zfile.FetchLIP(dataKey, reinterpret_cast<void**>(&texturePacket));
 
-			memcpy(this, &texGifPtrs, sizeof(TEXTURE_PARAMS));
-			zmalloc(96);
+			memcpy(this, &texturePacket, sizeof(TEXTURE_PARAMS));
 
-			_word128* texGifPtr = &texGifPtrs;
+			_word128* texGifPtr = &texturePacket;
 			void* bufferPtr = static_cast<void*>(&texGifPtr[1].u32[0]);
 
 			m_buffer = static_cast<void*>(bufferPtr);
@@ -103,7 +103,7 @@ namespace zdb
 			m_format = 2;
 nopal:
 		m_palID = 0;
-		return false;
+		return success;
 	}
 	
 	u16 CTexture::Release_HTEX()
@@ -189,30 +189,20 @@ nopal:
 
 	CTexHandle* CTexList::GetHandle(const char* name)
 	{
-		CTexHandle* handle = NULL;
-		
-		auto it = begin();
-
-		while (it != end())
+		for (auto i = begin(); i != end(); ++i)
 		{
-			CTexHandle* cur_handle = *it;
+			CTexHandle* cur = *i;
 
-			if (!cur_handle->m_texture || !cur_handle->m_name)
+			if (!cur->m_texture || !cur->m_name)
 			{
-				++it;
 				continue;
 			}
 
-			if (SDL_strcasecmp(cur_handle->m_name, name) == 0)
-			{
-				handle = cur_handle;
-				break;
-			}
-			
-			++it;
+			if (SDL_strcasecmp(cur->m_name, name) == 0)
+				return cur;
 		}
 
-		return handle;
+		return NULL;
 	}
 
 }
