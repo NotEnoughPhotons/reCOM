@@ -1,6 +1,8 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION
 #include "Apps/FTS/hud/hud.h"
 
+#include "GL/glew.h"
+
 #include <SDL3_image/SDL_image.h>
 
 #include "gamez/zNode/node_model.h"
@@ -19,8 +21,8 @@ CTestState::CTestState()
 
 bool CTestState::Init()
 {
-    LoadWorld("m8");
-    mdl = zdb::CWorld::m_world->FindChild("halftribuild_2", true);
+    LoadWorld("ui");
+    mdl = zdb::CWorld::m_world->GetModel("SatchelUl");
     mdl->SetActive(true);
     thePipe.m_camera = zdb::CWorld::m_world->m_camera;
     return true;
@@ -28,8 +30,27 @@ bool CTestState::Init()
 
 void CTestState::Tick(f32 dT)
 {
-    SDL_SetRenderDrawColor(theWindow->GetRenderer(), 15, 15, 15, 255);
+    // SDL_SetRenderDrawColor(theWindow->GetRenderer(), 15, 15, 15, 255);
     SDL_RenderClear(theWindow->GetRenderer());
-    thePipe.RenderNode(mdl, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
+
+    glViewport(0, 0, 1280, 960);
+    glClearColor(15, 15, 15, 255);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    for (auto i = mdl->m_child.begin(); i != mdl->m_child.end(); ++i)
+    {
+        zdb::CNode* child = *i;
+        child->SetActive(true);
+        thePipe.RenderNode(child, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
+    }
+
     SDL_RenderPresent(theWindow->GetRenderer());
+    SDL_GL_SwapWindow(theWindow->GetWindow());
+
+    SDL_Event e;
+
+    while (SDL_PollEvent(&e))
+    {
+
+    }
 }

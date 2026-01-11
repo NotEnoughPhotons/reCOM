@@ -12,14 +12,18 @@ s32 zgl_init()
 
 void zgl_shutdown()
 {
-	SDL_GL_DestroyContext(context->ctx);
-	SDL_DestroyRenderer(context->renderer);
-	SDL_DestroyWindow(context->window);
+	SDL_GL_DestroyContext(context.ctx);
+	SDL_DestroyRenderer(context.renderer);
+	SDL_DestroyWindow(context.window);
 }
 
-void zgl_set_context(zgl_context* ctx)
+void zgl_set_context(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext glContext)
 {
-	context = ctx;
+	context.ctx = glContext;
+	context.window = window;
+	context.renderer = renderer;
+
+	SDL_GL_MakeCurrent(context.window, context.ctx);
 }
 
 zgl_mesh_packet zgl_read_packet(const _word128* chain)
@@ -99,4 +103,14 @@ zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet)
 	}
 
 	return mesh;
+}
+
+void zgl_enable_ztest()
+{
+	glEnable(GL_DEPTH_TEST);
+}
+
+void zgl_disable_ztest()
+{
+	glDisable(GL_DEPTH_TEST);
 }

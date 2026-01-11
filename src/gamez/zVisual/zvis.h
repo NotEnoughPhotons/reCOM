@@ -8,6 +8,8 @@
 #include "gamez/zMath/zmath.h"
 #include "gamez/zTexture/ztex.h"
 
+#include "gamez/zRender/zrndr_gl.h"
+
 class CShader;
 class CTextureRelocMgr;
 
@@ -139,6 +141,8 @@ namespace zdb
 	class CVisual : public tag_VIS_PARAMS
 	{
 	public:
+		CVisual();
+
 		enum LOD
 		{
 			LOW,
@@ -164,6 +168,8 @@ namespace zdb
 		bool DrawLOD(CLOD_band* lod, f32 range, f32* distance);
 		void Render();
 		void VuUpdate(f32 opacity);
+
+		void SetupShaders();
 
 		CTexture* ResolveTextureName(_word128* packet, s32 offset);
 		CTexture* ResolveTextureName(_word128* packet, _word128* offset);
@@ -236,11 +242,16 @@ namespace zdb
 
 		u32 m_vbo;
 		u32 m_vao;
+		u32 m_ebo;
+
+		zgl_mesh m_mesh;
 	};
 
 	class CMesh : public CVisual
 	{
 	public:
+		CMesh();
+
 		void SetMeshTextureSelects(_word128* wtexture, _word128* wname);
 		
 		u32 m_mtx_count;

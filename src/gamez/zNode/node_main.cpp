@@ -469,7 +469,7 @@ namespace zdb
 				return *i;
 		}
 
-		if (!child && nested)
+		if (nested)
 		{
 			for (auto i = m_child.begin(); i != m_child.end(); i++)
 			{

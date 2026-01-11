@@ -16,6 +16,7 @@ CWindow::CWindow()
 	m_height = 0;
 	m_window = NULL;
 	m_renderer = NULL;
+	m_context = NULL;
 }
 
 CWindow::CWindow(CRdrFile* reader)
@@ -38,21 +39,15 @@ CWindow::CWindow(CRdrFile* reader)
 			char* flag = window_flags_tag->array[i].string;
 
 			if (SDL_strcasecmp(flag, "FULLSCREEN") == 0)
-			{
 				window_flags |= SDL_WINDOW_FULLSCREEN;
-			}
 			else if (SDL_strcasecmp(flag, "BORDERLESS") == 0)
-			{
 				window_flags |= SDL_WINDOW_BORDERLESS;
-			}
 			else if (SDL_strcasecmp(flag, "MINIMIZED") == 0)
-			{
 				window_flags |= SDL_WINDOW_MINIMIZED;
-			}
 			else if (SDL_strcasecmp(flag, "MAXIMIZED") == 0)
-			{
 				window_flags |= SDL_WINDOW_MAXIMIZED;
-			}
+			else if (SDL_strcasecmp(flag, "OPENGL") == 0)
+				window_flags |= SDL_WINDOW_OPENGL;
 		}
 	}
 	
@@ -77,7 +72,7 @@ CWindow::CWindow(CRdrFile* reader)
 
 	if ((SDL_GetWindowFlags(m_window) & SDL_WINDOW_OPENGL) != 0)
 	{
-		SDL_GL_CreateContext(m_window);
+		m_context = SDL_GL_CreateContext(m_window);
 	}
 	
 	zrdr_free(reader);
@@ -109,4 +104,9 @@ SDL_Window* CWindow::GetWindow() const
 SDL_Renderer* CWindow::GetRenderer() const
 {
 	return m_renderer;
+}
+
+SDL_GLContext CWindow::GetContext() const
+{
+	return m_context;
 }

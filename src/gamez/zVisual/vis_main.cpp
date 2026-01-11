@@ -1,16 +1,17 @@
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "zvis.h"
 
 #include "gamez/zArchive/zar.h"
-
 #include "gamez/zAssetLib/assetlib_vector.h"
-
+#include "gamez/zCamera/zcam.h"
 #include "gamez/zNode/znode.h"
 #include "gamez/zNode/node_assetlib.h"
 #include "gamez/zNode/node_model.h"
 #include "gamez/zNode/node_world.h"
-
 #include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zShader/zshader.h"
@@ -229,6 +230,14 @@ namespace zdb
 		}
 	}
 
+	CVisual::CVisual() : m_mesh()
+	{
+		m_lodIndex = 0;
+		m_shader = new CShader();
+
+		SetupShaders();
+	}
+
 	CVisual* CVisual::Create(zar::CZAR& archive)
 	{
 		CVisual* visual = NULL;
@@ -351,6 +360,42 @@ namespace zdb
 				break;
 			}
 		}
+
+		zgl_mesh_packet meshPkt = zgl_read_packet(m_chainPtr);
+		m_mesh = zgl_convert_mesh_packet(&meshPkt);
+
+		glGenVertexArrays(1, &m_vao);
+		glGenBuffers(1, &m_vbo);
+		glGenBuffers(1, &m_ebo);
+
+		glBindVertexArray(m_vao);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vao);
+		glBufferData(GL_ARRAY_BUFFER, m_mesh.vertex_count * (sizeof(f32) * 3), &m_mesh.vertices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_mesh.index_count * sizeof(u32), &m_mesh.indices[0], GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)0);
+		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, y)));
+		//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, z)));
+
+		glEnableVertexAttribArray(0);
+		//glEnableVertexAttribArray(1);
+		//glEnableVertexAttribArray(2);
+	}
+
+	void CVisual::SetupShaders()
+	{
+		// m_shader->Destroy();
+
+		char buf[256];
+		sprintf_s(buf, 256, "data/shaders/%s.vertex", "standard");
+		m_shader->LoadVertexShader(buf);
+		memset(buf, 0, 256);
+		sprintf_s(buf, 256, "data/shaders/%s.fragment", "standard");
+		m_shader->LoadFragmentShader(buf);
+		memset(buf, 0, 256);
+
+		m_shader->Create();
 	}
 	
 	bool CVisual::GetChainData()
@@ -371,7 +416,31 @@ namespace zdb
 
 	void CVisual::VuUpdate(f32 opacity)
 	{
+		m_shader->Use();
+
+		CMatrix model = CMatrix::identity;
+		CMatrix camera = CMatrix::identity;
+
+		model.m_matrix[3][0] = -2.0f;
+		camera.m_matrix[3][2] = -10.0f;
+
+		m_shader->SetMat4("model", model);
+		m_shader->SetMat4("view", camera);
+
+		f32 aspect = 1280 / 960;
+		f32 fov = glm::radians(90.0f);
+
+		// Doing this for now until I extend the matrix library.
+		glm::mat4x4 proj = glm::perspective(fov, aspect, 0.01f, 10000.0f);
+		CMatrix projMat = reinterpret_cast<CMatrix&>(proj);
+		// projMat.m_matrix[3][3] = 1.0f;
+
+		m_shader->SetMat4("projection", projMat);
+
 		GetChainData();
+		glBindVertexArray(m_vao);
+		glDrawElements(GL_TRIANGLE_STRIP, m_mesh.index_count, GL_UNSIGNED_INT, NULL);
+		glBindVertexArray(0);
 	}
 
 	CTexture* CVisual::ResolveTextureName(_word128* packet, s32 offset)

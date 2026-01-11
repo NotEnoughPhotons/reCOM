@@ -318,8 +318,8 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 				lod = NULL;
 			else
 			{
-				if (index <= m_world->m_LOD_Object.size())
-					lod = m_world->m_LOD_Object[index];
+				//if (index <= m_world->m_LOD_Object.size())
+					//lod = m_world->m_LOD_Object[index];
 			}
 
 			if (!lod || visual->DrawLOD(lod, scaledRange, &opacity))

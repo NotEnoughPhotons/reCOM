@@ -3,7 +3,11 @@
 
 #include "zshader.h"
 
+#include "gamez/zMath/zmath.h"
+
 #include <GL\glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <SDL3/SDL.h>
@@ -64,7 +68,7 @@ bool CShader::LoadVertexShader(const char* path)
 
     buf << file.rdbuf();
 
-    m_vsSource = _strdup(buf.str().c_str());
+    m_vsSource = zstrdup(buf.str().c_str());
 
     m_vsHandle = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(m_vsHandle, 1, &m_vsSource, nullptr);
@@ -93,7 +97,7 @@ bool CShader::LoadFragmentShader(const char* path)
 
     buf << file.rdbuf();
 
-    m_fsSource = _strdup(buf.str().c_str());
+    m_fsSource = zstrdup(buf.str().c_str());
 
     m_fsHandle = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(m_fsHandle, 1, &m_fsSource, nullptr);
@@ -123,28 +127,29 @@ void CShader::SetFloat(const char* name, f32 value)
     glUniform1f(location, value);
 }
 
-void CShader::SetVec2(const char* name, glm::vec2 value)
+void CShader::SetVec2(const char* name, PNT2D value)
 {
     s32 location = glGetUniformLocation(m_program, name);
     glUniform2f(location, value.x, value.y);
 }
 
-void CShader::SetVec3(const char* name, glm::vec3 value)
+void CShader::SetVec3(const char* name, PNT3D value)
 {
     s32 location = glGetUniformLocation(m_program, name);
     glUniform3f(location, value.x, value.y, value.z);
 }
 
-void CShader::SetVec4(const char* name, glm::vec4 value)
+void CShader::SetVec4(const char* name, PNT4D value)
 {
     s32 location = glGetUniformLocation(m_program, name);
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
-void CShader::SetMat4(const char* name, glm::mat4x4 value)
+void CShader::SetMat4(const char* name, CMatrix value)
 {
     s32 location = glGetUniformLocation(m_program, name);
-    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+    glm::mat4x4 mat = reinterpret_cast<glm::mat4x4&>(value.m_matrix);
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void CShader::SetTexture(const char* name, u32 texture)

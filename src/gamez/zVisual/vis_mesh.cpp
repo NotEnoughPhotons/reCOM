@@ -25,6 +25,11 @@ namespace zdb
         }
     }
 
+    CMesh::CMesh()
+    {
+
+    }
+
     CSubMesh::CSubMesh()
     {
 

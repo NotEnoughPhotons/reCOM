@@ -21,8 +21,5 @@ uniform samplerCube envMap;
 
 void main()
 {
-	vec3 norm = normalize(normal);
-	vec3 dir = normalize(lightPos - fragpos);
-	float diff = max(dot(norm, dir), 0.0);
-	FragColor = vec4(1.0 * diff);
+	FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

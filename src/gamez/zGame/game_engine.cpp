@@ -21,6 +21,8 @@ bool CGame::StartEngine()
 	// zdb::CTextureFX::Init();
 	CValve::Init();
 	zVid_Init(ZVID_MODE_NTSC);
+	zgl_init();
+	zgl_set_context(theWindow->GetWindow(), theWindow->GetRenderer(), theWindow->GetContext());
 	zdb::CTexture::Init();
 	C2D::Init();
 	zdb::CWorld::Init();

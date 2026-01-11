@@ -92,6 +92,7 @@ public:
 	
 	SDL_Window* GetWindow() const;
 	SDL_Renderer* GetRenderer() const;
+	SDL_GLContext GetContext() const;
 
 	f32 GetWidth() const { return m_width; }
 	f32 GetHeight() const { return m_height; }
@@ -102,6 +103,7 @@ private:
 
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
+	SDL_GLContext m_context;
 };
 
 class CVideo

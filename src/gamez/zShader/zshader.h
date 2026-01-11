@@ -1,6 +1,7 @@
 #ifndef ZSHADER_H
 #define ZSHADER_H
 #include "gamez/zSystem/zsys.h"
+#include "gamez/zMath/zmath.h"
 
 #include "vector"
 
@@ -33,10 +34,10 @@ public:
     void SetInt(const char*, s32);
     void SetInt(const char*, u32);
     void SetFloat(const char*, f32);
-    void SetVec2(const char*, glm::vec2);
-    void SetVec3(const char*, glm::vec3);
-    void SetVec4(const char*, glm::vec4);
-    void SetMat4(const char*, glm::mat4x4);
+    void SetVec2(const char*, PNT2D);
+    void SetVec3(const char*, PNT3D);
+    void SetVec4(const char*, PNT4D);
+    void SetMat4(const char*, CMatrix);
     void SetTexture(const char*, u32);
     void SetCubemap(const char*, u32);
 

@@ -2,8 +2,8 @@ settings (
     window_settings (
         width ( 1280 )
         height ( 960 )
-        window_flags ( WINDOWED )
-        init_flags ( VIDEO AUDIO GAMEPAD JOYSTICK )
+        window_flags ( WINDOWED OPENGL )
+        init_flags ( VIDEO AUDIO  GAMEPAD JOYSTICK )
     )
     
     game_specific_settings (

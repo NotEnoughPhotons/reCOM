@@ -41,7 +41,7 @@
 #include "gamez/zSystem/zsys_primitive.h"
 
 typedef struct {
-	SDL_GLContext& ctx;
+	SDL_GLContext ctx;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 } zgl_context;
@@ -99,12 +99,12 @@ typedef struct {
 	zgl_index* indices;
 } zgl_mesh;
 
-static zgl_context* context;
+static zgl_context context;
 
 extern s32 zgl_init();
 extern void zgl_shutdown();
 
-extern void zgl_set_context(zgl_context* ctx);
+extern void zgl_set_context(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context);
 
 extern void zgl_enable_ztest();
 extern void zgl_disable_ztest();

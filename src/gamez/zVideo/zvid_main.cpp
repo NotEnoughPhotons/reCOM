@@ -4,6 +4,7 @@
 #include "zvid.h"
 #include "Apps/FTS/gamever.h"
 
+#include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zValve/zvalve.h"
 
@@ -41,6 +42,9 @@ void zVid_Init(_zvid_mode mode)
 	{
 		zVid_Assert(glewInit() == GLEW_OK, LONG_MAX, __FILE__, __LINE__);
 	}
+
+	zgl_enable_ztest();
+
 }
 
 void zVid_Open()
