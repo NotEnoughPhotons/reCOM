@@ -1,19 +1,21 @@
 ﻿#include "zrender.h"
 
+#include "gamez/zMath/zmath_vu.h"
+
 CMatrix* CStack::m_pointer = NULL;
 CMatrix* CStack::m_top = NULL;
 
-CMatrix* CStack::Multiply(const CMatrix* matrix, bool other)
+CMatrix* CStack::Multiply(CMatrix* matrix, bool other)
 {
 	CMatrix m = *m_top;
 	if (other)
 	{
 		m_top++;
 		m_pointer++;
-		// vu0MulMatrix(m_top->m_matrix, m->m_matrix, matrix->m_matrix);
+		zMathMulMatrix(m_top, &m, matrix);
 	}
 	else
-		// vu0MulMatrix(m_top->m_matrix, m_top->m_matrix, matrix->m_matrix);
+		zMathMulMatrix(m_top, m_top, matrix);
 
 	return m_top;
 }

@@ -85,7 +85,7 @@ struct BLENDMODE
 class CStack
 {
 public:
-	static CMatrix* Multiply(const CMatrix* matrix, bool other);
+	static CMatrix* Multiply(CMatrix* matrix, bool other);
 	
 	static CMatrix* m_top;
 	static CMatrix* m_pointer;
@@ -122,7 +122,7 @@ public:
 	static void Init();
 
 	void RenderAtom(zdb::CNode* atomNode);
-	void RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV* fovTag);
+	void RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV fov);
 	void RenderUiNode(zdb::CNode* node);
 	void RenderUiNodeRecursive(zdb::CNode* node);
 	bool RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov);

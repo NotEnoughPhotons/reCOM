@@ -179,10 +179,13 @@ namespace zdb
 
 		f32 GetScaledRangeSquared(const CPnt3D& point) { return 0.0f; }
 
+		bool CanSeeRegion(u32 mask);
+
 		void SetHalfHorizontalFOVRadians(f32 radians);
 		void SetFarClip(f32 farclip);
 		
 		static bool m_dynamics_controlled;
+		static bool m_do_region_test;
 		
 		f32 m_Zmin;
 		f32 m_Zmax;

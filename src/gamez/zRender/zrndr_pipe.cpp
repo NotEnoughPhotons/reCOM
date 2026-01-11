@@ -4,6 +4,7 @@
 #include "gamez/zNode/node_world.h"
 #include "gamez/zGrid/zgrid.h"
 #include "gamez/zSystem/zsys_bench.h"
+#include "gamez/zMath/zmath_vu.h"
 #include "gamez/zVisual/zvis.h"
 #include "gamez/zVideo/zvid.h"
 
@@ -22,6 +23,123 @@ void BuildNodeLocalLightList(zdb::CNode* node, zdb::CNode* light)
 void CPipe::RenderAtom(zdb::CNode* atomNode)
 {
 	m_node = atomNode;
+}
+
+void CPipe::RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
+{
+	bool doAlpha = false;
+
+	if (!node->m_active)
+		return;
+
+	if (!node->m_hasVisuals)
+		return;
+
+	if (!m_camera->CanSeeRegion(node->m_region_mask))
+		return;
+
+	CBench::countNodes++;
+
+	CMatrix nodeTransform = *stack.Multiply(&node->m_matrix, true);
+
+	// Take care of any nodes in the frustum
+	if (fov != zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN)
+	{
+		CBBox* bbox = NULL;
+
+		PNT4D bboxtransform;
+		PNT3D bboxmin;
+		PNT3D bboxmax;
+
+		PNT4D mx = reinterpret_cast<PNT4D&>(nodeTransform.m_matrix[0]);
+		PNT4D my = reinterpret_cast<PNT4D&>(nodeTransform.m_matrix[1]);
+		PNT4D mz = reinterpret_cast<PNT4D&>(nodeTransform.m_matrix[2]);
+		PNT4D mw = reinterpret_cast<PNT4D&>(nodeTransform.m_matrix[3]);
+
+		if (node->m_use_parent_bbox)
+			bbox = node->m_parent->GetBBox();
+		else
+			bbox = &node->m_bbox;
+
+		bboxmin = bbox->m_min;
+		bboxmax = bbox->m_max;
+
+		bboxtransform.w = 1.0f;
+		bboxtransform.x = bboxmin.x;
+		bboxtransform.y = bboxmin.y;
+		bboxtransform.z = bboxmax.z;
+
+		// TODO: do bbox transform math here
+		for (u32 i = 8; i > 0; i--)
+		{
+
+		}
+	}
+
+	if (node->m_mtx_is_identity && !m_drawCharacters)
+	{
+		node->m_mtx_is_identity = false;
+		CStack::m_pointer--;
+		CStack::m_top--;
+	}
+	else
+	{
+		u32 vid = zdb::CVisual::m_stack_vid[node->m_vid];
+
+		// Add node to opacity stack
+		if (node->m_Opacity < 0.99f)
+		{
+			m_opacity_stack++;
+			if (m_opacity_stack_index == m_opacity_stack_size)
+			{
+				// Extend stack
+				m_opacity_stack = static_cast<f32*>(zrealloc(m_opacity_stack, (m_opacity_stack_size + 1) * 4));
+				m_opacity_stack_size++;
+			}
+
+			doAlpha = true;
+			m_opacity_stack[m_opacity_stack_index] *= node->m_Opacity;
+		}
+
+		if (node->m_facade)
+			// Compute sprite billboard for this node
+			node->ComputeFacadeMatrix(&m_camera->m_matrix, &nodeTransform);
+
+		if (node->m_visual.size() != 0)
+		{
+			if (!m_LODFilter)
+				RenderVisual(node, fov);
+			else if (!RenderVisual(node, fov))
+			{
+				CStack::m_pointer--;
+				CStack::m_top--;
+
+				if (doAlpha)
+					m_opacity_stack_index--;
+
+				zdb::CVisual::m_stack_vid.pop_back();
+				return;
+			}
+		}
+
+		for (auto i = node->m_child.begin(); i != node->m_child.end(); ++i)
+		{
+			zdb::CNode* child = *i;
+
+			if (!child->m_hasMesh)
+				RenderNode(child, fov);
+			else
+				RenderMesh(child, NULL, NULL, zdb::tag_ZVIS_FOV::ZVIS_FOV_CLIP);
+		}
+
+		CStack::m_pointer--;
+		CStack::m_top--;
+
+		if (doAlpha)
+			m_opacity_stack_index--;
+
+		zdb::CVisual::m_stack_vid.pop_back();
+	}
 }
 
 u32 CPipe::RenderWorld(zdb::CWorld* world)
@@ -167,7 +285,7 @@ void CPipe::RenderUiNode(zdb::CNode* node)
 {
 	CStack::m_top++;
 	CStack::m_pointer++;
-	// vu0CopyMatrix(CStack::m_top->m_matrix, CMatrix::identity.m_matrix);
+	zMathCopyMatrix(CStack::m_top, &CMatrix::identity);
 	RenderUiNodeRecursive(node);
 	CStack::m_pointer--;
 	CStack::m_top--;

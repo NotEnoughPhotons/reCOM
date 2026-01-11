@@ -167,6 +167,11 @@ namespace zdb
 		return 0;
 	}
 
+	void CNode::ComputeFacadeMatrix(const CMatrix* matrix, CMatrix* model)
+	{
+
+	}
+
 	CNode* CNode::Copy() const
 	{
 		return _Copy(NULL);

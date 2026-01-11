@@ -7,6 +7,7 @@
 namespace zdb
 {
 	bool CCamera::m_dynamics_controlled = true;
+	bool CCamera::m_do_region_test = true;
 	
 	CCamera::CCamera() : CNode()
 	{
@@ -101,6 +102,17 @@ namespace zdb
 	bool CCamera::CmdTickParams(_zanim_cmd_hdr* header, f32* dT)
 	{
 		return true;
+	}
+
+	bool CCamera::CanSeeRegion(u32 mask)
+	{
+		if (!mask)
+			mask = 1;
+
+		if (m_do_region_test && (m_SeeRegions & mask) != 0)
+			return true;
+
+		return false;
 	}
 
 	void CCamera::SetHalfHorizontalFOVRadians(f32 radians)

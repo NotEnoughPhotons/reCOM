@@ -195,6 +195,8 @@ namespace zdb
 		
 		s32 DeleteVisuals();
 
+		void ComputeFacadeMatrix(const CMatrix* view, CMatrix* model);
+
 		void SetParentHasVisuals();
 		void SetDynamicLight(bool self_light, bool apply_to_children);
 
