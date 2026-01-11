@@ -12,10 +12,7 @@ const CPnt3D CPnt3D::zero = { 0.0f, 0.0f, 0.0f };
 const CPnt3D CPnt3D::unit_nz = { 0.0f, 0.0f, 0.0f };
 const CPnt4D CPnt4D::zero = { 0.0f, 0.0f, 0.0f, 0.0f };
 const CQuat CQuat::identity = { CPnt3D(1.0f, 0.0f, 0.0f), 0.0f };
-const CMatrix CMatrix::identity =
-	{
-		{ 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f }
-	};
+const CMatrix CMatrix::identity = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
 
 void init_trig_table()
 {
