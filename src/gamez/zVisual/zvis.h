@@ -2,6 +2,8 @@
 #define ZVISUAL_H
 #include <deque>
 
+#include "vis_vector.h"
+
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zTexture/ztex.h"
@@ -188,8 +190,10 @@ namespace zdb
 		static bool m_applyLocalLights;
 		static bool m_applyMultipass;
 		static bool m_applyShadow;
+		static bool m_renderMap;
 		static bool m_fogEnable;
 		static bool m_lightingEnable;
+		static bool m_landmarkFlag;
 
 		static CMatrix m_modelToWorld;
 		static CMatrix m_WorldToModel;
@@ -244,12 +248,25 @@ namespace zdb
 
 	class CSubMesh : public CMesh
 	{
-
+	public:
+		CSubMesh(CMesh* mesh);
+	
+		bool field4_0x4;
+		u32 field14_0x1c;
+		u32 m_matrix_id;
+		CMesh* m_mesh;
 	};
 
 	class CDecal : public CVisual
 	{
+	public:
+		static CDecalPool m_tempPool;
+	};
 
+	class CMeshDecal : public CDecal
+	{
+	public:
+		static CMeshDecalPool m_tempPool;
 	};
 
 	class C2DVisual : public CVisual
@@ -257,12 +274,6 @@ namespace zdb
 	public:
 		C2D* m_node2d;
 		CTextureRelocMgr* m_reloc;
-	};
-
-	class CVisualVector : public std::vector<CVisual*>
-	{
-	public:
-		bool Exists(const CVisual* visual);
 	};
 }
 #endif

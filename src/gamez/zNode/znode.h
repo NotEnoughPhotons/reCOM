@@ -164,8 +164,8 @@ namespace zdb
 		static CNode* Read(CSaveLoad& sload, CNode* node);
 		virtual bool Read(CSaveLoad& sload);
 		bool ReadDataBegin(CSaveLoad& sload);
-		CNode* Copy() const;
-		CNode* _Copy(CNode* other) const;
+		CNode* Copy();
+		CNode* _Copy(CNode* other);
 		bool Delete();
 		
 		void AddChild(CNode* child);

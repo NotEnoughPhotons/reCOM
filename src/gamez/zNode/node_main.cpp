@@ -10,8 +10,13 @@
 #include "gamez/zVisual/zvis.h"
 #include "gamez/zUtil/zutil.h"
 
+extern char* UNNAMED_NODE = "UNNAMED_NODE";
+extern char* DELETED_NODE = "DELETED_NODE";
+
 namespace zdb
 {
+	static CMesh* last_mesh = NULL;
+
 	u32 numNodes = 0;
 
 	u32 CGrid::N_ATOMS = 0;
@@ -172,15 +177,166 @@ namespace zdb
 
 	}
 
-	CNode* CNode::Copy() const
+	CNode* CNode::Copy()
 	{
 		return _Copy(NULL);
 	}
 
 	// TODO: Implement this function
-	CNode* CNode::_Copy(CNode* other) const
+	CNode* CNode::_Copy(CNode* other)
 	{
-		return NULL;
+		if (!other)
+			other = new CNode();
+		else
+		{
+			InitNodeParams(other, this);
+
+			if (other->m_name && other->m_name != UNNAMED_NODE)
+				zfree(other->m_name);
+
+			if (!m_name)
+				m_name = UNNAMED_NODE;
+			else
+				other->m_name = zstrdup(m_name);
+
+			other->m_Opacity = m_Opacity;
+
+			if (other->m_modelname)
+			{
+				zfree(other->m_modelname);
+				other->m_modelname = NULL;
+			}
+
+			if (other->m_name)
+				m_name = zstrdup(other->m_name);
+
+			other->m_modelname = m_name;
+			other->SetModel(m_model);
+			other->m_modified = true;
+			other->m_region_mask = m_region_mask;
+		}
+
+		other->m_visual.reserve(m_visual.size());
+
+		for (u32 i = 0; i < m_visual.size(); i++)
+		{
+			CVisual* visual = m_visual[i];
+			CMesh* mesh = static_cast<CMesh*>(visual);
+			CSubMesh* submesh = static_cast<CSubMesh*>(mesh);
+
+			if (!visual->m_has_lods)
+				mesh = NULL;
+
+			if (!mesh)
+			{
+				if (!submesh)
+				{
+					if (visual && !other->m_visual.Exists(visual))
+					{
+						visual->m_instance_cnt++;
+						other->m_visual.insert(other->m_visual.begin(), visual);
+
+						if (visual->m_field1)
+							other->m_hasMesh = true;
+
+						if (visual->m_has_lods)
+							other->m_hasVisuals = true;
+
+						other->SetParentHasVisuals();
+					}
+
+					last_mesh = NULL;
+				}
+				else
+				{
+					CSubMesh* lastSubmesh = new CSubMesh(last_mesh);
+
+					lastSubmesh->m_matrix_id = submesh->m_matrix_id;
+
+					if (!other->m_visual.Exists(lastSubmesh))
+					{
+						lastSubmesh->m_instance_cnt++;
+						other->m_visual.insert(other->m_visual.begin(), lastSubmesh);
+
+						if (lastSubmesh->m_field1)
+							other->m_hasMesh = true;
+
+						if (lastSubmesh->m_has_lods)
+							other->m_hasVisuals = true;
+
+						other->SetParentHasVisuals();
+					}
+				}
+			}
+			else
+			{
+				// TODO: Clone mesh and add to other visual list
+			}
+		}
+
+		// TODO: DI copying goes here
+
+		other->ReserveChildren(m_child.size());
+
+		for (u32 i = 0; i < m_child.size(); i++)
+		{
+			CNode* child = m_child[i];
+			CNode* instance = child;
+
+			if (child->m_type != static_cast<u32>(TYPE::NODE_TYPE_INSTANCE))
+				instance = NULL;
+
+			if (!instance)
+				instance = child->_Copy(NULL);
+			else
+			{
+				CPnt3D position;
+				CQuat rotation;
+
+				child->m_matrix.ToQuat(&rotation);
+
+				position.x = child->m_matrix.m_matrix[3][0];
+				position.y = child->m_matrix.m_matrix[3][1];
+				position.z = child->m_matrix.m_matrix[3][2];
+
+				instance = CreateInstance(m_model, &position, &rotation);
+
+				if (instance)
+				{
+					InitNodeParams(instance, child);
+
+					if (instance->m_name && instance->m_name != UNNAMED_NODE)
+						zfree(instance->m_name);
+
+					if (!child->m_name)
+						m_name = UNNAMED_NODE;
+					else
+						instance->m_name = zstrdup(m_name);
+
+					instance->m_Opacity = m_Opacity;
+
+					if (instance->m_modelname)
+					{
+						zfree(instance->m_modelname);
+						instance->m_modelname = NULL;
+					}
+
+					if (instance->m_name)
+						m_name = zstrdup(instance->m_name);
+
+					instance->m_modelname = m_name;
+					instance->SetModel(m_model);
+					instance->m_modified = true;
+					instance->m_region_mask = m_region_mask;
+
+				}
+
+				if (instance)
+					other->AddChild(instance);
+			}
+		}
+
+		return other;
 	}
 
 	bool CNode::Delete()
