@@ -11,6 +11,11 @@
 f32 lastRenderTime = 0.0f;
 f32 curRenderTime = 0.0f;
 
+void zVid_FrameRestore()
+{
+
+}
+
 void zVid_Swap(bool doSwap)
 {
 	lastRenderTime = 0.0f;

@@ -28,14 +28,14 @@ void CPnt3D::Normalize(CPnt3D* other)
 	}
 }
 
-void CPnt3D::Add(const CPnt3D* other, CPnt3D* out)
+void CPnt3D::Add(CPnt3D* other, CPnt3D* out)
 {
 	out->x = x + other->x;
 	out->y = y + other->y;
 	out->z = z + other->z;
 }
 
-void CPnt3D::Sub(const CPnt3D* other, CPnt3D* out)
+void CPnt3D::Sub(CPnt3D* other, CPnt3D* out)
 {
 	out->x = x - other->x;
 	out->y = y - other->y;

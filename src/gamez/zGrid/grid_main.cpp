@@ -6,7 +6,7 @@
 
 namespace zdb
 {
-    CCell::CCell(const CPnt3D* origin, f32 offset)
+    CCell::CCell(CPnt3D* origin, f32 offset)
     {
         CPnt3D boxextents;
         

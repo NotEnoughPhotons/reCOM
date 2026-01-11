@@ -18,7 +18,7 @@ namespace zdb
 	public:
 		CRenderMap(CNode*, tag_render_map_type, CTexture*);
 
-		void Update();
+		void Update() {}
 	};
 }
 #endif

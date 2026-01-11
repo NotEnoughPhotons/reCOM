@@ -120,7 +120,7 @@ void CZProjectile::PreFireProjectile()
 }
 
 bool CZProjectile::SetProjectile(zdb::CNode* owner, CZWeapon* weapon, CZAmmo* ammo,
-	const CPnt3D& startpos, CPnt3D& velscale, const CPnt3D& vel,
+	const CPnt3D& startpos, CPnt3D& velscale, CPnt3D& vel,
 	s32 id, zdb::CModel* model, f32 time, f32 removal_time)
 {
 	m_weapon = weapon;

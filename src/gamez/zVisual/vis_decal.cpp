@@ -2,6 +2,9 @@
 
 namespace zdb
 {
+    CDecalPool CDecal::m_tempPool;
+    CMeshDecalPool CMeshDecal::m_tempPool;
+
     void CVisual::ApplyDecal(CDecal* decal)
     {
         CDecal* applied = NULL;
@@ -23,4 +26,15 @@ namespace zdb
         }
     }
 
+    // TODO: Implement this function
+    void CDecalPool::RecycleTick()
+    {
+
+    }
+
+    // TODO: Implement this function
+    void CMeshDecalPool::RecycleTick()
+    {
+
+    }
 }

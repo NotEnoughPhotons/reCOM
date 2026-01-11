@@ -1,6 +1,7 @@
 #include "zrender.h"
 #include "gamez/zCamera/zcam.h"
 #include "gamez/zNode/znode.h"
+#include "gamez/zNode/node_shadow.h"
 #include "gamez/zNode/node_world.h"
 #include "gamez/zGrid/zgrid.h"
 #include "gamez/zSystem/zsys_bench.h"
@@ -84,7 +85,7 @@ void CPipe::RenderNode(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 	}
 	else
 	{
-		u32 vid = zdb::CVisual::m_stack_vid[node->m_vid];
+		zdb::CVisual::m_stack_vid.push_back(node->m_vid);
 
 		// Add node to opacity stack
 		if (node->m_Opacity < 0.99f)
@@ -146,30 +147,83 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 {
 	numCharactersRendered = 0;
 	
+	// TODO: get register value REG_RCNT0_COUNT
+	// and substitute here
+	CBench::drawTimeX = zSys.timerScale;
+
+	m_texLoadIdx = 0;
+	m_texIntIdx = 0;
+
 	zVid_ClearColor(120.0f, 0.0f, 0.0f);
 
-	// zdb::CDecal::m_tempPool.RecycleTick();
-	// zdb::CMeshDecal::m_tempPool.RecycleTick();
+	zdb::CDecal::m_tempPool.RecycleTick();
+	zdb::CMeshDecal::m_tempPool.RecycleTick();
 
 	m_polys = false;
 	m_world = world;
 
-	// CStack::m_top++;
-	// CStack::m_pointer++;
-	// *CStack::m_top = CMatrix::identity;
+	CStack::m_top++;
+	CStack::m_pointer++;
+	*CStack::m_top = CMatrix::identity;
+	zMathCopyMatrix(CStack::m_top, &CMatrix::identity);
+
+	zdb::CVisual::m_stack_vid.push_back(0);
 
 	world->Update();
 	zdb::CVisual::AlphaEnable(false);
+	m_drawCharacters = true;
 
-	m_drawCharacters = false;
+	if (world->m_shadows.size() != 0)
+	{
+		zdb::CVisual::m_applyShadow = false;
+		zdb::CVisual::m_renderMap = true;
+		zdb::CVisual::m_lightingEnable = false;
+		zdb::CVisual::m_fogEnable = false;
+
+		for (auto i = world->m_shadows.begin(); i != world->m_shadows.end(); ++i)
+		{
+			zdb::CRenderMap* shadow = *i;
+
+			m_node = shadow;
+			shadow->Update();
+
+			// if (!shadow->m_hasMesh)
+				// RenderNodeShadow();
+			// else
+				// RenderMeshShadow();
+		}
+
+		zdb::CVisual::m_renderMap = false;
+		zVid_FrameRestore();
+	}
 
 	m_alpha.m_camera = m_camera;
 	m_drawCharacters = false;
 
 	zdb::CVisual::m_adjustBilinearRange = bilinearDistance;
 
-	zdb::CGridAtom* atom = world->m_grid->StartTraversalOrdered();
-	
+	if (world->m_landmarks.size() != 0)
+	{
+		zdb::CVisual::LandmarkEnable(true);
+
+		for (auto i = world->m_landmarks.begin(); i != world->m_landmarks.end(); ++i)
+		{
+			zdb::CNode* landmark = *i;
+
+			if (landmark->m_landmark)
+			{
+				f32 radius = landmark->GetRadius();
+				m_doFog = m_camera->TestLandmarkFOG((CPnt3D*)(landmark->m_matrix.m_matrix[3]), radius);
+			}
+
+			RenderNode(m_node, zdb::tag_ZVIS_FOV::ZVIS_FOV_CLIP);
+		}
+
+		zdb::CVisual::LandmarkEnable(false);
+	}
+
+	m_drawCharacters = true;
+
 	return 1;
 }
 
@@ -185,7 +239,7 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 		zdb::CVisual* visual = node->m_visual[i];
 
 		// Does this visual contain LODs?
-		if (visual->m_useLOD)
+		if (!visual->m_lodIndex)
 		{
 			CPnt3D position;
 
@@ -197,10 +251,10 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 
 			if (visual->m_detail_cnt != 0)
 			{
-				// Transform the LOD mesh around the position of the visual instance.
+				// Transform the visual around the center..
 				CStack::m_top->Transform(&visual->m_centroid, 1);
 
-				// Determine the LOD mesh to use based upon distance from the camera.
+				// Determine the visual to use based upon distance from the camera.
 				zdb::CVisual::m_rangeSqdToCamera = m_camera->GetScaledRangeSquared(position);
 				zdb::CVisual::m_applyDetailTexture = false;
 
@@ -257,7 +311,7 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 			CPnt3D pos(mat.m_matrix[0][3], mat.m_matrix[1][3], mat.m_matrix[2][3]);
 			f32 scaledRange = m_camera->GetScaledRangeSquared(pos);
 
-			u32 index = visual->m_useLOD;
+			u32 index = visual->m_lodIndex;
 			zdb::CLOD_band* lod = NULL;
 
 			if (!index)
@@ -268,11 +322,9 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 					lod = m_world->m_LOD_Object[index];
 			}
 
-			if (!lod)
-				visual->DrawLOD(lod, scaledRange, &opacity);
-
-			if (m_LODFilter)
-				return false;
+			if (!lod || visual->DrawLOD(lod, scaledRange, &opacity))
+				if (m_LODFilter)
+					return false;
 		}
 	}
 

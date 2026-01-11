@@ -25,6 +25,11 @@ namespace zdb
         }
     }
 
+    CSubMesh::CSubMesh()
+    {
+
+    }
+
     CSubMesh::CSubMesh(CMesh* mesh)
     {
         field4_0x4 = true;

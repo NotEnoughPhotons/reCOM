@@ -30,6 +30,10 @@ extern char* SetDatabase(const char* db)
 
 extern bool LoadWorld(const char* name)
 {
+#if DEBUG
+	SDL_Log("[GameZ] - Loading world %s", name);
+#endif
+
 	char strbuf[1024];
 	zdb::CNodeUniverse* universe = zdb::NodeUniverse;
 
@@ -66,8 +70,15 @@ extern bool LoadWorld(const char* name)
 			{
 				if (!library->m_models.empty())
 				{
+
+
 					for (u32 j = 0; j != library->m_models.size(); j++)
+					{
+#if DEBUG
+						SDL_Log("[GameZ] - Hooking up visuals for model %s", library->m_models[j]->m_name);
+#endif
 						hookupVisuals(&archive, library->m_models[j]);
+					}
 
 					library->m_model_buffer = archive.ReleaseDataBuffer();
 				}

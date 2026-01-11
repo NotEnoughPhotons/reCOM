@@ -2,8 +2,6 @@
 #define ZSHADER_H
 #include "gamez/zSystem/zsys.h"
 
-#include "primitive.h"
-
 #include "vector"
 
 #include "glm/vec2.hpp"

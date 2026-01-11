@@ -11,15 +11,20 @@
 #include "gamez/zNode/node_model.h"
 #include "gamez/zNode/node_world.h"
 
+#include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zShader/zshader.h"
 
 s32 node_index = 0;
 zdb::CVisData* _vdataTex = NULL;
 std::deque<u32> zdb::CVisual::m_stack_vid;
+bool zdb::CVisual::m_applyShadow = true;
 bool zdb::CVisual::m_applyDetailTexture = false;
 bool zdb::CVisual::m_applyLocalLights = false;
 bool zdb::CVisual::m_fogEnable = false;
+bool zdb::CVisual::m_renderMap = false;
+bool zdb::CVisual::m_landmarkFlag = false;
+bool zdb::CVisual::m_lightingEnable = true;
 f32 zdb::CVisual::m_rangeSqdToCamera = 1.0f;
 _word128* zdb::CVisual::m_dmaChain = NULL;
 u32 zdb::CVisual::m_dmaQwc = 0;
@@ -248,6 +253,12 @@ namespace zdb
 		return visual;
 	}
 
+	void CVisual::LandmarkEnable(bool enable)
+	{
+		m_landmarkFlag = enable;
+		m_lightingEnable = !enable;
+	}
+
 	bool CVisual::Read(zar::CZAR& archive)
 	{
 		u32 detail_size = 0;
@@ -354,7 +365,7 @@ namespace zdb
 
 	void CVisual::Render()
 	{
-		if (m_renderState != 0)
+		// if (m_renderState != 0)
 			VuUpdate(1.0f);
 	}
 

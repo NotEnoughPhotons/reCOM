@@ -16,6 +16,7 @@ class CZBodyPart;
 
 extern CAppCamera* appCamera;
 
+extern bool fogCheck;
 extern bool camera_tether_intersects_something;
 extern f32 save_short_tether_length;
 extern f32 DeltaRot;
@@ -179,6 +180,7 @@ namespace zdb
 
 		f32 GetScaledRangeSquared(const CPnt3D& point) { return 0.0f; }
 
+		bool TestLandmarkFOG(CPnt3D* pos, f32 radius);
 		bool CanSeeRegion(u32 mask);
 
 		void SetHalfHorizontalFOVRadians(f32 radians);

@@ -4,6 +4,8 @@
 #include "gamez/zNode/node_world.h"
 #include "gamez/zSeal/zseal.h"
 
+bool fogCheck = true;
+
 namespace zdb
 {
 	bool CCamera::m_dynamics_controlled = true;
@@ -102,6 +104,32 @@ namespace zdb
 	bool CCamera::CmdTickParams(_zanim_cmd_hdr* header, f32* dT)
 	{
 		return true;
+	}
+
+	bool CCamera::TestLandmarkFOG(CPnt3D* pos, f32 radius)
+	{
+		bool canSee = false;
+
+		if (m_fog_enabled)
+		{
+			canSee = false;
+
+			if (m_directional_fog_enabled)
+			{
+				if (m_landmark_fog_top <= pos->y - radius)
+					canSee = false;
+			}
+
+			CPnt3D& camPos = (CPnt3D&)(m_matrix[3][0]);
+			CPnt3D out;
+			pos->Sub(&camPos, &out);
+
+			f32 dist = sqrtf((camPos.z * camPos.z) + (camPos.y * camPos.y) + (camPos.x * camPos.x));
+			if (radius + dist < m_fog_near)
+				canSee = false;
+		}
+
+		return canSee || (m_fog_enabled & fogCheck) != 0;
 	}
 
 	bool CCamera::CanSeeRegion(u32 mask)

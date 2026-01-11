@@ -206,7 +206,7 @@ namespace zdb
 
 		static f32 m_adjustBilinearRange;
 
-		bool m_useLOD;
+		bool m_lodIndex;
 		bool m_has_lods;
 
 		CPnt3D m_centroid;
@@ -249,6 +249,7 @@ namespace zdb
 	class CSubMesh : public CMesh
 	{
 	public:
+		CSubMesh();
 		CSubMesh(CMesh* mesh);
 	
 		bool field4_0x4;

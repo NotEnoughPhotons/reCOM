@@ -3,6 +3,7 @@
 #include "znode.h"
 #include "node_model.h"
 #include "node_universe.h"
+#include "node_assetlib.h"
 
 #include "gamez/zGrid/zgrid.h"
 
@@ -225,7 +226,10 @@ namespace zdb
 			CSubMesh* submesh = static_cast<CSubMesh*>(mesh);
 
 			if (!visual->m_has_lods)
+			{
 				mesh = NULL;
+				submesh = NULL;
+			}
 
 			if (!mesh)
 			{
@@ -330,10 +334,10 @@ namespace zdb
 					instance->m_region_mask = m_region_mask;
 
 				}
-
-				if (instance)
-					other->AddChild(instance);
 			}
+
+			if (instance)
+				other->AddChild(instance);
 		}
 
 		return other;
@@ -462,7 +466,7 @@ namespace zdb
 			size_t childStringLength = strlen(child->m_name);
 
 			if (length == childStringLength && strcmp(child->m_name, name) == 0)
-				child = *i;
+				return *i;
 		}
 
 		if (!child && nested)
@@ -476,6 +480,8 @@ namespace zdb
 					return child->FindChild(name, nested);
 			}
 		}
+
+		return NULL;
 	}
 
 	void CNode::DeleteChildren()
@@ -504,19 +510,27 @@ namespace zdb
 
 	void CNode::SetParentHasVisuals()
 	{
-		m_modified = true;
+		m_hasVisuals = true;
 
 		if (m_parent && !m_parent->m_modified)
-		{
 			m_parent->SetParentHasVisuals();
-		}
 
-		CModel* vismdl = dynamic_cast<CModel*>(this);
+		CModel* model = dynamic_cast<CModel*>(this);
 
-		if (vismdl)
+		if (!model)
+			return;
+
+		for (auto i = model->m_list.begin(); i != model->m_list.end(); ++i)
 		{
-			// TODO:
-			// Use CRefList for iteration on visuals
+			CAssetLib* assetlib = *i;
+
+			for (auto j = assetlib->m_models.begin(); j != assetlib->m_models.end(); ++j)
+			{
+				CNode* node = *j;
+
+				if (node->m_hasVisuals)
+					node->SetParentHasVisuals();
+			}
 		}
 	}
 

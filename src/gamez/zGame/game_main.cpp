@@ -10,7 +10,7 @@ COurGame theGame;
 CGame::CGame()
 {
 	m_Active = false;
-	m_InitialState = new CMenuState();
+	m_InitialState = new CTestState();
 	m_CurrentState = 0;
 	m_MinIdlePeriod = 100;
 	m_TestVariable = NULL;

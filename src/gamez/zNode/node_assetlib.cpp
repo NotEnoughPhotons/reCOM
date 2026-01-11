@@ -192,7 +192,7 @@ namespace zdb
 	{
 		if (m_cache_model)
 		{
-			if (name && strcmp(m_cache_model->m_name, name) != 0)
+			if (name && !strcmp(m_cache_model->m_name, name))
 				return m_cache_model;
 		}
 

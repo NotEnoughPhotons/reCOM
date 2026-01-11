@@ -31,7 +31,7 @@ namespace zdb
 			s32 z;
 		};
 
-		CCell(const CPnt3D* origin, f32 offset);
+		CCell(CPnt3D* origin, f32 offset);
 	private:
 		CLightList m_lightList;
 		CClutterList m_clutterList;

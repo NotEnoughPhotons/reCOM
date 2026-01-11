@@ -2,6 +2,7 @@
 #define NODE_WORLD_H
 #include "node_light.h"
 #include "node_wind.h"
+#include "node_vector.h"
 
 namespace zdb
 {
@@ -72,7 +73,7 @@ namespace zdb
 
 		// TODO:
 		// implement these two container types
-		// CRenderMapVector m_shadows;
+		CRenderMapVector m_shadows;
 		// CLightMapVector m_lightMaps;
 
 		CLOD_Object m_LOD_Object;
