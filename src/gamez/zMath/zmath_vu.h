@@ -31,7 +31,7 @@ extern void zMathRotTransPers();
 
 extern void zMathClipBBox();
 
-extern void zMathCopyMatrix();
+extern void zMathCopyMatrix(CMatrix* dest, const CMatrix* src);
 extern void zMathApplyMatrix();
 extern void zMathUnitMatrix(CMatrix& mat);
 extern void zMathMulMatrix(CMatrix* m0, CMatrix* m1, CMatrix* out);

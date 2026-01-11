@@ -37,6 +37,26 @@ void zMathUnitMatrix(CMatrix& mat)
 	mat.m_matrix[3][3] = 1.0f;
 }
 
+void zMathCopyMatrix(CMatrix* dest, const CMatrix* src)
+{
+	s32 i, j, k;
+	f32* pA = (f32*)dest;
+	f32* pB = (f32*)src;
+	f32* pQ = (f32*)src;
+	f32 pM[16];
+
+	for (s32 i = 0; i < 16; i++)
+		pM[i] = 0;
+
+	for (i = 0; i < 4; i++)
+		for (j = 0; j < 4; j++)
+			for (k = 0; k < 4; k++)
+				pM[4 * i + j] += pA[4 * k + j] * pB[4 * i + k];
+
+	for (i = 0; i < 16; i++)
+		pQ[i] = pM[i];
+}
+
 void zMathMulMatrix(CMatrix* m0, CMatrix* m1, CMatrix* out)
 {
 	s32 i, j, k;
