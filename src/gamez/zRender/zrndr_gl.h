@@ -64,8 +64,16 @@ typedef struct {
 } zgl_vertex_packet;
 
 typedef struct {
+	u8 ix;
+	u8 iy;
+	u8 iz;
+	u8 mark;
+} zgl_index_packet;
+
+typedef struct {
 	zgl_mesh_packet_hdr header;
 	zgl_vertex_packet* vertices;
+	zgl_index_packet* indices;
 } zgl_mesh_packet;
 
 typedef struct {
@@ -79,9 +87,16 @@ typedef struct {
 } zgl_vertex;
 
 typedef struct {
+	u8 ix;
+	u8 iy;
+	u8 iz;
+} zgl_index;
+
+typedef struct {
 	u32 vertex_count;
 	u32 index_count;
 	zgl_vertex* vertices;
+	zgl_index* indices;
 } zgl_mesh;
 
 static zgl_context* context;
@@ -100,6 +115,4 @@ extern zgl_mesh_packet zgl_read_packet(const _word128* chain);
 extern zgl_mesh_packet zgl_read_mesh_packet(const void* packet);
 
 extern zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet);
-
-extern zgl_vertex& zgl_convert_mesh_packet(const _word128* packet);
 #endif

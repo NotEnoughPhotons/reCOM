@@ -46,11 +46,17 @@ zgl_mesh_packet zgl_read_mesh_packet(const void* packet)
 	zgl_mesh_packet mesh;
 	zgl_mesh_packet_hdr* header = (zgl_mesh_packet_hdr*)addr;
 	zgl_vertex_packet* vertices = static_cast<zgl_vertex_packet*>(zcalloc(header->vertex_count, sizeof(zgl_vertex_packet)));
+	zgl_index_packet* indices = static_cast<zgl_index_packet*>(zcalloc(header->index_count, sizeof(u32)));
 
-	memcpy(vertices, addr + sizeof(zgl_mesh_packet_hdr), header->vertex_count * sizeof(zgl_vertex_packet));
+	const u8* vertex_offset = addr + sizeof(zgl_mesh_packet_hdr);
+	const u8* index_offset = vertex_offset + ((header->vertex_count * 16) + sizeof(u64));
+
+	memcpy(vertices, vertex_offset, header->vertex_count * sizeof(zgl_vertex_packet));
+	memcpy(indices, index_offset, header->index_count * sizeof(zgl_index_packet));
 
 	mesh.header = *header;
 	mesh.vertices = vertices;
+	mesh.indices = indices;
 
 	return mesh;
 }
@@ -62,6 +68,7 @@ zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet)
 	mesh.vertex_count = packet->header.vertex_count;
 
 	mesh.vertices = static_cast<zgl_vertex*>(zcalloc(mesh.vertex_count, sizeof(zgl_vertex)));
+	mesh.indices = static_cast<zgl_index*>(zcalloc(mesh.index_count, sizeof(zgl_index)));
 
 	for (u32 i = 0; i < mesh.vertex_count; i++)
 	{
@@ -77,6 +84,18 @@ zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet)
 		v.flags = vp.flags;
 
 		mesh.vertices[i] = v;
+	}
+
+	for (u32 i = 0; i < mesh.index_count; i++)
+	{
+		zgl_index_packet ip = packet->indices[i];
+		zgl_index ix;
+
+		ix.ix = ip.ix / 3;
+		ix.iy = ip.iy / 3;
+		ix.iz = ip.iz / 3;
+
+		mesh.indices[i] = ix;
 	}
 
 	return mesh;
