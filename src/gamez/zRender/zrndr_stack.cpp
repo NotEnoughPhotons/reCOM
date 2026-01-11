@@ -2,8 +2,9 @@
 
 #include "gamez/zMath/zmath_vu.h"
 
-CMatrix* CStack::m_pointer = NULL;
-CMatrix* CStack::m_top = NULL;
+CMatrix CStack::m_stack[64];
+CMatrix* CStack::m_pointer = CStack::m_stack;
+CMatrix* CStack::m_top = CStack::m_stack;
 
 CMatrix* CStack::Multiply(CMatrix* matrix, bool other)
 {

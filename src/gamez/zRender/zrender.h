@@ -87,6 +87,7 @@ class CStack
 public:
 	static CMatrix* Multiply(CMatrix* matrix, bool other);
 	
+	static CMatrix m_stack[64];
 	static CMatrix* m_top;
 	static CMatrix* m_pointer;
 };
