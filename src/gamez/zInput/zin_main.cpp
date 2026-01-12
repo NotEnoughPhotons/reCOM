@@ -13,8 +13,7 @@ CKeyboard* CInput::m_keyboard = NULL;
 void CInput::Init()
 {
 	m_init = OpenPadIO() != false;
-
-	m_keyboard = new CKeyboard();
+	CKeyboard::Init();
 	m_init = true;
 }
 
