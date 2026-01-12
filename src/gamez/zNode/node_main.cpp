@@ -372,7 +372,7 @@ namespace zdb
 
 	bool CNode::Delete()
 	{
-		if (m_type == static_cast<u32>(TYPE::UNK4))
+		if (m_type == static_cast<u32>(TYPE::MULTI_PARENT))
 		{
 			if (m_child.size() != 0)
 			{
