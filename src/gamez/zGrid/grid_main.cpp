@@ -22,7 +22,7 @@ namespace zdb
 
         max.Add(origin, &boxextents);
         
-        m_type = (u32)TYPE::NODE_TYPE_CELL;
+        m_type = (u32)TYPE::CELL;
 
         m_lightList.erase(m_lightList.begin(), m_lightList.end());
     }
@@ -420,7 +420,7 @@ namespace zdb
 
     CNode* CGridAtom::GetCell()
     {
-        if (Ent->m_type != (u32)CNode::TYPE::NODE_TYPE_CELL)
+        if (Ent->m_type != (u32)CNode::TYPE::CELL)
             return NULL;
 
         return Ent;

@@ -5,7 +5,7 @@ namespace zdb
 {
     CLight::CLight()
     {
-        m_type = (u32)TYPE::NODE_TYPE_LIGHT;
+        m_type = (u32)TYPE::LIGHT;
         m_invMaxRange = 0.0f;
         m_maxRange = 0.0f;
         m_diffuse.x = 128.0f;
@@ -26,10 +26,10 @@ void LightList_Search(zdb::CNode* node, zdb::CLightList& lightList)
     if (!node)
         return;
 
-    if (node->m_type != (u32)zdb::CNode::TYPE::NODE_TYPE_CELL)
+    if (node->m_type != (u32)zdb::CNode::TYPE::CELL)
         return;
 
-    if (node->m_type == (u32)zdb::CNode::TYPE::NODE_TYPE_LIGHT)
+    if (node->m_type == (u32)zdb::CNode::TYPE::LIGHT)
         lightList.insert(lightList.begin(), dynamic_cast<zdb::CLight*>(node));
 
     for (auto i = node->m_child.begin(); i != node->m_child.end(); ++i)

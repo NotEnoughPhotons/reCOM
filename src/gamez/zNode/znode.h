@@ -137,17 +137,17 @@ namespace zdb
 		// guess the rest of these
 		enum class TYPE
 		{
-			NODE_TYPE_EMPTY,
-			NODE_TYPE_GENERIC,
-			NODE_TYPE_INSTANCE,
-			NODE_TYPE_CHILD,
-			NODE_TYPE_UNK4,
-			NODE_TYPE_UNK5,
-			NODE_TYPE_GRID,
-			NODE_TYPE_MODEL,
-			NODE_TYPE_LIGHT,
-			NODE_TYPE_LENSFLARE,
-			NODE_TYPE_CELL
+			EMPTY,
+			GENERIC,
+			INSTANCE,
+			CHILD,
+			UNK4,
+			UNK5,
+			GRID,
+			MODEL,
+			LIGHT,
+			LENSFLARE,
+			CELL
 		};
 		
 		CNode();

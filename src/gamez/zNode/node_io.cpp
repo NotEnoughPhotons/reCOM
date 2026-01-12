@@ -78,7 +78,7 @@ namespace zdb
 		model->m_parent = instance;
 		instance->m_model = model;
 		instance->SetModelname(model->m_name);
-		instance->m_type = (u32)TYPE::NODE_TYPE_INSTANCE;
+		instance->m_type = (u32)TYPE::INSTANCE;
 
 		return instance;
 	}
@@ -100,7 +100,7 @@ namespace zdb
 		model->m_parent = instance;
 		instance->m_model = model;
 		instance->SetModelname(model->m_name);
-		instance->m_type = (u32)TYPE::NODE_TYPE_INSTANCE;
+		instance->m_type = (u32)TYPE::INSTANCE;
 
 		return instance;
 	}
@@ -126,17 +126,17 @@ namespace zdb
 
 			switch ((CNode::TYPE)nparams.m_type)
 			{
-			case TYPE::NODE_TYPE_INSTANCE:
+			case TYPE::INSTANCE:
 				isChild = true;
 				break;
-			case TYPE::NODE_TYPE_GENERIC:
-			case TYPE::NODE_TYPE_UNK5:
+			case TYPE::GENERIC:
+			case TYPE::UNK5:
 				node = new CNode();
 				break;
-			case TYPE::NODE_TYPE_LIGHT:
+			case TYPE::LIGHT:
 				node = new CLight();
 				break;
-			case TYPE::NODE_TYPE_LENSFLARE:
+			case TYPE::LENSFLARE:
 				node = new CLensFlare();
 				break;
 			}
@@ -225,7 +225,7 @@ namespace zdb
 	CNode* CNode::CreateXRef()
 	{
 		CNode* xref = new CNode();
-		xref->m_type = static_cast<u32>(TYPE::NODE_TYPE_CHILD);
+		xref->m_type = static_cast<u32>(TYPE::CHILD);
 		xref->SetName("XRef");
 		return xref;
 	}
@@ -243,7 +243,7 @@ namespace zdb
 		if (rotation)
 			xref->SetRotation(rotation);
 
-		xref->m_type = static_cast<u32>(TYPE::NODE_TYPE_CHILD);
+		xref->m_type = static_cast<u32>(TYPE::CHILD);
 		xref->SetName("XRef");
 		xref->AddChild(model);
 	}

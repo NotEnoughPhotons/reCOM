@@ -314,7 +314,7 @@ namespace zdb
 			CNode* child = m_child[i];
 			CNode* instance = child;
 
-			if (child->m_type != static_cast<u32>(TYPE::NODE_TYPE_INSTANCE))
+			if (child->m_type != static_cast<u32>(TYPE::INSTANCE))
 				instance = NULL;
 
 			if (!instance)
@@ -372,7 +372,7 @@ namespace zdb
 
 	bool CNode::Delete()
 	{
-		if (m_type == static_cast<u32>(TYPE::NODE_TYPE_UNK4))
+		if (m_type == static_cast<u32>(TYPE::UNK4))
 		{
 			if (m_child.size() != 0)
 			{
@@ -383,7 +383,7 @@ namespace zdb
 					m_parent->AddChild(child);
 			}
 		}
-		else if (m_type == static_cast<u32>(TYPE::NODE_TYPE_INSTANCE))
+		else if (m_type == static_cast<u32>(TYPE::INSTANCE))
 		{
 			// m_model->m_list.remove_if(this);
 
@@ -406,7 +406,7 @@ namespace zdb
 		if (node && parent != this)
 		{
 			CNode* child = node;
-			if (m_type != (u32)TYPE::NODE_TYPE_CHILD)
+			if (m_type != (u32)TYPE::CHILD)
 			{
 				if (parent)
 				{
@@ -432,7 +432,7 @@ namespace zdb
 
 		if (m_child.Exists(child))
 		{
-			if (m_type == (u32)TYPE::NODE_TYPE_CHILD)
+			if (m_type == (u32)TYPE::CHILD)
 			{
 				m_child.Remove(child);
 				count = -1;
@@ -582,13 +582,13 @@ namespace zdb
 
 	bool CNode::InheritRegionMasks(u32 pmask, u32 cmask)
 	{
-		if (m_type == (u32)TYPE::NODE_TYPE_CELL)
+		if (m_type == (u32)TYPE::CELL)
 			return false;
 
 		u32 parent = cmask | m_region_mask;
 		u32 child = pmask | 1 << m_region_shift;
 
-		m_region_mask = m_type == (u32)TYPE::NODE_TYPE_LIGHT ? parent : child;
+		m_region_mask = m_type == (u32)TYPE::LIGHT ? parent : child;
 
 		for (u32 i = 0; i < m_child.size(); i++)
 			m_child[i]->InheritRegionMasks(parent, child);
@@ -676,7 +676,7 @@ namespace zdb
 
 	bool CNode::SetModel(CModel* model)
 	{
-		if (m_type != (u32)TYPE::NODE_TYPE_CHILD || m_type != (u32)TYPE::NODE_TYPE_INSTANCE)
+		if (m_type != (u32)TYPE::CHILD || m_type != (u32)TYPE::INSTANCE)
 		{
 			return false;
 		}
@@ -774,7 +774,7 @@ namespace zdb
 		if (!m_parent)
 			return false;
 
-		if (m_type != (u32)TYPE::NODE_TYPE_GRID)
+		if (m_type != (u32)TYPE::GRID)
 			return false;
 
 		((CGrid*)m_parent)->Update(this);
@@ -800,7 +800,7 @@ namespace zdb
 
 	CMatrix& CNode::BuildMTW(CMatrix& mat)
 	{
-		if (m_type == (u32)TYPE::NODE_TYPE_GRID)
+		if (m_type == (u32)TYPE::GRID)
 		{
 			// set identity matrix
 		}
