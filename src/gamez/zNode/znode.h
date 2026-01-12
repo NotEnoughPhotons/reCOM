@@ -141,7 +141,7 @@ namespace zdb
 			GENERIC,
 			INSTANCE,
 			CHILD,
-			UNK4,
+			MULTI_PARENT,
 			UNK5,
 			GRID,
 			MODEL,
