@@ -22,7 +22,7 @@ bool CGame::StartEngine()
 	CValve::Init();
 	zVid_Init(ZVID_MODE_NTSC);
 	zgl_init();
-	zgl_set_context(theWindow->GetWindow(), theWindow->GetRenderer(), theWindow->GetContext());
+	// zgl_set_context(theWindow->GetWindow(), theWindow->GetRenderer(), theWindow->GetContext());
 	zdb::CTexture::Init();
 	C2D::Init();
 	zdb::CWorld::Init();
@@ -52,7 +52,7 @@ bool COurGame::StartEngine()
 	sprintf_s(img_dir, 256, "%s/LOADING.RAW", gamez_GameRunPath);
 
 	// Display loading screen
-	CVideo::RestoreImage(img_dir, true);
+	// CVideo::RestoreImage(img_dir, true);
 
 	// After the image is loaded into the back buffer,
 	// bring it to the main one

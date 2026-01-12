@@ -1,5 +1,7 @@
 #include "zvid.h"
 
+#include "gamez/zRender/zrndr_gl.h"
+
 #include "Apps/FTS/gamever.h"
 #include "gamez/zReader/zrdr.h"
 
@@ -74,7 +76,9 @@ CWindow::CWindow(CRdrFile* reader)
 	{
 		m_context = SDL_GL_CreateContext(m_window);
 	}
-	
+
+	SDL_GL_MakeCurrent(m_window, m_context);
+
 	zrdr_free(reader);
 }
 

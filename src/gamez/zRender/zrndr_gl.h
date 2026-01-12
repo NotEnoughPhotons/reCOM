@@ -34,6 +34,8 @@
 #define ZGL_SUCCESS 0
 #define ZGL_FAIL -1
 
+#include <vector>
+
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_video.h"
 
@@ -47,6 +49,19 @@ typedef struct {
 } zgl_context;
 
 typedef struct {
+	u8 qwc;
+	u8 type;
+	void* data;
+} zgl_packet;
+
+typedef struct {
+	u8 qwc;
+	bool setup;
+	void* data;
+	std::vector<zgl_packet> packets;
+} zgl_chain;
+
+typedef struct {
 	u8 unk01[48];
 	u32 vertex_count;
 	u32 index_count;
@@ -54,36 +69,16 @@ typedef struct {
 } zgl_mesh_packet_hdr;
 
 typedef struct {
-	s16 x;
-	s16 y;
-	s16 z;
-	u16 index;
-	s16 u;
-	s16 v;
-	u32 flags;
-} zgl_vertex_packet;
-
-typedef struct {
-	u8 ix;
-	u8 iy;
-	u8 iz;
-	u8 mark;
-} zgl_index_packet;
-
-typedef struct {
-	zgl_mesh_packet_hdr header;
-	zgl_vertex_packet* vertices;
-	zgl_index_packet* indices;
-} zgl_mesh_packet;
-
-typedef struct {
 	f32 x;
 	f32 y;
 	f32 z;
-	u32 index;
-	f32 u;
-	f32 v;
-	u32 flags;
+	f32 r;
+	f32 g;
+	f32 b;
+	//f32 f;
+	//f32 u;
+	//f32 v;
+	//u32 flags;
 } zgl_vertex;
 
 typedef struct {
@@ -95,9 +90,16 @@ typedef struct {
 typedef struct {
 	u32 vertex_count;
 	u32 index_count;
-	zgl_vertex* vertices;
-	zgl_index* indices;
+	std::vector<zgl_vertex> vertices;
+	std::vector<u32> indices;
 } zgl_mesh;
+
+typedef struct {
+	zgl_mesh mesh;
+	u32 v_array;
+	u32 v_buffer;
+	u32 e_buffer;
+} zgl_mesh_buffer;
 
 static zgl_context context;
 
@@ -111,8 +113,12 @@ extern void zgl_disable_ztest();
 
 extern void zgl_set_fog(u32 r, u32 g, u32 b);
 
-extern zgl_mesh_packet zgl_read_packet(const _word128* chain);
-extern zgl_mesh_packet zgl_read_mesh_packet(const void* packet);
+extern zgl_chain zgl_read_chain(const _word128* chain);
+extern size_t zgl_get_chain_size(const zgl_chain* chain);
 
-extern zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet);
+extern zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain);
+extern void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh);
+
+extern void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer);
+extern void zgl_mesh_buffer_destroy(zgl_mesh_buffer* buffer);
 #endif

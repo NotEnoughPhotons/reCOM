@@ -38,13 +38,7 @@ void zVid_Init(_zvid_mode mode)
 		lodLevel = CValve::Create("lodLevel", VALVE_TYPE::VTYPE_PERM);
 	}
 
-	if ((SDL_GetWindowFlags(theWindow->GetWindow()) & SDL_WINDOW_OPENGL) != 0)
-	{
-		zVid_Assert(glewInit() == GLEW_OK, LONG_MAX, __FILE__, __LINE__);
-	}
-
-	zgl_enable_ztest();
-
+	// zgl_enable_ztest();
 }
 
 void zVid_Open()

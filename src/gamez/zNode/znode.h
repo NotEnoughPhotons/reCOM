@@ -137,7 +137,7 @@ namespace zdb
 		// guess the rest of these
 		enum class TYPE
 		{
-			NODE_TYPE_UNKNOWN,
+			NODE_TYPE_EMPTY,
 			NODE_TYPE_GENERIC,
 			NODE_TYPE_INSTANCE,
 			NODE_TYPE_CHILD,
@@ -192,6 +192,7 @@ namespace zdb
 
 		bool AddVisual(CVisual* visual);
 		bool AddDI(CDI* di);
+		bool DeleteVisual(CVisual* visual, bool doChildren);
 		
 		s32 DeleteVisuals();
 

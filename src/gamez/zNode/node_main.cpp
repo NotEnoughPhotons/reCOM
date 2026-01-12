@@ -159,6 +159,33 @@ namespace zdb
 		return false;
 	}
 	
+	bool CNode::DeleteVisual(CVisual* visual, bool doChildren)
+	{
+		std::vector<CVisual*>::iterator it;
+
+		// Look for copies, I guess.
+		for (it = m_visual.begin(); it != m_visual.end(); ++it)
+			if (*it == visual)
+				break;
+
+		// std::remove_copy(m_visual.begin(), m_visual.end(), it, visual);
+
+		// m_visual.erase(it);
+
+		bool released = visual->Release();
+
+		if (doChildren && !released)
+		{
+			if (visual)
+				// delete visual;
+
+			m_hasVisuals = false;
+		}
+
+		m_modified = true;
+		return true;
+	}
+
 	s32 CNode::DeleteVisuals()
 	{
 		for (auto i = m_visual.begin(); i != m_visual.end(); ++i)

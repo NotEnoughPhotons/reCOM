@@ -240,11 +240,7 @@ namespace zdb
 
 		CShader* m_shader;
 
-		u32 m_vbo;
-		u32 m_vao;
-		u32 m_ebo;
-
-		zgl_mesh m_mesh;
+		zgl_mesh_buffer* m_meshBuffer;
 	};
 
 	class CMesh : public CVisual

@@ -7,6 +7,10 @@ s32 zgl_init()
 	if (glewInit() != GLEW_OK)
 		return ZGL_FAIL;
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
 	return ZGL_SUCCESS;
 }
 
@@ -23,86 +27,163 @@ void zgl_set_context(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext g
 	context.window = window;
 	context.renderer = renderer;
 
-	SDL_GL_MakeCurrent(context.window, context.ctx);
+	if (!SDL_GL_MakeCurrent(context.window, context.ctx))
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "[GameZ] - ERROR! %s", SDL_GetError());
 }
 
-zgl_mesh_packet zgl_read_packet(const _word128* chain)
+zgl_chain zgl_read_chain(const _word128* chain)
 {
-	const u32 size = chain->u8[0]; // Size of the chain in quadwords
+	const _word128* addr = chain;
+
+	const u32 size = chain->u8[0];
 	const bool setup = chain->u8[2];
 
-	for (u32 i = 1; i < size + 1; i++)
+	zgl_chain chn;
+	chn.qwc = size;
+	chn.setup = false;
+	chn.data = (void*)chain->u32[2];
+	chn.packets.reserve(chn.qwc);
+
+	addr++;
+
+	for (u32 i = 1; i <= size; i++)
 	{
-		_word128 packet = chain[i];
-		u32 qwc = packet.u8[0]; // Size of the packet in quadwords
-		u8 type = packet.u8[2];
-		_word128* meshpkt = (_word128*)packet.u32[1];
+		_word128 packet = addr[i];
+		zgl_packet chainp;
+		
+		chainp.qwc = packet.u8[0];
+		chainp.type = packet.u8[2];
+		chainp.data = (void*)packet.u32[1];
 
-		if (type == 2)
-			return zgl_read_mesh_packet(meshpkt);
+		chn.packets.push_back(chainp);
 	}
+
+	return chn;
 }
 
-zgl_mesh_packet zgl_read_mesh_packet(const void* packet)
+size_t zgl_get_chain_size(const zgl_chain* chain)
 {
-	const u8* addr = reinterpret_cast<const u8*>(packet);
-
-	zgl_mesh_packet mesh;
-	zgl_mesh_packet_hdr* header = (zgl_mesh_packet_hdr*)addr;
-	zgl_vertex_packet* vertices = static_cast<zgl_vertex_packet*>(zcalloc(header->vertex_count, sizeof(zgl_vertex_packet)));
-	zgl_index_packet* indices = static_cast<zgl_index_packet*>(zcalloc(header->index_count, sizeof(u32)));
-
-	const u8* vertex_offset = addr + sizeof(zgl_mesh_packet_hdr);
-	const u8* index_offset = vertex_offset + ((header->vertex_count * 16) + sizeof(u64));
-
-	memcpy(vertices, vertex_offset, header->vertex_count * sizeof(zgl_vertex_packet));
-	memcpy(indices, index_offset, header->index_count * sizeof(zgl_index_packet));
-
-	mesh.header = *header;
-	mesh.vertices = vertices;
-	mesh.indices = indices;
-
-	return mesh;
+	return chain->qwc * sizeof(_word128);
 }
 
-zgl_mesh zgl_convert_mesh_packet(const zgl_mesh_packet* packet)
+zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain)
 {
 	zgl_mesh mesh;
-	mesh.index_count = packet->header.index_count;
-	mesh.vertex_count = packet->header.vertex_count;
+	mesh.index_count = 0;
+	mesh.vertex_count = 0;
 
-	mesh.vertices = static_cast<zgl_vertex*>(zcalloc(mesh.vertex_count, sizeof(zgl_vertex)));
-	mesh.indices = static_cast<zgl_index*>(zcalloc(mesh.index_count, sizeof(zgl_index)));
+	std::vector<zgl_mesh> meshes;
 
-	for (u32 i = 0; i < mesh.vertex_count; i++)
+	for (u32 i = 0; i < chain->qwc; i++)
 	{
-		zgl_vertex_packet vp = packet->vertices[i];
-		zgl_vertex v;
+		zgl_packet packet = chain->packets[i];
+		zgl_mesh m;
 
-		v.x = vp.x / 16.0f;
-		v.y = vp.y / 16.0f;
-		v.z = vp.z / 16.0f;
-		v.index = vp.index;
-		v.u = vp.u / 4096.0f;
-		v.v = vp.v / 4096.0f;
-		v.flags = vp.flags;
-
-		mesh.vertices[i] = v;
+		if (packet.type == 2)
+		{
+			zgl_chain_mesh_process(&packet, &m);
+			meshes.push_back(m);
+			mesh = m;
+		}
 	}
 
-	for (u32 i = 0; i < mesh.index_count; i++)
+	if (meshes.size() > 1)
 	{
-		zgl_index_packet ip = packet->indices[i];
-		zgl_index ix;
-
-		ix.ix = ip.ix / 3;
-		ix.iy = ip.iy / 3;
-		ix.iz = ip.iz / 3;
-
-		mesh.indices[i] = ix;
+		for (u32 i = 1; i < meshes.size() - 1; i++)
+		{
+			mesh.vertices.insert(mesh.vertices.end(), meshes[i].vertices.begin(), meshes[i].vertices.end());
+			mesh.indices.insert(mesh.indices.end(), meshes[i].indices.begin(), meshes[i].indices.end());
+		}
 	}
+
+	//mesh.vertex_count = mesh.vertices.size();
+	//mesh.index_count = mesh.indices.size();
 
 	return mesh;
+}
+
+void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
+{
+	const _word128* addr = reinterpret_cast<const _word128*>(packet->data);
+
+	addr += 3;
+
+	u32 vertex_count = addr->u32[0];
+	u32 index_count = addr->u32[1];
+
+	mesh->vertices.reserve(vertex_count);
+	mesh->indices.reserve(index_count);
+
+	mesh->vertex_count = vertex_count;
+	mesh->index_count = index_count;
+
+	addr += 2;
+
+	for (u32 i = 0; i < vertex_count; i++)
+	{
+		const _word128* word = &addr[i];
+		zgl_vertex v;
+
+		v.x = static_cast<s16>(word->u16[0]) / 16.0f;
+		v.y = static_cast<s16>(word->u16[1]) / 16.0f;
+		v.z = static_cast<s16>(word->u16[2]) / 16.0f;
+		v.r = 1.0f / static_cast<f32>(rand() % 11);
+		v.g = 1.0f / static_cast<f32>(rand() % 11);
+		v.b = 1.0f / static_cast<f32>(rand() % 11);
+		//v.f = static_cast<s16>(word->u16[3]) / 16.0f;
+		//v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
+		//v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
+		//v.flags = word->u32[4];
+
+		mesh->vertices.push_back(v);
+	}
+
+	addr += vertex_count;
+	addr = (_word128*)(&addr->u64[1]);
+
+	const u8* ptr = reinterpret_cast<const u8*>(addr);
+
+	for (u32 i = 0; i < index_count * 4; i += 4)
+	{
+		u8 x = ptr[i];
+		u8 y = ptr[i + 1];
+		u8 z = ptr[i + 2];
+
+		mesh->indices.push_back(x / 3);
+		mesh->indices.push_back(y / 3);
+		mesh->indices.push_back(z / 3);
+	}
+}
+
+void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer)
+{
+	if (buffer->mesh.vertex_count == 0 || buffer->mesh.index_count == 0)
+		return;
+
+	glGenVertexArrays(1, &buffer->v_array);
+	glGenBuffers(1, &buffer->v_buffer);
+	glGenBuffers(1, &buffer->e_buffer);
+
+	glBindVertexArray(buffer->v_array);
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffer->v_array);
+	glBufferData(GL_ARRAY_BUFFER, buffer->mesh.vertices.size() * (sizeof(f32) * 6), buffer->mesh.vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->e_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer->mesh.indices.size() * sizeof(u32), buffer->mesh.indices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)3);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, y)));
+	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, z)));
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(2);
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void zgl_enable_ztest()

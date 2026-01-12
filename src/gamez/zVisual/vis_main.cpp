@@ -59,6 +59,8 @@ void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 
 void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CModel* model, zdb::CVisBase* vbase)
 {
+	std::vector<zdb::CVisual*> visualsToRemove;
+
 	char node_name[1024];
 	char node_light_name[1024];
 
@@ -73,11 +75,8 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 	if (node->m_hasMesh)
 		node->GetSubMesh();
 
-	if (!node->m_visual.empty())
-	{
-		node->m_hasVisuals = true;
+	if (node->m_visual.size() != 0 || node->m_hasVisuals)
 		node_index++;
-	}
 
 	for (auto i = model->m_list.begin(); i != model->m_list.end(); i++)
 	{
@@ -109,16 +108,16 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 				vbase->m_node_ofs = node_ofs;
 				visual->SetBuffer(&vbase->m_data_buffer[vbase->m_node_ofs], bufidx, vbase);
 			}
+			else
+				visualsToRemove.insert(visualsToRemove.begin(), visual);
 		}
 
 		bufidx++;
 	}
 
-	if (model->m_list.size() == 0 || model->m_bForceExport)
+	if (model->m_list.size() == 0 || model->m_bForceExport || model->GetMesh())
 	{
-		zdb::CMesh* mesh = model->GetMesh();
-
-		for (u32 i = 0; i != node->m_visual.size(); i++)
+		for (u32 i = 0; i < node->m_visual.size(); i++)
 		{
 			zdb::CVisual* visual = node->m_visual[i];
 
@@ -150,8 +149,18 @@ void hookupVisuals(zar::CZAR* archive, zar::CKey* key, zdb::CNode* node, zdb::CM
 					visual->m_chainPtr = (_word128*)((u8*)vbase->m_data_buffer + vbase->m_node_ofs);
 					visual->SetBuffer(visual->m_chainPtr, 0, vbase);
 				}
+				else
+				{
+					visualsToRemove.insert(visualsToRemove.begin(), visual);
+				}
 			}
 		}
+	}
+
+	for (auto i = visualsToRemove.begin(); i != visualsToRemove.end(); ++i)
+	{
+		zdb::CVisual* visual = *i;
+		node->DeleteVisual(visual, true);
 	}
 
 	for (auto i = node->m_child.begin(); i != node->m_child.end(); i++)
@@ -173,7 +182,7 @@ void hookupVisuals(zar::CZAR* archive, zdb::CModel* model)
 
 	if (model->GetMesh())
 	{
-		hookupMesh(archive, model);
+		// hookupMesh(archive, model);
 		return;
 	}
 
@@ -230,10 +239,12 @@ namespace zdb
 		}
 	}
 
-	CVisual::CVisual() : m_mesh()
+	CVisual::CVisual()
 	{
 		m_lodIndex = 0;
 		m_shader = new CShader();
+		m_chainPtr = NULL;
+		m_meshBuffer = NULL;
 
 		SetupShaders();
 	}
@@ -361,26 +372,10 @@ namespace zdb
 			}
 		}
 
-		zgl_mesh_packet meshPkt = zgl_read_packet(m_chainPtr);
-		m_mesh = zgl_convert_mesh_packet(&meshPkt);
-
-		glGenVertexArrays(1, &m_vao);
-		glGenBuffers(1, &m_vbo);
-		glGenBuffers(1, &m_ebo);
-
-		glBindVertexArray(m_vao);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vao);
-		glBufferData(GL_ARRAY_BUFFER, m_mesh.vertex_count * (sizeof(f32) * 3), &m_mesh.vertices[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_mesh.index_count * sizeof(u32), &m_mesh.indices[0], GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)0);
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, y)));
-		//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, z)));
-
-		glEnableVertexAttribArray(0);
-		//glEnableVertexAttribArray(1);
-		//glEnableVertexAttribArray(2);
+		zgl_chain meshPkt = zgl_read_chain(m_chainPtr);
+		m_meshBuffer = new zgl_mesh_buffer();
+		m_meshBuffer->mesh = zgl_chain_read_meshes(&meshPkt);
+		zgl_mesh_buffer_create(m_meshBuffer);
 	}
 
 	void CVisual::SetupShaders()
@@ -400,6 +395,9 @@ namespace zdb
 	
 	bool CVisual::GetChainData()
 	{
+		if (!m_chainPtr)
+			return false;
+
 		u32 stackidx = m_stack_vid.size() - 1;
 		_word128* tag = &m_chainPtr[m_stack_vid[stackidx % m_stack_vid.size()]];
 		m_dmaChain = &tag[1];
@@ -421,13 +419,12 @@ namespace zdb
 		CMatrix model = CMatrix::identity;
 		CMatrix camera = CMatrix::identity;
 
-		model.m_matrix[3][0] = -2.0f;
-		camera.m_matrix[3][2] = -10.0f;
+		camera.m_matrix[3][2] = -5.0f;
 
 		m_shader->SetMat4("model", model);
-		m_shader->SetMat4("view", camera);
+		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
 
-		f32 aspect = 1280 / 960;
+		f32 aspect = 1280.0f / 960.0f;
 		f32 fov = glm::radians(90.0f);
 
 		// Doing this for now until I extend the matrix library.
@@ -438,8 +435,16 @@ namespace zdb
 		m_shader->SetMat4("projection", projMat);
 
 		GetChainData();
-		glBindVertexArray(m_vao);
-		glDrawElements(GL_TRIANGLE_STRIP, m_mesh.index_count, GL_UNSIGNED_INT, NULL);
+
+		if (!m_meshBuffer || m_meshBuffer->mesh.index_count == 0)
+		{
+			glBindVertexArray(0);
+			return;
+		}
+
+		glBindVertexArray(m_meshBuffer->v_array);
+		//glDrawArrays(GL_TRIANGLES, 0, m_meshBuffer->mesh.vertices.size());
+		glDrawElements(GL_TRIANGLES, m_meshBuffer->mesh.indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
