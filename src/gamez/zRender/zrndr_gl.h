@@ -72,13 +72,10 @@ typedef struct {
 	f32 x;
 	f32 y;
 	f32 z;
-	f32 r;
-	f32 g;
-	f32 b;
-	//f32 f;
-	//f32 u;
-	//f32 v;
-	//u32 flags;
+	f32 f;
+	f32 u;
+	f32 v;
+	// u32 flags;
 } zgl_vertex;
 
 typedef struct {

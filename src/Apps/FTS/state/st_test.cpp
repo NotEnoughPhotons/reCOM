@@ -21,8 +21,8 @@ CTestState::CTestState()
 
 bool CTestState::Init()
 {
-    LoadWorld("ui");
-    mdl = zdb::CWorld::m_world->GetModel("SatchelUl");
+    LoadWorld("m8");
+    mdl = zdb::CWorld::m_world->GetModel("worldmodel");
     mdl->SetActive(true);
     thePipe.m_camera = zdb::CWorld::m_world->m_camera;
 

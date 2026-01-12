@@ -246,6 +246,10 @@ namespace zdb
 		m_chainPtr = NULL;
 		m_meshBuffer = NULL;
 
+		m_r = 1.0f / (rand() % 10 + 1);
+		m_g = 1.0f / (rand() % 10 + 1);
+		m_b = 1.0f / (rand() % 10 + 1);
+
 		SetupShaders();
 	}
 
@@ -424,6 +428,12 @@ namespace zdb
 		m_shader->SetMat4("model", model);
 		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
 
+		PNT3D col;
+		col.x = m_r;
+		col.y = m_g;
+		col.z = m_b;
+		m_shader->SetVec3("col", col);
+
 		f32 aspect = 1280.0f / 960.0f;
 		f32 fov = glm::radians(90.0f);
 
@@ -443,7 +453,6 @@ namespace zdb
 		}
 
 		glBindVertexArray(m_meshBuffer->v_array);
-		//glDrawArrays(GL_TRIANGLES, 0, m_meshBuffer->mesh.vertices.size());
 		glDrawElements(GL_TRIANGLES, m_meshBuffer->mesh.indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}

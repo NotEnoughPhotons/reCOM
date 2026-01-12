@@ -1,24 +1,11 @@
 #version 330 core
 
-in vec3 position;
-in vec3 col;
-in vec3 normal;
-in vec3 fragpos;
+in vec4 position;
 in vec2 tcoords;
 
 out vec4 FragColor;
 
-uniform float time;
-uniform float deltaTime;
-
-uniform vec3 ambientCol;
-uniform vec3 lightPos;
-uniform vec3 lightCol;
-uniform vec3 objCol;
-
-uniform vec3 cameraPos;
-uniform sampler2D tex;
-uniform samplerCube envMap;
+uniform vec3 col;
 
 void main()
 {

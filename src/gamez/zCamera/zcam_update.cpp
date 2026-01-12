@@ -33,7 +33,7 @@ namespace zdb
         if (m_pitch < -89.0f)
             m_pitch = -89.0f;
 
-        f32 speed = CKeyboard::m_keys[SDL_SCANCODE_LSHIFT] ? 0.1f : 0.25f;
+        f32 speed = CKeyboard::m_keys[SDL_SCANCODE_LSHIFT] ? 0.25f : 0.5f;
 
         if (CKeyboard::m_keys[SDL_SCANCODE_W])
             m_position += m_forward * speed;

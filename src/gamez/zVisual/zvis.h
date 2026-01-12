@@ -241,6 +241,10 @@ namespace zdb
 		CShader* m_shader;
 
 		zgl_mesh_buffer* m_meshBuffer;
+
+		f32 m_r;
+		f32 m_g;
+		f32 m_b;
 	};
 
 	class CMesh : public CVisual

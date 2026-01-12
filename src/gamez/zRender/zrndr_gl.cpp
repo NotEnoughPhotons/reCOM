@@ -127,13 +127,9 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 		v.x = static_cast<s16>(word->u16[0]) / 16.0f;
 		v.y = static_cast<s16>(word->u16[1]) / 16.0f;
 		v.z = static_cast<s16>(word->u16[2]) / 16.0f;
-		v.r = 1.0f / static_cast<f32>(rand() % 11);
-		v.g = 1.0f / static_cast<f32>(rand() % 11);
-		v.b = 1.0f / static_cast<f32>(rand() % 11);
-		//v.f = static_cast<s16>(word->u16[3]) / 16.0f;
-		//v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
-		//v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
-		//v.flags = word->u32[4];
+		v.f = static_cast<s16>(word->u16[3]) / 16.0f;
+		v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
+		v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
 
 		mesh->vertices.push_back(v);
 	}
@@ -167,13 +163,14 @@ void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer)
 	glBindVertexArray(buffer->v_array);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->v_array);
-	glBufferData(GL_ARRAY_BUFFER, buffer->mesh.vertices.size() * (sizeof(f32) * 6), buffer->mesh.vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, buffer->mesh.vertices.size() * sizeof(zgl_vertex), buffer->mesh.vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->e_buffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer->mesh.indices.size() * sizeof(u32), buffer->mesh.indices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)3);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, x)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, u)));
+	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)3);
 	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, y)));
 	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, z)));
 
