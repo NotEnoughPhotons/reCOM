@@ -11,6 +11,7 @@
 #include "gamez/zVideo/zvid.h"
 
 zdb::CNode* mdl = NULL;
+C2DPoly* twodpoly = NULL;
 
 bool LoadWorld(const char* name);
 
@@ -21,10 +22,18 @@ CTestState::CTestState()
 
 bool CTestState::Init()
 {
-    LoadWorld("m8");
-    mdl = zdb::CWorld::m_world->GetModel("worldmodel");
-    mdl->SetActive(true);
+    CRdrFile* dbSettings = zrdr_read("./data/zrdr/test_level.rdr", NULL, ZRDR_FLAG_RAW);
+    char* db = zrdr_findstring(dbSettings, "database");
+    char* modelname = zrdr_findstring(dbSettings, "node");
+    zrdr_free(dbSettings);
+
+    LoadWorld(db);
+    mdl = zdb::CWorld::GetModel(modelname);
+    mdl->m_active = true;
     thePipe.m_camera = zdb::CWorld::m_world->m_camera;
+    twodpoly = new C2DPoly();
+    twodpoly->Load(-1.0f, -1.0f, 0.0f, 1.0f, 1.0f, -1.0f, NULL);
+    twodpoly->On();
 
     // glCullFace(GL_BACK);
     // glFrontFace(GL_CW);
@@ -60,12 +69,18 @@ void CTestState::Tick(f32 dT)
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    twodpoly->Draw(zdb::CWorld::m_world->m_camera);
+
     for (auto i = mdl->m_child.begin(); i != mdl->m_child.end(); ++i)
     {
         zdb::CNode* child = *i;
         child->SetActive(true);
         thePipe.RenderNode(child, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
     }
+
+    // thePipe.RenderNode(mdl, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
+
+    // thePipe.RenderWorld(zdb::CWorld::m_world);
 
     SDL_GL_SwapWindow(theWindow->GetWindow());
 }
