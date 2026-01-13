@@ -56,6 +56,7 @@ int InterruptDmacBusError()
 void zSysInit()
 {
 	// size_t allocsize = zsys_FullAllocAndFree();
+	zsys_AllocScratchpad();
 	// zSys.isT10K = 0x1ffffff < allocsize;
 	u32 flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK;
 	zVid_Assert(SDL_Init(flags), LONG_MAX, __FILE__, __LINE__);
