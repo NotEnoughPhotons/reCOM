@@ -136,6 +136,8 @@ void zSysPostInit()
 		wait_cond = NULL;
 	}
 
+	zrdr_free(start_settings);
+
 	if (path_failed)
 	{
 		const SDL_MessageBoxButtonData buttons[]
