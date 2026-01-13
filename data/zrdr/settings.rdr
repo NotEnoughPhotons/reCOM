@@ -13,4 +13,8 @@ settings (
         SCUS_972.30 ( "SOCOM - U.S. Navy Seals (US)" )
         SCES_509.28 ( "SOCOM - U.S. Navy Seals (EU)" )
      )
+
+     boot (
+        PATH ("D:/")
+     )
 )

@@ -109,20 +109,33 @@ void zSysPostInit()
 		postinited = true;
 	}
 
-	SDL_Mutex* mutex = SDL_CreateMutex();
-	wait_cond = SDL_CreateCondition();
-	
-	SDL_LockMutex(mutex);
-	SDL_ShowOpenFolderDialog(zSys_OpenFileDialog, NULL, NULL, "D:/", false);
-	SDL_WaitCondition(wait_cond, mutex);
-	SDL_UnlockMutex(mutex);
+	auto start_settings = zrdr_read("./data/zrdr/settings.rdr", NULL, ZRDR_FLAG_RAW);
 
-	SDL_DestroyMutex(mutex);
-	mutex = NULL;
+	auto boot_tag = zrdr_findtag(start_settings, "boot");
+	auto path = zrdr_findstring(boot_tag, "PATH");
 
-	SDL_DestroyCondition(wait_cond);
-	wait_cond = NULL;
-	
+	if (boot_tag || path)
+	{
+		strcpy_s(gamez_GameRoot, 256, path);
+		strcpy_s(gamez_GameRunPath, 256, path);
+	}
+	else
+	{
+		SDL_Mutex* mutex = SDL_CreateMutex();
+		wait_cond = SDL_CreateCondition();
+
+		SDL_LockMutex(mutex);
+		SDL_ShowOpenFolderDialog(zSys_OpenFileDialog, NULL, NULL, "D:/", false);
+		SDL_WaitCondition(wait_cond, mutex);
+		SDL_UnlockMutex(mutex);
+
+		SDL_DestroyMutex(mutex);
+		mutex = NULL;
+
+		SDL_DestroyCondition(wait_cond);
+		wait_cond = NULL;
+	}
+
 	if (path_failed)
 	{
 		const SDL_MessageBoxButtonData buttons[]
