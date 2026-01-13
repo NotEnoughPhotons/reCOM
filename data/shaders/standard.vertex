@@ -1,9 +1,12 @@
 #version 330 core
 layout (location = 0) in vec4 v_pos;
 layout (location = 1) in vec2 v_tcoords;
+layout (location = 2) in vec3 v_normal;
 
 out vec4 position;
 out vec2 tcoords;
+out vec3 normal;
+out vec3 fragpos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -12,5 +15,7 @@ uniform mat4 projection;
 void main()
 {
     position = model * v_pos;
+    normal = v_normal;
+    fragpos = vec3(model * v_pos);
     gl_Position = projection * view * position;
 }

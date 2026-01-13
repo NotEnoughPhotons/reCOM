@@ -31,6 +31,20 @@ void zgl_set_context(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext g
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "[GameZ] - ERROR! %s", SDL_GetError());
 }
 
+void zgl_create_buffers()
+{
+	glGenVertexArrays(1, &zgl_vao);
+	glGenBuffers(1, &zgl_vbo);
+	glGenBuffers(1, &zgl_ebo);
+}
+
+void zgl_destroy_buffers()
+{
+	glDeleteBuffers(1, &zgl_ebo);
+	glDeleteBuffers(1, &zgl_vbo);
+	glDeleteVertexArrays(1, &zgl_vao);
+}
+
 zgl_chain zgl_read_chain(const _word128* chain)
 {
 	const _word128* addr = chain;
@@ -124,14 +138,54 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 		const _word128* word = &addr[i];
 		zgl_vertex v;
 
-		v.x = static_cast<s16>(word->u16[0]) / 16.0f;
-		v.y = static_cast<s16>(word->u16[1]) / 16.0f;
-		v.z = static_cast<s16>(word->u16[2]) / 16.0f;
-		v.f = static_cast<s16>(word->u16[3]) / 16.0f;
+		v.x = static_cast<s16>(word->u16[0]);
+		v.y = static_cast<s16>(word->u16[1]);
+		v.z = static_cast<s16>(word->u16[2]);
+		v.f = static_cast<s16>(word->u16[3]);
 		v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
 		v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
 
 		mesh->vertices.push_back(v);
+	}
+
+	// Calculate face normals
+	// This is based off of taking the cross product
+	// of three points.
+	for (u32 i = 0; i < mesh->vertices.size() - 3; i += 3)
+	{
+		zgl_vertex& p1 = mesh->vertices[i];
+		zgl_vertex& p2 = mesh->vertices[i + 1];
+		zgl_vertex& p3 = mesh->vertices[i + 2];
+
+		zgl_vertex v1;
+		zgl_vertex v2;
+		zgl_vertex result;
+
+		// Differences
+		v1.x = p2.x - p1.x;
+		v1.y = p2.y - p1.y;
+		v1.z = p2.z - p1.z;
+
+		v2.x = p3.x - p1.x;
+		v2.y = p3.y - p1.y;
+		v2.z = p3.z - p1.z;
+
+		// Cross product
+		result.x = (v1.y * v2.z) - (v1.z * v2.y);
+		result.y = (v1.z * v1.x) - (v1.x * v2.z);
+		result.z = (v1.x * v2.y) - (v1.y * v2.x);
+
+		// Then normalize
+		f32 length = sqrtf(result.x * result.x + result.y * result.y + result.z * result.z);
+
+		result.x /= length;
+		result.y /= length;
+		result.z /= length;
+
+		// Store the result in the vertices
+		p1.xn = result.x;
+		p2.yn = result.y;
+		p3.zn = result.z;
 	}
 
 	addr += vertex_count;
@@ -155,28 +209,27 @@ void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer)
 {
 	if (buffer->mesh.vertex_count == 0 || buffer->mesh.index_count == 0)
 		return;
-
+	
 	glGenVertexArrays(1, &buffer->v_array);
+
 	glGenBuffers(1, &buffer->v_buffer);
 	glGenBuffers(1, &buffer->e_buffer);
 
 	glBindVertexArray(buffer->v_array);
 
-	glBindBuffer(GL_ARRAY_BUFFER, buffer->v_array);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer->v_buffer);
 	glBufferData(GL_ARRAY_BUFFER, buffer->mesh.vertices.size() * sizeof(zgl_vertex), buffer->mesh.vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->e_buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer->mesh.indices.size() * sizeof(u32), buffer->mesh.indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer->mesh.indices.size(), buffer->mesh.indices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, x)));
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, u)));
-	// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 6, (void*)3);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, y)));
-	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(f32) * 3, (void*)(offsetof(zgl_vertex, z)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, xn)));
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	//glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

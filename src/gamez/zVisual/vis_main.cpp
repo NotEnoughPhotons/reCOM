@@ -418,21 +418,15 @@ namespace zdb
 
 	void CVisual::VuUpdate(f32 opacity)
 	{
-		m_shader->Use();
-
 		CMatrix model = CMatrix::identity;
 		CMatrix camera = CMatrix::identity;
 
 		camera.m_matrix[3][2] = -5.0f;
 
-		m_shader->SetMat4("model", model);
-		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
-
 		PNT3D col;
 		col.x = m_r;
 		col.y = m_g;
 		col.z = m_b;
-		m_shader->SetVec3("col", col);
 
 		f32 aspect = 1280.0f / 960.0f;
 		f32 fov = glm::radians(90.0f);
@@ -442,7 +436,11 @@ namespace zdb
 		CMatrix projMat = reinterpret_cast<CMatrix&>(proj);
 		// projMat.m_matrix[3][3] = 1.0f;
 
+		m_shader->Use();
+		m_shader->SetMat4("model", model);
+		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
 		m_shader->SetMat4("projection", projMat);
+		m_shader->SetVec3("col", col);
 
 		GetChainData();
 
@@ -453,7 +451,8 @@ namespace zdb
 		}
 
 		glBindVertexArray(m_meshBuffer->v_array);
-		glDrawElements(GL_TRIANGLES, m_meshBuffer->mesh.indices.size(), GL_UNSIGNED_INT, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_meshBuffer->e_buffer);
+		glDrawArrays(GL_TRIANGLES, 0, m_meshBuffer->mesh.vertices.size());
 		glBindVertexArray(0);
 	}
 

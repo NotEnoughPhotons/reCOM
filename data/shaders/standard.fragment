@@ -2,6 +2,8 @@
 
 in vec4 position;
 in vec2 tcoords;
+in vec3 fragpos;
+in vec3 normal;
 
 out vec4 FragColor;
 
@@ -9,5 +11,11 @@ uniform vec3 col;
 
 void main()
 {
-	FragColor = vec4(col, 1.0);
+	vec3 norm = normalize(normal);
+	vec3 lightdir = normalize(vec3(0.0, 10.0, 5.0) - fragpos);
+	vec3 ambient = col * 0.1;
+	float diff = max(dot(norm, lightdir), 0.0);
+	vec3 diffuse = diff * vec3(1.0);
+	vec3 result = (ambient + diffuse) * col;
+	FragColor = vec4(result, 1.0);
 }

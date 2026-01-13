@@ -75,6 +75,9 @@ typedef struct {
 	f32 f;
 	f32 u;
 	f32 v;
+	f32 xn;
+	f32 yn;
+	f32 zn;
 	// u32 flags;
 } zgl_vertex;
 
@@ -100,6 +103,10 @@ typedef struct {
 
 static zgl_context context;
 
+static u32 zgl_vao;
+static u32 zgl_vbo;
+static u32 zgl_ebo;
+
 extern s32 zgl_init();
 extern void zgl_shutdown();
 
@@ -109,6 +116,9 @@ extern void zgl_enable_ztest();
 extern void zgl_disable_ztest();
 
 extern void zgl_set_fog(u32 r, u32 g, u32 b);
+
+extern void zgl_create_buffers();
+extern void zgl_destroy_buffers();
 
 extern zgl_chain zgl_read_chain(const _word128* chain);
 extern size_t zgl_get_chain_size(const zgl_chain* chain);
