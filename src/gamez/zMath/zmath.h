@@ -236,7 +236,7 @@ public:
 
 	const float* GetTranslate() const;
 
-	void Transform(CPnt3D* point, s32 count) const;
+	void Transform(CPnt3D* point, s32 count);
 	void Multiply(const CMatrix* first, const CMatrix* second);
 
 	void SetRotation(const CPnt3D* rotation);

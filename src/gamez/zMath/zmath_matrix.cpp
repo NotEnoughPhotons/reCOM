@@ -40,41 +40,16 @@ const float* CMatrix::GetTranslate() const
 }
 
 /// Transform a matrix by a point.
-void CMatrix::Transform(CPnt3D* point, s32 count) const
+void CMatrix::Transform(CPnt3D* point, s32 count)
 {
-	glm::mat4x4 mat(1.0f);
-	
-	mat[0][0] = m_matrix[0][0];
-	mat[0][1] = m_matrix[1][0];
-	mat[0][2] = m_matrix[2][0];
-	mat[0][3] = m_matrix[3][0];
-
-	mat[1][0] = m_matrix[0][1];
-	mat[1][1] = m_matrix[1][1];
-	mat[1][2] = m_matrix[2][1];
-	mat[1][3] = m_matrix[3][1];
-
-	mat[2][0] = m_matrix[0][2];
-	mat[2][1] = m_matrix[1][2];
-	mat[2][2] = m_matrix[2][2];
-	mat[2][3] = m_matrix[3][2];
-
-	mat[3][0] = m_matrix[0][3];
-	mat[3][1] = m_matrix[1][3];
-	mat[3][2] = m_matrix[2][3];
-	mat[3][3] = m_matrix[3][3];
-
-	mat = glm::translate(mat, glm::vec3(point->x, point->y, point->z));
-
-	point->x = mat[3][0];
-	point->y = mat[3][1];
-	point->z = mat[3][2];
+	m_matrix[3][0] = point->x;
+	m_matrix[3][1] = point->y;
+	m_matrix[3][2] = point->z;
+	m_matrix[3][3] = 1.0f;
 }
 
 void CMatrix::Multiply(const CMatrix* first, const CMatrix* second)
 {
-	// I never want to do this again.
-
 	// First row
 	m_matrix[0][0] = 
 		(first->m_matrix[0][0] * second->m_matrix[0][0]) + 
@@ -149,15 +124,55 @@ void CMatrix::Multiply(const CMatrix* first, const CMatrix* second)
 		(first->m_matrix[2][1] * second->m_matrix[1][3]) +
 		(first->m_matrix[2][2] * second->m_matrix[2][3]) +
 		(first->m_matrix[2][3] * second->m_matrix[3][3]);
+
+	// Fourth row
+	m_matrix[3][0] =
+		(first->m_matrix[3][0] * second->m_matrix[0][0]) +
+		(first->m_matrix[3][1] * second->m_matrix[1][0]) +
+		(first->m_matrix[3][2] * second->m_matrix[2][0]) +
+		(first->m_matrix[3][3] * second->m_matrix[3][0]);
+
+	m_matrix[3][1] =
+		(first->m_matrix[3][0] * second->m_matrix[0][1]) +
+		(first->m_matrix[3][1] * second->m_matrix[1][1]) +
+		(first->m_matrix[3][2] * second->m_matrix[2][1]) +
+		(first->m_matrix[3][3] * second->m_matrix[3][1]);
+
+	m_matrix[3][2] =
+		(first->m_matrix[3][0] * second->m_matrix[0][2]) +
+		(first->m_matrix[3][1] * second->m_matrix[1][2]) +
+		(first->m_matrix[3][2] * second->m_matrix[2][2]) +
+		(first->m_matrix[3][3] * second->m_matrix[3][2]);
+
+	m_matrix[3][3] =
+		(first->m_matrix[3][0] * second->m_matrix[0][3]) +
+		(first->m_matrix[3][1] * second->m_matrix[1][3]) +
+		(first->m_matrix[3][2] * second->m_matrix[2][3]) +
+		(first->m_matrix[3][3] * second->m_matrix[3][3]);
 }
 
 void CMatrix::ToEuler(CPnt3D* p)
 {
-
+	p->x = acosf(-m_matrix[1][2]);
+	p->y = atan2f(-m_matrix[2][2], m_matrix[0][2]);
+	p->z = atan2f(-m_matrix[1][0], m_matrix[1][1]);
 }
 
 // TODO: Implement matrix conversion to quaternion
 void CMatrix::ToQuat(CQuat* q)
 {
 	*q = CQuat::identity;
+}
+
+void CMatrix::SetRows(const CPnt3D* m0, const CPnt3D* m1, const CPnt3D* m2, const CPnt3D* m3)
+{
+	if (m0) memcpy(this->m_matrix[0], m0, sizeof(CPnt3D));
+	if (m1) memcpy(this->m_matrix[1], m1, sizeof(CPnt3D));
+	if (m2) memcpy(this->m_matrix[2], m2, sizeof(CPnt3D));
+	if (m3) memcpy(this->m_matrix[3], m3, sizeof(CPnt3D));
+}
+
+void CMatrix::SetZero()
+{
+	memset(this, 0, sizeof(CMatrix));
 }
