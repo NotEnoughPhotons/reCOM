@@ -87,6 +87,12 @@ class CStack
 public:
 	static CMatrix* Multiply(CMatrix* matrix, bool other);
 	
+	// TODO:
+	// This class is dangerous, specifically because it's targeting memory in static cache.
+	// There is the potential for memory in that region to be overwritten, IF you forget -
+	// to not decrease the matrix stack's pointer when you're in a loop.
+	// SOLUTION: Do bounds checking inside of the arithmetic operator overloads.
+
 	static CMatrix m_stack[64];
 	static CMatrix* m_top;
 	static CMatrix* m_pointer;
