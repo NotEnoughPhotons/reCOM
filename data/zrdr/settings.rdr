@@ -15,6 +15,6 @@ settings (
      )
 
      boot (
-        PATH ("D:/")
+        PATH ("F:/")
      )
 )
