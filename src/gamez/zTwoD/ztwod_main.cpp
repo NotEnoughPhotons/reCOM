@@ -37,9 +37,7 @@ void C2D::Init()
 void C2D::Open()
 {
 	if (m_p2dcamera == NULL)
-	{
 		m_p2dcamera = new zdb::CCamera();
-	}
 }
 
 bool C2D::CanHandleInput()
@@ -52,22 +50,24 @@ void C2D::SetCanHandleInput(bool enable)
 	m_active_and_handling_input = enable;
 }
 
+void C2D::GetAssetLibs(CLibList& libs)
+{
+	for (auto i = begin(); i != end(); ++i)
+		(*i)->GetAssetLibs(libs);
+}
+
 void C2D::Draw(zdb::CCamera* camera)
 {
-	if (m_on)
-	{
-		auto it = begin();
-		while (it != end())
-		{
-			(*it)->Draw(camera);
-			++it;
-		}
-	}
+	if (!m_on)
+		return;
+
+	for (auto i = begin(); i != end(); ++i)
+		(*i)->Draw(camera);
 }
 
 void C2D::Enable(bool enable)
 {
-	first = enable;
+	m_on = enable;
 }
 
 void C2D::SetUseFrameBufferAlpha(bool enable)
@@ -88,16 +88,4 @@ void C2D::On()
 void C2D::Off()
 {
 	m_on = false;
-}
-
-C2DFade::C2DFade()
-{
-	m_fade_enable = false;
-	m_fade_dx = 0.0f;
-	m_fade_limit = 128.0f;
-}
-
-C2DPoly::C2DPoly()
-{
-
 }

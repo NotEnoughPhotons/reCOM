@@ -32,6 +32,8 @@ class C2Dlist : public std::list<C2D*> {};
 class C2D : public C2Dlist
 {
 public:
+	class CLibList : public std::vector<zdb::CAssetLib*> {};
+
 	C2D();
 
 	static void Init();
@@ -46,19 +48,21 @@ public:
 	static f32 m_fXPixel;
 	static f32 m_fYPixel;
 
+	virtual void Parse(_zrdr* rdr, zdb::CAssetLib* lib, zdb::CTextureRelocMgr* manager) {}
+	virtual void GetAssetLibs(CLibList& libs);
 	virtual void Draw(const CMatrix& transform, zdb::CTextureRelocMgr* manager) {}
 	virtual void Draw(zdb::CCamera* camera);
 	virtual void Reset() {}
-	virtual void Tick(float dT) {}
-	virtual bool TickZAnimCmd(_zanim_cmd_hdr* header, float* delta, bool* enable) { return false; }
+	virtual void Tick(f32 dT) {}
+	virtual bool TickZAnimCmd(_zanim_cmd_hdr* header, f32* delta, bool* enable) { return false; }
 	virtual bool ParseZAnimCmd(_zrdr* reader) { return false; }
 	virtual bool HandlePad(const CPad* pad, int index) { return false; }
 
 	virtual void SetActive() {}
 	virtual void SetNormal() {}
-	virtual void SetTrans(float translation) {}
+	virtual void SetTrans(f32 translation) {}
 	virtual void SetUseFrameBufferAlpha(bool enable);
-	virtual void SetMapOffset(int x, int y) {}
+	virtual void SetMapOffset(s32 x, s32 y) {}
 
 	void Enable(bool enable);
 	void On();
@@ -134,6 +138,17 @@ class C2DPoly : public C2D
 {
 public:
 	C2DPoly();
+
+	void Draw(zdb::CCamera* camera);
+	void MakePacket(zdb::CCamera* camera);
+	void Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, zdb::CTexture* texture);
+
+	s32 m_x;
+	s32 m_y;
+	f32 m_RGB[3][4];
+	f32 m_NewUV[3][4];
+	f32 m_vertex[3][4];
+	zdb::CTexture* m_texture;
 };
 
 class C2DBitmapPoly : public C2D, protected C2DFade
