@@ -110,9 +110,6 @@ zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain)
 		}
 	}
 
-	//mesh.vertex_count = mesh.vertices.size();
-	//mesh.index_count = mesh.indices.size();
-
 	return mesh;
 }
 
@@ -138,10 +135,10 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 		const _word128* word = &addr[i];
 		zgl_vertex v;
 
-		v.x = static_cast<s16>(word->u16[0]);
-		v.y = static_cast<s16>(word->u16[1]);
-		v.z = static_cast<s16>(word->u16[2]);
-		v.f = static_cast<s16>(word->u16[3]);
+		v.x = static_cast<s16>(word->u16[0]) / 16.0f;
+		v.y = static_cast<s16>(word->u16[1]) / 16.0f;
+		v.z = static_cast<s16>(word->u16[2]) / 16.0f;
+		v.f = static_cast<s16>(word->u16[3]) / 16.0f;
 		v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
 		v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
 
@@ -184,7 +181,15 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 
 		// Store the result in the vertices
 		p1.xn = result.x;
+		p1.yn = result.y;
+		p1.zn = result.z;
+
+		p2.xn = result.x;
 		p2.yn = result.y;
+		p2.zn = result.z;
+
+		p3.xn = result.x;
+		p3.yn = result.y;
 		p3.zn = result.z;
 	}
 
