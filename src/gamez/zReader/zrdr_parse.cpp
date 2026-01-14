@@ -259,51 +259,32 @@ bool _eval_defined(char* token)
 {
 	s32 symidx = 0;
 	char symbolbuf[MAX_ZRDR_PATH_LEN + 1];
-
-	do
+	
+	while (fstack.size() > 2);
 	{
-		while (true)
+		while (!fstack.front()->fread(token, 1))
 		{
-			CBufferIO* file = fstack.front();
-
-			if (!file->fread(token, 1))
-			{
-				break;
-			}
-
-			if (isalpha(*token) != 0)
-			{
-				auto it = zrdr_symbols.begin();
-
-				while (it != zrdr_symbols.end())
-				{
-					if (strcmp(symbolbuf, *it) == 0)
-					{
-						break;
-					}
-				}
-
-				return *it != zrdr_symbols.front();
-			}
-
 			if (symidx > MAX_ZRDR_PATH_LEN)
-			{
 				return false;
+
+			if (isalpha(*token))
+			{
+				symbolbuf[symidx] = *token;
+				symbolbuf[symidx + 1] = '\0';
+				symidx++;
+
+				for (auto i = zrdr_symbols.begin(); i != zrdr_symbols.end(); ++i)
+					if (strcmp(symbolbuf, *i) == 0)
+						return *i != zrdr_symbols.front();
+					
 			}
-
-			symbolbuf[symidx] = *token;
-			symbolbuf[symidx + 1] = '\0';
-			symidx++;
-		}
-
-		if (fstack.size() < 2)
-		{
-			return false;
 		}
 
 		fstack.pop(true);
 	}
-	while (true);
+	
+
+	return true;
 }
 
 void _resolveA(_zrdr* self, _zrdr* root, char* name)
