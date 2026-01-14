@@ -15,6 +15,8 @@
 /// https://github.com/ps2dev/ps2sdk
 /// -----------------------------
 
+extern void Vu0MatrixInverseWithUniformScale(CMatrix* m0, CMatrix* m1);
+
 extern void zMathCopyVector(PNT3D& out, PNT3D& in);
 extern void zMathAddVector(PNT3D& sum, PNT3D& addend, PNT3D& summand);
 extern void zMathSubVector(PNT3D& diff, PNT3D& subend, PNT3D& diffand);
