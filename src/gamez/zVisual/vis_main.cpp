@@ -380,6 +380,20 @@ namespace zdb
 		m_meshBuffer = new zgl_mesh_buffer();
 		m_meshBuffer->mesh = zgl_chain_read_meshes(&meshPkt);
 		zgl_mesh_buffer_create(m_meshBuffer);
+
+		u32 numVertices = 0;
+		u32 numIndices = 0;
+
+		for (auto i = m_meshBuffer->mesh.begin(); i != m_meshBuffer->mesh.end(); ++i)
+		{
+			zgl_mesh& mesh = *i;
+
+			mesh.base_vertex = numVertices;
+			mesh.base_index = numIndices;
+
+			numVertices += mesh.vertex_count;
+			numIndices += mesh.index_count;
+		}
 	}
 
 	void CVisual::SetupShaders()
@@ -444,16 +458,22 @@ namespace zdb
 
 		GetChainData();
 
-		if (!m_meshBuffer || m_meshBuffer->mesh.index_count == 0)
+		if (!m_meshBuffer || m_meshBuffer->mesh.size() == 0)
 		{
 			glBindVertexArray(0);
 			return;
 		}
 
-		glBindVertexArray(m_meshBuffer->v_array);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_meshBuffer->e_buffer);
-		glDrawArrays(GL_TRIANGLES, 0, m_meshBuffer->mesh.vertices.size());
-		glBindVertexArray(0);
+
+		for (auto i = m_meshBuffer->mesh.begin(); i != m_meshBuffer->mesh.end(); ++i)
+		{
+			zgl_mesh& mesh = *i;
+
+			glBindVertexArray(mesh.v_array);
+			glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, NULL);
+			glBindVertexArray(0);
+		}
+
 	}
 
 	CTexture* CVisual::ResolveTextureName(_word128* packet, s32 offset)

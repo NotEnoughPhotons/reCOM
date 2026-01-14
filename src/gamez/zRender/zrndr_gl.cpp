@@ -80,7 +80,7 @@ size_t zgl_get_chain_size(const zgl_chain* chain)
 	return chain->qwc * sizeof(_word128);
 }
 
-zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain)
+std::vector<zgl_mesh> zgl_chain_read_meshes(const zgl_chain* chain)
 {
 	zgl_mesh mesh;
 	mesh.index_count = 0;
@@ -101,16 +101,7 @@ zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain)
 		}
 	}
 
-	if (meshes.size() > 1)
-	{
-		for (u32 i = 1; i < meshes.size() - 1; i++)
-		{
-			mesh.vertices.insert(mesh.vertices.end(), meshes[i].vertices.begin(), meshes[i].vertices.end());
-			mesh.indices.insert(mesh.indices.end(), meshes[i].indices.begin(), meshes[i].indices.end());
-		}
-	}
-
-	return mesh;
+	return meshes;
 }
 
 void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
@@ -125,6 +116,9 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 	mesh->vertices.reserve(vertex_count);
 	mesh->indices.reserve(index_count);
 
+	mesh->base_vertex = 0;
+	mesh->base_index = 0;
+
 	mesh->vertex_count = vertex_count;
 	mesh->index_count = index_count;
 
@@ -135,10 +129,10 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 		const _word128* word = &addr[i];
 		zgl_vertex v;
 
-		v.x = static_cast<s16>(word->u16[0]) / 16.0f;
-		v.y = static_cast<s16>(word->u16[1]) / 16.0f;
-		v.z = static_cast<s16>(word->u16[2]) / 16.0f;
-		v.f = static_cast<s16>(word->u16[3]) / 16.0f;
+		v.x = static_cast<s16>(word->u16[0]) / 2.0f;
+		v.y = static_cast<s16>(word->u16[1]) / 2.0f;
+		v.z = static_cast<s16>(word->u16[2]) / 2.0f;
+		v.f = static_cast<s16>(word->u16[3]) / 2.0f;
 		v.u = static_cast<s16>(word->u16[4]) / 4096.0f;
 		v.v = static_cast<s16>(word->u16[5]) / 4096.0f;
 
@@ -212,33 +206,40 @@ void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh)
 
 void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer)
 {
-	if (buffer->mesh.vertex_count == 0 || buffer->mesh.index_count == 0)
-		return;
 	
-	glGenVertexArrays(1, &buffer->v_array);
 
-	glGenBuffers(1, &buffer->v_buffer);
-	glGenBuffers(1, &buffer->e_buffer);
+	for (auto i = buffer->mesh.begin(); i != buffer->mesh.end(); ++i)
+	{
+		zgl_mesh& mesh = *i;
 
-	glBindVertexArray(buffer->v_array);
+		glGenVertexArrays(1, &mesh.v_array);
 
-	glBindBuffer(GL_ARRAY_BUFFER, buffer->v_buffer);
-	glBufferData(GL_ARRAY_BUFFER, buffer->mesh.vertices.size() * sizeof(zgl_vertex), buffer->mesh.vertices.data(), GL_STATIC_DRAW);
+		glGenBuffers(1, &mesh.v_buffer);
+		glGenBuffers(1, &mesh.e_buffer);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->e_buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer->mesh.indices.size(), buffer->mesh.indices.data(), GL_STATIC_DRAW);
+		glBindVertexArray(mesh.v_array);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh.v_buffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.e_buffer);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, x)));
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, u)));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, xn)));
+		glBufferData(GL_ARRAY_BUFFER, mesh.vertices.size() * sizeof(zgl_vertex), mesh.vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indices.size() * sizeof(u32), mesh.indices.data(), GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, x)));
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, u)));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(zgl_vertex), (void*)(offsetof(zgl_vertex, xn)));
 
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	
+
+	
 }
 
 void zgl_enable_ztest()

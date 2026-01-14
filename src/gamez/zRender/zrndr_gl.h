@@ -88,14 +88,19 @@ typedef struct {
 } zgl_index;
 
 typedef struct {
+	u32 base_vertex;
+	u32 base_index;
 	u32 vertex_count;
 	u32 index_count;
+	u32 v_array;
+	u32 v_buffer;
+	u32 e_buffer;
 	std::vector<zgl_vertex> vertices;
 	std::vector<u32> indices;
 } zgl_mesh;
 
 typedef struct {
-	zgl_mesh mesh;
+	std::vector<zgl_mesh> mesh;
 	u32 v_array;
 	u32 v_buffer;
 	u32 e_buffer;
@@ -123,7 +128,7 @@ extern void zgl_destroy_buffers();
 extern zgl_chain zgl_read_chain(const _word128* chain);
 extern size_t zgl_get_chain_size(const zgl_chain* chain);
 
-extern zgl_mesh zgl_chain_read_meshes(const zgl_chain* chain);
+extern std::vector<zgl_mesh> zgl_chain_read_meshes(const zgl_chain* chain);
 extern void zgl_chain_mesh_process(const zgl_packet* packet, zgl_mesh* mesh);
 
 extern void zgl_mesh_buffer_create(zgl_mesh_buffer* buffer);
