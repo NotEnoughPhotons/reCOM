@@ -154,7 +154,7 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 	m_texLoadIdx = 0;
 	m_texIntIdx = 0;
 
-	zVid_ClearColor(120.0f, 0.0f, 0.0f);
+	zVid_ClearColor(world->m_camera->m_fog_color.x, world->m_camera->m_fog_color.y, world->m_camera->m_fog_color.z);
 
 	zdb::CDecal::m_tempPool.RecycleTick();
 	zdb::CMeshDecal::m_tempPool.RecycleTick();
@@ -222,9 +222,21 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 		zdb::CVisual::LandmarkEnable(false);
 	}
 
+	for (auto i = world->m_child.begin(); i != world->m_child.end(); ++i)
+	{
+		zdb::CNode* child = *i;
+		child->SetActive(true);
+		RenderNode(child, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
+	}
+
 	m_drawCharacters = true;
 
-	return 1;
+	CStack::m_pointer--;
+	CStack::m_top--;
+
+	zdb::CVisual::m_stack_vid.pop_back();
+
+	return true;
 }
 
 bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
@@ -258,9 +270,9 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 				zdb::CVisual::m_rangeSqdToCamera = m_camera->GetScaledRangeSquared(position);
 				zdb::CVisual::m_applyDetailTexture = false;
 
-				for (u32 j = 0; j < visual->m_detail_cnt; j++)
-					if (zdb::CVisual::m_rangeSqdToCamera <= visual->m_detail_buff[j].m_range_sqd_to_camera)
-						zdb::CVisual::m_applyDetailTexture = true;
+				//for (u32 j = 0; j < visual->m_detail_cnt; j++)
+				//	if (zdb::CVisual::m_rangeSqdToCamera <= visual->m_detail_buff[j].m_range_sqd_to_camera)
+				//		zdb::CVisual::m_applyDetailTexture = true;
 			}
 
 			// Does this visual have bilinear filtering for textures?
