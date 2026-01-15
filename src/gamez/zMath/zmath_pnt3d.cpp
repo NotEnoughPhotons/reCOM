@@ -53,3 +53,32 @@ void CPnt3D::Cross(const CPnt3D* a, CPnt3D* b, bool normalize)
 {
 
 }
+
+void CPnt3D::Interp(const CPnt3D* from, f32 step, CPnt3D* to)
+{
+	if (step == 0.0f)
+	{
+		to = this;
+	}
+	else
+	{
+		f32 value = 1.0f - step;
+
+		if (step == 1.0f)
+		{
+			to->x = from->x;
+			to->y = from->y;
+			to->z = from->z;
+		}
+		else
+		{
+			to->x = x * value;
+			to->y = y * value;
+			to->z = z * value;
+
+			to->x += from->x * step;
+			to->y += from->y * step;
+			to->z += from->z * step;
+		}
+	}
+}

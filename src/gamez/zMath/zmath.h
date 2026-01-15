@@ -165,6 +165,7 @@ public:
 	void Sub(CPnt3D* other, CPnt3D* out);
 	void Scale(f32 scaleFactor, CPnt3D* out);
 	void Cross(const CPnt3D* a, CPnt3D* b, bool normalize);
+	void Interp(const CPnt3D* from, f32 step, CPnt3D* to);
 };
 
 class CPnt4D : public PNT4D
