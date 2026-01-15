@@ -299,7 +299,7 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 				if (FirstVisDrawn)
 				{
 					FirstVisDrawn = false;
-					// m_node->NodeSetup(node, mat, fov);
+					zdb::CVisual::NodeSetup(m_node, node, &mat, static_cast<s32>(fov));
 
 					if (zdb::CVisual::m_applyLocalLights)
 						// Why do UI nodes need to have lights?
@@ -309,7 +309,7 @@ bool CPipe::RenderVisual(zdb::CNode* node, zdb::tag_ZVIS_FOV fov)
 				// TODO: Fix this function. A matrix apparently isn't used or passed into
 				// CVisual::VuUpdate. What???
 				// Expected: visual->Render(mat);
-				visual->Render();
+				visual->Render(&mat);
 				CBench::countVisuals++;
 			}
 			else if (opacity >= 0.0078125f)

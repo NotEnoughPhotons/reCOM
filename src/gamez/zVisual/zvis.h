@@ -155,6 +155,7 @@ namespace zdb
 		static s32 ApplyDecal(u32 vertex, f32 opacity, CPnt3D* position, CMatrix* mat, CTexHandle* handle);
 		static CVisual* Create(zar::CZAR& archive);
 		static void LandmarkEnable(bool enableLandmarks);
+		static void NodeSetup(CNode* node, CNode* other, CMatrix* matrix, s32 status);
 		
 		void Init();
 
@@ -164,10 +165,11 @@ namespace zdb
 
 		void SetBuffer(_word128* wvis, u32 size, CVisBase* visdata);
 		bool GetChainData();
+
 		
 		bool DrawLOD(CLOD_band* lod, f32 range, f32* distance);
-		void Render();
-		void VuUpdate(f32 opacity);
+		void Render(CMatrix* transform);
+		void VuUpdate(CMatrix* transform, f32 opacity);
 
 		void SetupShaders();
 
@@ -201,15 +203,18 @@ namespace zdb
 		static bool m_lightingEnable;
 		static bool m_landmarkFlag;
 
+		static f32 m_GlobalLightScale;
+
 		static CMatrix m_modelToWorld;
 		static CMatrix m_WorldToModel;
 
 		static CCamera* m_camera;
 		static s32 custom;
 
+		static s32 m_fovStatus;
+
 		static f32 m_opacity;
 		static f32 m_rangeSqdToCamera;
-
 		static f32 m_adjustBilinearRange;
 
 		bool m_lodIndex;

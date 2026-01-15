@@ -12,6 +12,7 @@
 #include "gamez/zNode/node_assetlib.h"
 #include "gamez/zNode/node_model.h"
 #include "gamez/zNode/node_world.h"
+#include "gamez/zMath/zmath_vu.h"
 #include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zRender/zrender.h"
 #include "gamez/zShader/zshader.h"
@@ -19,6 +20,8 @@
 s32 node_index = 0;
 zdb::CVisData* _vdataTex = NULL;
 std::deque<u32> zdb::CVisual::m_stack_vid;
+CMatrix zdb::CVisual::m_modelToWorld;
+CMatrix zdb::CVisual::m_WorldToModel;
 bool zdb::CVisual::m_applyShadow = true;
 bool zdb::CVisual::m_applyDetailTexture = false;
 bool zdb::CVisual::m_applyLocalLights = false;
@@ -29,6 +32,8 @@ bool zdb::CVisual::m_lightingEnable = true;
 f32 zdb::CVisual::m_rangeSqdToCamera = 1.0f;
 _word128* zdb::CVisual::m_dmaChain = NULL;
 u32 zdb::CVisual::m_dmaQwc = 0;
+s32 zdb::CVisual::m_fovStatus = 0;
+f32 zdb::CVisual::m_GlobalLightScale = 1.0f;
 
 void hookupMesh(zar::CZAR* archive, zdb::CModel* model)
 {
@@ -424,15 +429,38 @@ namespace zdb
 		return true;
 	}
 
-	void CVisual::Render()
+	void CVisual::NodeSetup(CNode* node, CNode* other, CMatrix* matrix, s32 status)
 	{
-		// if (m_renderState != 0)
-			VuUpdate(1.0f);
+		m_modelToWorld = *matrix;
+		Vu0MatrixInverseWithUniformScale(&m_WorldToModel, matrix);
+		m_fovStatus = status;
+
+		if (m_renderMap && node->m_light || other->m_light)
+		{
+			m_lightingEnable = true;
+
+			if (node->m_customGlobalLight < 0)
+				m_GlobalLightScale = 1.0f;
+			else
+				m_GlobalLightScale = node->m_customGlobalLight * 0.007874016f;
+
+			m_applyLocalLights = other->m_light_dynamic;
+		}
+		else
+		{
+			m_lightingEnable = false;
+			m_applyLocalLights = false;
+		}
 	}
 
-	void CVisual::VuUpdate(f32 opacity)
+	void CVisual::Render(CMatrix* transform)
 	{
-		CMatrix model = CMatrix::identity;
+		// if (m_renderState != 0)
+			VuUpdate(transform, 1.0f);
+	}
+
+	void CVisual::VuUpdate(CMatrix* transform, f32 opacity)
+	{
 		CMatrix camera = CMatrix::identity;
 
 		camera.m_matrix[3][2] = -5.0f;
@@ -451,7 +479,7 @@ namespace zdb
 		// projMat.m_matrix[3][3] = 1.0f;
 
 		m_shader->Use();
-		m_shader->SetMat4("model", model);
+		m_shader->SetMat4("model", *transform);
 		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
 		m_shader->SetMat4("projection", projMat);
 		m_shader->SetVec3("col", col);
