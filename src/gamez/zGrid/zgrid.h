@@ -61,20 +61,23 @@ namespace zdb
 		void Update(CNode* node);
 
 		void SetTraversalBoundary(const CPnt3D* point, s32 tick, bool lineWalk);
+		void SetTraversalBoundaryOrdered(const CPnt3D* point, const CPnt3D* boundary, s32 tick, bool lineWalk);
 		void SetTraversalExtents(const CPnt3D* point, s32 tick, bool lineWalk);
 		CGridAtom* StartTraversal();
 		CGridAtom* StartTraversalOrdered();
 		CGridAtom* GetNextAtom();
 		CGridAtom* GetNextAtomOrdered();
 
-		// TODO: Implement this function
-		void gridAddNodeToGrids(CNode* node) { }
+		void addOrderedCellAtom(s32 ix, s32 iy, bool dummy);
+		void buildOrderedCellAtomList(const CPnt3D* point);
+		bool gridCellOut(s32 ix, s32 iy);
+		void gridAddNodeToGrids(CNode* node);
 		void gridRemoveNodeFromGrids(CNode* node);
 		CGridAtom** gridGetAtomBasePtr(s32 x, s32 y);
 		bool gridGetNextIndex();
 
 		static u32 N_ATOMS;
-	private:
+
 		CFRect m_extents;
 		CWorld* m_world;
 

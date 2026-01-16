@@ -39,7 +39,7 @@ namespace zdb
         m_world = world;
         m_posts = params->m_posts;
 
-        if (m_world->m_flatten)
+        if (m_world->m_use_parent_bbox)
         {
             CNode* parent = m_world->m_parent;
             bbox = parent->m_bbox;
@@ -75,17 +75,19 @@ namespace zdb
         m_AtomBuf = static_cast<CGridAtom*>(zmalloc(m_AtomCnt * 12));
         m_FreeAtoms = static_cast<CGridAtom**>(zmalloc(m_AtomCnt << 2));
 
-        s32 atomidx = m_AtomCnt;
+        u32 ex = 0;
+        u32 ey = 0;
 
-        // TODO:
-        // this is stupid
-        // for (u32 i = 0; i < m_AtomCnt; i++)
-        // {
-        //     atomidx = (s32)m_AtomBuf->Next;
-        //     m_FreeAtoms
-        // }
+        for (u32 i = 0; i < m_AtomCnt; i++)
+        {
+            // TODO: clean this up
+            u32 count = (u32)&m_AtomBuf->Ent + ey;
+            ey += 12;
+            *(u32*)(m_FreeAtoms + ex) = count;
+            ex += 4;
+        }
 
-        m_AtomFreePtr = atomidx - 1;
+        m_AtomFreePtr = m_AtomCnt - 1;
 
         m_Atoms = static_cast<CGridAtom**>(zmalloc(m_CellCount.cx * m_CellCount.cy * sizeof(CGridAtom)));
 
@@ -152,13 +154,9 @@ namespace zdb
         s32 cy = 8;
 
         if (!sload.m_zfile.Fetch("grid_params", this, sizeof(tag_GRID_PARAMS)))
-        {
             return false;
-        }
         else
-        {
             return Create(sload.m_world, this);
-        }
 
         return false;
     }
@@ -214,6 +212,34 @@ namespace zdb
         }
 
         m_TickNum++;
+    }
+
+    void CGrid::SetTraversalBoundaryOrdered(const CPnt3D* point, const CPnt3D* boundary, s32 tick, bool lineWalk)
+    {
+        CPnt3D xCell;
+        CPnt3D zCell;
+
+        SetTraversalExtents(boundary, tick, lineWalk);
+
+        if (tick == 1)
+        {
+            m_orderedCells.m_gridCellAtomCnt = 0;
+            m_orderedCells.m_rt_gridCellAtomCnt = 0;
+            // gridGetGridXandZIndex(&xCell, &zCell, boundary->x, boundary->z);
+            // addOrderedCellAtom(&xCell, &zCell, true);
+            m_TickNum++;
+        }
+        else
+        {
+            for (u32 i = 0; i < m_PntCnt; i++)
+            {
+                // TODO: do stuff here
+            }
+
+            m_TickNum++;
+            // buildOrderedCellAtomList(point);
+            m_TickNum++;
+        }
     }
 
     void CGrid::SetTraversalExtents(const CPnt3D* point, s32 tick, bool lineWalk)
@@ -281,6 +307,130 @@ namespace zdb
         }
         
         return m_NextAtom;
+    }
+
+    void CGrid::addOrderedCellAtom(s32 ix, s32 iy, bool dummy)
+    {
+        if ((m_ix >= ix && ix > m_ixb) && (m_iz >= iy && iy > m_izb))
+            return;
+
+        s32 x = ix;
+        if (ix < 0)
+            x = 0;
+
+        u32 sizeX = m_CellCount.cx;
+        u32 count = sizeX - 1;
+
+        if (x <= count)
+            count = x;
+
+        s32 z = iy;
+        if (iy < 0)
+            z = 0;
+
+        u32 sizeY = m_CellCount.cy - 1;
+
+        if (z <= sizeY)
+            sizeY = z;
+
+        CGridAtom* atom = m_Atoms[count + sizeY * sizeX];
+
+        if (!atom)
+            return;
+
+        if (atom->Ent->m_TickNum > m_TickNum)
+            return;
+
+        if (!dummy || gridCellOut(ix, iy))
+            return;
+
+        s32 i = m_orderedCells.m_gridCellAtomCnt;
+
+        atom->Ent->m_TickNum = m_TickNum;
+        m_orderedCells.m_Atoms[i].cellAtom = atom;
+        m_orderedCells.m_Atoms[i].ring = abs(ix - m_orderedCells.m_viewX) + abs(iy - m_orderedCells.m_viewZ);
+        m_orderedCells.m_Atoms[i].x = ix;
+        m_orderedCells.m_Atoms[i].z = iy;
+        m_orderedCells.m_gridCellAtomCnt++;
+    }
+    
+    void CGrid::buildOrderedCellAtomList(const CPnt3D* point)
+    {
+
+    }
+
+    bool CGrid::gridCellOut(s32 ix, s32 iy)
+    {
+        m_CurCellOut = 0;
+
+        if (m_PntCnt != 1 && m_PntCnt != 2 || m_LineWalk)
+        {
+            m_CurCellOut = 1;
+            for (u32 i = 0; i < m_PntCnt; i++)
+            {
+                f32 curCell = (m_CellDim * 0.5f + m_origin.z + iy * m_CellDim)
+                            - (m_Pnts[i].z * m_Edge[i].z)
+                            + (m_CellDim * 0.5f + m_origin.x + ix * m_CellDim)
+                            - (m_Pnts[i].x * m_Edge[i].x);
+
+                if (curCell < -m_GridCellToI)
+                    return true;
+
+                if (m_LineWalk && m_GridCellToI < curCell)
+                    return true;
+            }
+
+            m_CurCellOut = 0;
+            if (2 < m_PntCnt)
+                m_RowCellIn = 1;
+        }
+
+        return false;
+    }
+
+    void CGrid::gridAddNodeToGrids(CNode* node)
+    {
+        if (!node)
+            return;
+
+        CBBox* bbox = NULL;
+
+        if (node->m_use_parent_bbox)
+        {
+            bbox = &node->m_parent->m_bbox;
+
+            if (node->m_parent->m_use_parent_bbox)
+                bbox = node->m_parent->GetBBox();
+        }
+        else
+            bbox = &node->m_bbox;
+
+        CPnt3D worldToCell;
+        f32 x = 0.0f;
+        f32 y = 0.0f;
+        f32 z = 0.0f;
+        // TODO: Write a function that translates two points
+        // node->m_matrix.Transform();
+
+        if (x < worldToCell.x)
+        {
+            worldToCell.x = x;
+            x = worldToCell.x;
+        }
+
+        if (y < worldToCell.y)
+        {
+            worldToCell.y = y;
+            y = worldToCell.y;
+        }
+
+        if (z < worldToCell.z)
+        {
+            worldToCell.z = z;
+            z = worldToCell.z;
+        }
+
+
     }
 
     void CGrid::gridRemoveNodeFromGrids(CNode* node)
