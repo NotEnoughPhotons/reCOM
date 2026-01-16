@@ -527,14 +527,18 @@ class CZAnimZAR : public zar::CZAR {};
 class CZAnimNameTable
 {
 public:
-
+	char** m_name;
+	u32 m_count;
 };
 
 class CZAnimSet
 {
 public:
-	bool Start();
 
+	bool Start();
+	void Init();
+
+	void Name(const char* name);
 	void GetName();
 
 	bool m_WasStarted;
@@ -552,8 +556,15 @@ public:
 	s32 m_anim_count;
 	s32 m_anim_max;
 	CZAnim* m_anim_list;
-	// CZAnimSetSave* m_node_states;
+	CZAnimSetSave* m_node_states;
 	CSched_Manager* m_task_scheduler;
+};
+
+class CZAnimSetSave : public std::vector<CZAnimSet*>
+{
+public:
+	std::vector<CQuat> m_rotationList;
+	std::vector<CZAnimSet*> m_parentList;
 };
 
 class CZAnimNameIndexTable
@@ -581,8 +592,13 @@ public:
 	_zanim_cmd_hdr* AddCmd(const char* name, _zanim_cmd_hdr*(*parser)(_zrdr*), void(*begin)(_zanim_cmd_hdr*), bool(*tick)(_zanim_cmd_hdr*, f32*), void(*end)(_zanim_cmd_hdr*));
 	_zanim_cmd_hdr* AnimParseExpression(_zanim_cmd_hdr* header, _zrdr* reader);
 
+	bool NewAnimSet(u32 index);
+
 	_zanim_cmd_set* GetCmdEntry(char* name, bool param_2);
 	_zanim_cmd_set* GetCmdSet(char* name, bool param_2);
+
+	u32 GetAnimSetIndex(const char* animName, bool searchList);
+	CZAnimSet* GetAnimSet(u32 i);
 	
 	static bool m_LoadFromZAR;
 

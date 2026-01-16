@@ -117,7 +117,31 @@ _zanim_cmd_hdr* zAnimLoadWhile(_zrdr* tag)
     }
 }
 
+void CZAnimSet::Name(const char* name)
+{
+    if (m_name)
+        zfree(m_name);
+
+    m_name = zstrdup(name);
+}
+
 bool CZAnimSet::Start()
 {
     return false;
+}
+
+void CZAnimSet::Init()
+{
+    m_WasStarted = false;
+    m_IsStarted = false;
+    m_IsAvailable = true;
+    m_name = NULL;
+    m_si_script_count = 0;
+    m_si_script = NULL;
+    m_AnimExList = NULL;
+    m_anim_count = 0;
+    m_anim_max = 0;
+    m_anim_list = NULL;
+    m_node_states = NULL;
+    m_task_scheduler = NULL;
 }

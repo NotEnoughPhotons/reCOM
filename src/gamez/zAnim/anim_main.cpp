@@ -136,6 +136,16 @@ void CZAnimMain::CmdSet(s32 program_counter)
 	m_CurSeq->cmd_state = 2;
 }
 
+bool CZAnimMain::NewAnimSet(u32 index)
+{
+	while (m_animset_count <= index)
+	{
+		m_animset_list = static_cast<CZAnimSet*>(zrealloc(m_animset_list, m_animset_count + 1 * sizeof(CZAnimSet)));
+		memset(&m_animset_list[m_animset_count * 6], 0, sizeof(CZAnimSet));
+		m_animset_list[m_animset_count * 6].Init();
+	}
+}
+
 _zanim_cmd_set* CZAnimMain::GetCmdEntry(char* name, bool param_2)
 {
 	char* buf = NULL;
@@ -167,6 +177,58 @@ _zanim_cmd_set* CZAnimMain::GetCmdSet(char* name, bool param_2)
 			}
 		}
 	}
+}
+
+u32 CZAnimMain::GetAnimSetIndex(const char* animName, bool searchList)
+{
+	for (u32 i = 0; i < m_animset_count; i++)
+	{
+		if (!animName)
+		{
+			if (!m_animset_list[i].m_name)
+				return i;
+
+			if (!SDL_strcasecmp(m_animset_list[i].m_name, "None"))
+				return i;
+		}
+		else if (m_animset_list[i].m_name)
+		{
+			if (!SDL_strcasecmp(m_animset_list[i].m_name, animName))
+				return i;
+		}
+	}
+
+	u32 i = 0;
+	if (searchList)
+	{
+		for (i = 0; i < m_animset_count; i++)
+		{
+			if (&m_animset_list[i].m_IsAvailable)
+			{
+				// wtf??
+				m_animset_list[i * 6].m_IsAvailable = false;
+				goto setname;
+			}
+		}
+
+		NewAnimSet(m_animset_count);
+
+	setname:
+		if (animName)
+			m_animset_list[i * 6].Name(animName);
+	}
+
+	return 0;
+}
+
+CZAnimSet* CZAnimMain::GetAnimSet(u32 i)
+{
+	if (i < 0 || m_animset_count <= 1)
+		return NULL;
+	else
+		return &m_animset_list[i];
+
+	return NULL;
 }
 
 char* CZAnimMain::SplitName(char* name, char** splitname)
