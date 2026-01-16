@@ -202,6 +202,53 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 
 	zdb::CVisual::m_adjustBilinearRange = bilinearDistance;
 
+	zdb::CGrid* grid = world->m_grid;
+
+	for (zdb::CGridAtom* atom = grid->StartTraversalOrdered(); grid->m_ring < 2; atom = grid->GetNextAtomOrdered())
+	{
+		zdb::CCell* cell = static_cast<zdb::CCell*>(atom->GetCell());
+
+		if (!cell)
+		{
+			m_node = atom->Ent;
+			bool applyShadow = false;
+
+			if (m_node->m_clutter && m_node->m_shadow)
+				applyShadow = true;
+
+			zdb::CVisual::m_applyShadow = !applyShadow;
+			RenderAtom(m_node);
+		}
+		else
+		{
+			CBBox* bbox = NULL;
+			CPnt3D bboxExtents;
+			m_cell = cell;
+
+			if (m_cell->m_use_parent_bbox)
+				bbox = &m_cell->m_parent->m_bbox;
+			else
+				bbox = &m_cell->m_bbox;
+
+			bbox->m_min.Interp(&bbox->m_max, 0.5f, &bboxExtents);
+			// TODO: implement all this
+			// m_camera->TestFOG(
+			// &bboxExtents, 
+			// zdb::CWorld::m_world->m_grid.m_ClutterToI
+			// + zdb::CWorld::m_world->m_grid.m_GridCellToI);
+
+			//zdb::CVisual* firstVisual = m_cell->GetFirstVisual();
+
+			//if (firstVisual)
+			//{
+				//firstVisual->m_render_priority = -3;
+				//firstVisual->Render(CStack::m_top);
+			//}
+
+			//m_cell->RenderClutter();
+		}
+	}
+
 	if (world->m_landmarks.size() != 0)
 	{
 		zdb::CVisual::LandmarkEnable(true);
@@ -225,7 +272,7 @@ u32 CPipe::RenderWorld(zdb::CWorld* world)
 	for (auto i = world->m_child.begin(); i != world->m_child.end(); ++i)
 	{
 		zdb::CNode* child = *i;
-		child->SetActive(true);
+		// child->SetActive(true);
 		RenderNode(child, zdb::tag_ZVIS_FOV::ZVIS_FOV_ALL_IN);
 	}
 
