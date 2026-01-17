@@ -594,6 +594,7 @@ public:
 
 	bool NewAnimSet(u32 index);
 
+	u32 GetCmd(u32 index, char* name, bool alloc);
 	_zanim_cmd_set* GetCmdEntry(char* name, bool param_2);
 	_zanim_cmd_set* GetCmdSet(char* name, bool param_2);
 

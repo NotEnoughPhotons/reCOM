@@ -39,12 +39,12 @@ void CZAnimMain::Open()
 	}
 
 	InitCommands();
-	// NewAnimSet(2);
+	NewAnimSet(2);
 
-	                     // Why?
-	// m_animset_list[2] = *(CZAnimSet*)0x1;
-	// m_animset_list[50] = *(CZAnimSet*)0x1;
-	// m_animset_list[98] = *(CZAnimSet*)0x1;
+	m_animset_list->m_IsAvailable = true;
+	m_animset_list[1].m_IsAvailable = true;
+	m_animset_list[2].m_IsAvailable = true;
+
 	m_CurrentFrame = 0;
 	m_RunningAnimCount = 0;
 	m_IsOpen = true;
@@ -141,9 +141,37 @@ bool CZAnimMain::NewAnimSet(u32 index)
 	while (m_animset_count <= index)
 	{
 		m_animset_list = static_cast<CZAnimSet*>(zrealloc(m_animset_list, m_animset_count + 1 * sizeof(CZAnimSet)));
-		memset(&m_animset_list[m_animset_count * 6], 0, sizeof(CZAnimSet));
-		m_animset_list[m_animset_count * 6].Init();
+		memset(&m_animset_list[m_animset_count], 0, sizeof(CZAnimSet));
+		m_animset_list[m_animset_count].Init();
+		m_animset_list[m_animset_count].Name("None");
+		m_animset_count++;
 	}
+
+	return true;
+}
+
+u32 CZAnimMain::GetCmd(u32 index, char* name, bool alloc)
+{
+	for (u32 i = 0; i < m_cmdset_list[index].count; i++)
+	{
+		if (alloc)
+		{
+			zanim_cmd* command = static_cast<zanim_cmd*>(zrealloc(m_cmdset_list[index].cmd_list, m_cmdset_list[index].count + 1));
+			m_cmdset_list[index].cmd_list = command;
+			zanim_cmd* buf = (zanim_cmd*)m_cmdset_list[index].cmd_list->name + m_cmdset_list[index].count * 6;
+			memset(buf, 0, sizeof(zanim_cmd));
+			buf->name = zstrdup(name);
+			buf->cmd_val.index.set = index;
+			buf->cmd_val.index.cmd = m_cmdset_list[index].count;
+			m_cmdset_list[index].count++;
+		}
+		else
+		{
+
+		}
+	}
+
+	return 0;
 }
 
 _zanim_cmd_set* CZAnimMain::GetCmdEntry(char* name, bool param_2)
@@ -322,7 +350,5 @@ _zanim_cmd_hdr* CZAnimMain::AddCmd(const char* name,
 	bool(*tick)(_zanim_cmd_hdr*, float*),
 	void(*end)(_zanim_cmd_hdr*))
 {
-	char* anim_name = NULL;
-	
 	return 0;
 }
