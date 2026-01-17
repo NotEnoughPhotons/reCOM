@@ -1,107 +1,53 @@
 #include "zanim.h"
 
+bool zAnimQuadAlignTick(_zanim_cmd_hdr* header, f32* dT)
+{
+    return true;
+}
+
 bool zAnimIfTick(_zanim_cmd_hdr* header, f32* dT)
 {
     ZAnim.m_CurSeq->m_IF_NestLevel++;
 
-    do
+    while (!CZAnimExpression::ProcExpr(dT))
     {
-        ZAnim.CmdNext(8);
+        _zanim_cmd_hdr* header = NULL;
+        bool evaluated = false;
 
-        if (!CZAnimExpression::ProcExpr(dT))
+        while (!evaluated)
         {
-            bool valid = false;
-            do
+            if (!ZAnim.CmdValid())
             {
-                ZAnim.CmdNext();
-                
-                if (ZAnim.CmdValid())
-                {
-                    u8* program_counter = NULL;
-
-                    if (ZAnim.m_CurSeq)
-                    {
-                        program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
-                    }
-
-                    if (*program_counter != ZAnim.m_cmd_else.data_size)
-                    {
-                        program_counter = NULL;
-
-                        if (ZAnim.m_CurSeq)
-                        {
-                            program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
-                        }
-
-                        if (*program_counter != ZAnim.m_cmd_elseif.data_size)
-                        {
-                            program_counter = NULL;
-
-                            if (ZAnim.m_CurSeq)
-                            {
-                                program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
-                            }
-
-                            if (*program_counter != ZAnim.m_cmd_endif.data_size)
-                            {
-                                continue;
-                            }
-                        }
-                    }
-
-                    program_counter = NULL;
-
-                    if (ZAnim.m_CurSeq)
-                    {
-                        program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
-                    }
-
-                    if (program_counter[4] == ZAnim.m_CurSeq->loop_counter)
-                    {
-                        valid = true;
-
-                        if (!ZAnim.m_CurSeq)
-                        {
-                            program_counter = NULL;
-                        }
-                        else
-                        {
-                            program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
-                        }
-
-                        if (*program_counter == ZAnim.m_cmd_endif.data_size)
-                        {
-                            ZAnim.m_CurSeq->loop_counter--;
-                        }
-                    }
-                }
-                else
-                {
-                    valid = true;
-                }
-            } while (!valid);
-
-            u8* program_counter = NULL;
-            
-            if (!ZAnim.m_CurSeq)
-            {
-                program_counter = NULL;
-            }
-            else
-            {
-                program_counter = (u8*)ZAnim.m_CurSeq->cmd_pc;
+                evaluated = true;
+                break;
             }
 
-            if (*program_counter != ZAnim.m_cmd_elseif.data_size)
+            if (ZAnim.m_CurSeq)
+                header = reinterpret_cast<_zanim_cmd_hdr*>(ZAnim.m_CurSeq->cmd_pc);
+
+            if (header->data_type != ZAnim.m_cmd_else.data_type)
+                if (header->data_type != ZAnim.m_cmd_elseif.data_type)
+                    if (header->data_type != ZAnim.m_cmd_endif.data_type)
+                        continue;
+
+            if (header->data_size == ZAnim.m_CurSeq->m_IF_NestLevel)
             {
-                return true;
+                evaluated = true;
+                if (header->data_type == ZAnim.m_cmd_endif.data_type)
+                    ZAnim.m_CurSeq->m_IF_NestLevel--;
             }
         }
+
+        if (!ZAnim.m_CurSeq)
+            header = NULL;
         else
-        {
-            return true;
-        }
-    } while (true);
+            header = reinterpret_cast<_zanim_cmd_hdr*>(ZAnim.m_CurSeq->cmd_pc);
+
+        if (header->data_type != ZAnim.m_cmd_elseif.data_type)
+            evaluated = true;
+    }
+
+    return true;
 }
 
 bool zAnimWhileTick(_zanim_cmd_hdr* header, f32* dT)
