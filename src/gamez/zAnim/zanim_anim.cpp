@@ -10,7 +10,7 @@ _zanim_cmd_hdr* zAnimLoad_If(_zrdr* tag)
     if (tag)
     {
         cmd = (_zanim_cmd_hdr*)zcalloc(1, 8);
-        cmd->data_type &= ANIMTYPE_CONDITION;
+        cmd->data_type &= DATATYPE_IF;
         cmd = ZAnim.AnimParseExpression(cmd, tag);
     }
 
@@ -26,7 +26,7 @@ _zanim_cmd_hdr* zAnimLoad_Else(_zrdr* tag)
     if (tag)
     {
         cmd = (_zanim_cmd_hdr*)zcalloc(1, 8);
-        cmd->data_type &= ANIMTYPE_CONDITION;
+        cmd->data_type &= DATATYPE_IF;
     }
 
     cmd->data_size = ZAnim.m_CurSeq->m_IF_NestLevel;
@@ -40,7 +40,7 @@ _zanim_cmd_hdr* zAnimLoad_ElseIf(_zrdr* tag)
     if (tag)
     {
         cmd = (_zanim_cmd_hdr*)zcalloc(1, 8);
-        cmd->data_type &= ANIMTYPE_CONDITION;
+        cmd->data_type &= DATATYPE_IF;
         cmd = ZAnim.AnimParseExpression(cmd, tag);
     }
 
@@ -55,7 +55,7 @@ _zanim_cmd_hdr* zAnimLoad_EndIf(_zrdr* tag)
     if (tag)
     {
         cmd = (_zanim_cmd_hdr*)zcalloc(1, 8);
-        cmd->data_type &= ANIMTYPE_CONDITION;
+        cmd->data_type &= DATATYPE_END_IF;
     }
 
     cmd->data_size = ZAnim.m_CurSeq->m_IF_NestLevel;
@@ -71,9 +71,9 @@ _zanim_cmd_hdr* zAnimLoadWhile(_zrdr* tag)
     if (tag)
     {
         cmd = (_zanim_cmd_hdr*)zcalloc(1, 8);
-        cmd->data_type &= ANIMTYPE_CONDITION;
+        cmd->data_type &= DATATYPE_WHILE;
 
-        if (tag->type == ZRDR_ARRAY && tag->array->integer == ANIMTYPE_CONDITION)
+        if (tag->type == ZRDR_ARRAY && tag->array->integer == DATATYPE_IF)
         {
             _zrdr* evaluation = NULL;
 

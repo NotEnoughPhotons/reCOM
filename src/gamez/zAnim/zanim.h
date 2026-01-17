@@ -8,8 +8,83 @@
 #include "gamez/zValve/zvalve.h"
 #include "gamez/zSound/zsnd.h"
 
-#define ANIMTYPE_UNKNOWN01 1
-#define ANIMTYPE_CONDITION 2
+/// ---------------------
+/// General purpose zAnim datatypes
+/// ---------------------
+
+#define DATATYPE_QUAD_ALIGN              0x01
+#define DATATYPE_IF                      0x02
+#define DATATYPE_GO_TO_ENDIF             0x04
+#define DATATYPE_END_IF                  0x05
+#define DATATYPE_NODE_ACTIVE             0x06
+#define DATATYPE_RANGE_TEST              0x08
+#define DATATYPE_RANDOM_WEIGHT           0x09
+#define DATATYPE_FAIL                    0x0A
+#define DATATYPE_LOOP                    0x0D
+#define DATATYPE_WAIT                    0x0E
+#define DATATYPE_OBJECT_ACTIVE_STATE     0x10
+#define DATATYPE_OBJECT_TRANSLATE_STATE  0x11
+#define DATATYPE_OBJECT_ROTATE_STATE     0x12
+#define DATATYPE_OBJECT_MOTION           0x13
+#define DATATYPE_OBJECT_MOTION_FROM_TO   0x14
+#define DATATYPE_OBJECT_OPACITY_FROM_TO  0x15
+#define DATATYPE_PARTICLE_SOURCE         0x17
+#define DATATYPE_CAMERA                  0x18
+#define DATATYPE_DESTRUCTION_SOURCE      0x19
+#define DATATYPE_SOUND                   0x1A
+#define DATATYPE_LIGHT                   0x1B
+#define DATATYPE_WHILE                   0x1C
+#define DATATYPE_END_WHILE               0x1D
+#define DATATYPE_CALL_ANIMATION          0x20
+#define DATATYPE_STOP_ANIMATION          0x21
+#define DATATYPE_PAUSE_ANIMATION         0x22
+#define DATATYPE_RESUME_ANIMATION        0x23
+#define DATATYPE_INVALIDATE_ANIMATION    0x24
+#define DATATYPE_CALL_SEQUENCE           0x25
+#define DATATYPE_STOP_SEQUENCE           0x26
+#define DATATYPE_MESSAGE                 0x2A
+#define DATATYPE_VALVE                   0x2D
+#define DATATYPE_CAM_CONTROL_SWITCH      0x2E
+#define DATATYPE_CAM_INDOORS_TEST        0x30
+#define DATATYPE_CAM_SET_REGIONS         0x31
+#define DATATYPE_CAM_SET_PARAMS          0x33
+#define DATATYPE_CAM_3RD_PERSON          0x34
+#define DATATYPE_IS_PLAYER_NODE          0x37
+
+/// ---------------------
+/// AI zAnim datatypes
+/// ---------------------
+
+#define DATATYPE_AI_COMM                 0x02
+#define DATATYPE_AI_DEBUG                0x03
+#define DATATYPE_AI_EVENT                0x05
+#define DATATYPE_AI_FIREMODE             0x06
+#define DATATYPE_AI_GOTO                 0x08
+#define DATATYPE_AI_HOLD                 0x09
+#define DATATYPE_AI_INSTATE              0x0A
+#define DATATYPE_AI_INVIEW               0x0B
+#define DATATYPE_AI_LOOKAT               0x0C
+#define DATATYPE_AI_MACRO                0x0D
+#define DATATYPE_AI_MOVE                 0x0F
+#define DATATYPE_AI_PARAM                0x11
+#define DATATYPE_AI_PURSUE               0x12
+#define DATATYPE_AI_ANIMATE              0x13
+#define DATATYPE_AI_INRANGE              0x14
+#define DATATYPE_AI_INREGION             0x15
+#define DATATYPE_AI_SETMODE              0x17
+#define DATATYPE_AI_SETANIMSET           0x18
+#define DATATYPE_AI_SIGNAL               0x19
+#define DATATYPE_AI_SOUND                0x1A
+#define DATATYPE_AI_STANCE               0x1B
+#define DATATYPE_AI_STATE                0x1C
+#define DATATYPE_AI_STOPALL              0x1D
+
+/// ---------------------
+/// UI zAnim datatypes
+/// ---------------------
+
+#define DATATYPE_UI_MENU                 0x1
+
 
 class CZAnim;
 class CZAnimEx;
