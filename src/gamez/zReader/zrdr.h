@@ -157,11 +157,12 @@ struct _zrdr
 	
 	void Clone(const _zrdr* other, const CSTable* table);
 	
-	_zrdr*    Get(s32 offset) const;
-	u32       GetLength()     const;
-	s32       GetInt()        const;
-	ZRDR_TYPE GetType()       const;
-	bool      IsArray()       const;
+	inline _zrdr*    Get(s32 offset) const;
+	inline u32       GetLength()     const;
+	inline s32       GetInt()        const;
+	inline ZRDR_TYPE GetType()       const;
+	inline bool      IsArray()       const;
+	inline bool      IsString()      const;
 	
 	bool Write(FILE* file);
 

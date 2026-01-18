@@ -42,6 +42,11 @@ bool _zrdr::IsArray() const
 	return type == ZRDR_ARRAY;
 }
 
+bool _zrdr::IsString() const
+{
+	return type == ZRDR_STRING;
+}
+
 void _zrdr::Clone(const _zrdr* other, const CSTable* table)
 {
 	if (!zrdr_init)
@@ -72,11 +77,16 @@ int _zrdr::GetInt() const
 	return 0;
 }
 
+ZRDR_TYPE _zrdr::GetType() const
+{
+	return static_cast<ZRDR_TYPE>(type);
+}
+
 _zrdr* _zrdr::Get(s32 offset) const
 {
 	u32 len = 0;
 
-	if (type == ZRDR_ARRAY)
+	if (IsArray())
 		len = array->integer - 1;
 
 	if (offset < len)
@@ -103,7 +113,7 @@ _zrdr* zrdr_findtag_startidx(_zrdr* reader, const char* name, u32 startidx)
 	if (!reader)
 		return NULL;
 
-	if (reader->type != ZRDR_ARRAY)
+	if (reader->IsArray())
 		return NULL;
 
 	u32 length = 0;
@@ -117,14 +127,14 @@ _zrdr* zrdr_findtag_startidx(_zrdr* reader, const char* name, u32 startidx)
 	{
 		_zrdr* node = &reader->array[startidx];
 
-		if (node->type == ZRDR_ARRAY)
+		if (node->IsArray())
 		{
 			node = zrdr_findtag_startidx(node, name, 1);
 
 			if (node)
 				return node;
 		}
-		else if (node->type == ZRDR_STRING && strcmp(node->string, name) == 0)
+		else if (node->IsString() && strcmp(node->string, name) == 0)
 			return &node[1];
 	}
 
