@@ -6,6 +6,7 @@
 #include "gamez/zCamera/zcam.h"
 #include "gamez/zInput/zinput.h"
 #include "gamez/zSystem/zsys.h"
+#include "gamez/zRender/zrndr_gl.h"
 #include "SDL3/SDL_ttf.h"
 
 class C2D;
@@ -127,9 +128,6 @@ private:
 	f32 m_NewUV[2][4];
 
 	zdb::CTexHandle* m_pTexHandle;
-	SDL_Texture* m_pSDLTexture;
-	SDL_FRect m_rect;
-
 	s32 m_iWidth;
 	s32 m_iHeight;
 };
@@ -138,6 +136,8 @@ class C2DPoly : public C2D
 {
 public:
 	C2DPoly();
+
+	void SetColor(f32 r, f32 g, f32 b);
 
 	void Draw(zdb::CCamera* camera);
 	void MakePacket(zdb::CCamera* camera);
@@ -149,10 +149,20 @@ public:
 	f32 m_NewUV[3][4];
 	f32 m_vertex[3][4];
 	zdb::CTexture* m_texture;
+
+	zgl_mesh* m_mesh;
+	zgl_mesh_buffer* m_buffer;
+	CShader* m_shader;
 };
 
 class C2DBitmapPoly : public C2D, protected C2DFade
 {
+public:
+	void SetColor(f32 r, f32 g, f32 b);
+
+	void Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, f32 v3x, f32 v3y, zdb::CTexture* texture);
+	void Draw(zdb::CCamera* camera);
+
 	s32 x1;
 	s32 x2;
 	s32 y1;

@@ -30,8 +30,8 @@ void C2D::Init()
 	m_botx = 2368.0f;
 	m_topy = 1824.0f;
 	m_boty = 2272.0f;
-	m_fXPixel = 1.0f;
-	m_fYPixel = 1.0f;
+	m_fXPixel = 1.0f / 1280.0f;
+	m_fYPixel = 1.0f / 960.0f;
 }
 
 void C2D::Open()
