@@ -52,15 +52,25 @@ bool zAnimIfTick(_zanim_cmd_hdr* header, f32* dT)
 
 bool zAnimWhileTick(_zanim_cmd_hdr* header, f32* dT)
 {
-    if (header->data_type == 0)
+    // what does this even mean
+    if (header[1].data_type == 0)
     {
         ZAnim.CmdNext(8);
         if (CZAnimExpression::ProcExpr(dT))
-        {
-            ZAnim.CmdSet(header->data_size);
-        }
+            ZAnim.CmdSet(header[1].data_size);
     }
 
+    return true;
+}
+
+bool zAnimEndIfTick(_zanim_cmd_hdr* header, f32* dT)
+{
+    ZAnim.m_CurSeq->m_IF_NestLevel--;
+    return true;
+}
+
+bool zAnimGoToEndIf(_zanim_cmd_hdr* header, f32* dT)
+{
     return true;
 }
 

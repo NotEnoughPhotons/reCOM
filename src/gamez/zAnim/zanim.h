@@ -92,6 +92,7 @@ class CZAnimMain;
 class CZAnimHealth;
 class CBlendable;
 class CAnimsByFP;
+class CZAnimSetSave;
 
 class CSched_Manager;
 
@@ -545,18 +546,59 @@ public:
 	// CZAnimArgList* m_arg_list;
 	// CZAnimNameIndexTable m_nameindex_table;
 
+	/// <summary>
+	/// Extension class for debugging animations.
+	/// </summary>
 	CZAnimEx* m_animEx;
+
+	/// <summary>
+	/// The health of the animation.
+	/// If the object "dies", then zAnim script logic can run.
+	/// </summary>
 	CZAnimHealth* m_health;
 
+	/// <summary>
+	/// If the animation is broken or faulty.
+	/// </summary>
 	u32 m_invalid : 1;
+
+	/// <summary>
+	/// Set if engine code created this animation.
+	/// </summary>
 	u32 m_added_to_world_internally : 1;
+
 	u32 m_debug : 1;
+
 	u32 m_animset_index : 8;
+
+	/// <summary>
+	/// Counts how many nodes this animation references.
+	/// </summary>
 	u32 m_node_ref_count : 8;
+
+	/// <summary>
+	/// Counts how many textures this animation references.
+	/// </summary>
 	u32 m_tex_ref_count : 8;
+
+	/// <summary>
+	/// Counts how many particles this animation is using.
+	/// </summary>
 	u32 m_particle_count : 8;
+
+	/// <summary>
+	/// Counts how many sounds this animation is using.
+	/// </summary>
 	u32 m_sound_ref_count : 8;
+
+	/// <summary>
+	/// Counts how many values this animation is using.
+	/// </summary>
 	u32 m_valve_ref_count : 8;
+	
+	/// <summary>
+	/// Counts how many animation calls this animation is using.
+	/// </summary>
 	u32 m_call_anim_ref_count : 8;
 
 	zdb::CNode* m_instance_node;
@@ -569,6 +611,10 @@ public:
 	_zanim_call_anim_ref* m_call_anim_ref_list;
 	_zanim_cmd_hdr** m_user_cmd;
 
+	/// <summary>
+	/// Pointer to raw zSequence data.
+	/// Can be converted into multiple types of sequences based on datatype.
+	/// </summary>
 	char* m_seq_data;
 	s32 m_seq_data_size;
 
