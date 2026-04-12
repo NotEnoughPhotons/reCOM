@@ -44,11 +44,6 @@ void C2DBitmap::Load(f32 x, f32 y, f32 width, f32 height, zdb::CTexHandle* handl
 	m_y = static_cast<s32>(y);
 	m_iWidth = static_cast<s32>(width) - m_x;
 	m_iHeight = static_cast<s32>(height) - m_y;
-
-	m_rect.x = m_x;
-	m_rect.y = m_y;
-	m_rect.w = width;
-	m_rect.h = height;
 	
 	if (m_hasTexture)
 	{
@@ -87,21 +82,21 @@ void C2DBitmap::Load(f32 x, f32 y, f32 width, f32 height, zdb::CTexHandle* handl
 				return;
 			}
 			
-			m_pSDLTexture = SDL_CreateTextureFromSurface(theWindow->GetRenderer(), surface);
+			/*m_pSDLTexture = SDL_CreateTextureFromSurface(theWindow->GetRenderer(), surface);
 
 			if (!m_pSDLTexture)
 			{
 				SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, SDL_GetError());
 				return;
-			}
+			}*/
 			
 			if (texture->m_bilinear)
 			{
-				SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_LINEAR);
+				/*SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_LINEAR);*/
 			}
 			else
 			{
-				SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_NEAREST);
+				/*SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_NEAREST);*/
 			}
 
 			m_hasTexture = true;
@@ -219,13 +214,13 @@ void C2DBitmap::Draw(zdb::CCamera* camera)
 				first = false;
 			}
 
-			SDL_SetRenderDrawColor(theWindow->GetRenderer(), m_RGB[0][0], m_RGB[0][1], m_RGB[0][2], 255);
-			SDL_RenderFillRect(theWindow->GetRenderer(), &m_rect);
+			/*SDL_SetRenderDrawColor(theWindow->GetRenderer(), m_RGB[0][0], m_RGB[0][1], m_RGB[0][2], 255);
+			SDL_RenderFillRect(theWindow->GetRenderer(), &m_rect);*/
 		}
 	}
 	else
 	{
-		SDL_RenderTexture(theWindow->GetRenderer(), m_pSDLTexture, NULL, &m_rect);
+		/*SDL_RenderTexture(theWindow->GetRenderer(), m_pSDLTexture, NULL, &m_rect);*/
 	}
 }
 

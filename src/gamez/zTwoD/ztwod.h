@@ -137,7 +137,9 @@ class C2DPoly : public C2D
 public:
 	C2DPoly();
 
+	void SetTrans(f32 transparency);
 	void SetColor(f32 r, f32 g, f32 b);
+	void SetUV(f32 v0u, f32 v0v, f32 v1u, f32 v1v, f32 v2u, f32 v2v);
 
 	void Draw(zdb::CCamera* camera);
 	void MakePacket(zdb::CCamera* camera);
@@ -158,7 +160,9 @@ public:
 class C2DBitmapPoly : public C2D, protected C2DFade
 {
 public:
+	void SetTrans(f32 transparency);
 	void SetColor(f32 r, f32 g, f32 b);
+	void SetUV(f32 v0u, f32 v0v, f32 v1u, f32 v1v, f32 v2u, f32 v2v);
 
 	void Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, f32 v3x, f32 v3y, zdb::CTexture* texture);
 	void Draw(zdb::CCamera* camera);

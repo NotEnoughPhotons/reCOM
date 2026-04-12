@@ -74,6 +74,15 @@ CWindow::CWindow(CRdrFile* reader)
 
 	if ((SDL_GetWindowFlags(m_window) & SDL_WINDOW_OPENGL) != 0)
 	{
+		if (!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE))
+			SDL_Log("Failed to set attribute SDL_GL_CONTEXT_PROFILE_MASK");
+
+		if(!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3))
+			SDL_Log("Failed to set attribute SDL_GL_CONTEXT_MAJOR_VERSION");
+
+		if(!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3))
+			SDL_Log("Failed to set attribute SDL_GL_CONTEXT_MINOR_VERSION");
+
 		m_context = SDL_GL_CreateContext(m_window);
 	}
 

@@ -83,6 +83,14 @@ C2DPoly::C2DPoly()
 	m_buffer->mesh.reserve(1);
 }
 
+void C2DPoly::SetTrans(f32 transparency)
+{
+	m_RGB[0][3] = transparency;
+	m_RGB[1][3] = transparency;
+	m_RGB[2][3] = transparency;
+	m_isTrans = true;
+}
+
 void C2DPoly::SetColor(f32 r, f32 g, f32 b)
 {
 	m_RGB[0][0] = r;
@@ -96,6 +104,16 @@ void C2DPoly::SetColor(f32 r, f32 g, f32 b)
 	m_RGB[2][2] = b;
 }
 
+void C2DPoly::SetUV(f32 v0u, f32 v0v, f32 v1u, f32 v1v, f32 v2u, f32 v2v)
+{
+	m_NewUV[0][0] = v0u;
+	m_NewUV[0][1] = -v0v;
+	m_NewUV[1][0] = v1u;
+	m_NewUV[1][1] = -v1v;
+	m_NewUV[2][0] = v2u;
+	m_NewUV[2][1] = -v2v;
+}
+
 void C2DPoly::Draw(zdb::CCamera* camera)
 {
 	MakePacket(camera);
@@ -107,7 +125,14 @@ void C2DPoly::Draw(zdb::CCamera* camera)
 		return;
 	}
 
+	PNT3D col;
+	col.x = m_RGB[0][0];
+	col.y = m_RGB[0][1];
+	col.z = m_RGB[0][2];
+
 	m_shader->Use();
+	m_shader->SetVec3("ourColor", col);
+	m_shader->SetTexture("mainTex", GL_TEXTURE0);
 
 	for (auto i = m_buffer->mesh.begin(); i != m_buffer->mesh.end(); ++i)
 	{
@@ -127,6 +152,19 @@ void C2DPoly::MakePacket(zdb::CCamera* camera)
 void C2DPoly::Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, zdb::CTexture* texture)
 {
 	m_texture = texture;
+
+	if (m_texture)
+	{
+		const u8* data = static_cast<u8*>(m_texture->m_buffer);
+		u32 tex = 0;
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_texture->m_width, m_texture->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	}
 
 	m_x = static_cast<s32>(v0x);
 	m_y = static_cast<s32>(v0y);
@@ -152,20 +190,20 @@ void C2DPoly::Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, zdb::CT
 	v1.x = m_vertex[0][0] - 0.125f;
 	v1.y = m_vertex[0][1] - 0.125f;
 	v1.z = 0.0f;
-	//v1.u = m_NewUV[0][1];
-	//v1.v = m_NewUV[0][2];
+	v1.u = m_NewUV[0][0];
+	v1.v = m_NewUV[0][1];
 
 	v2.x = m_vertex[1][0] - 0.125f;
 	v2.y = m_vertex[1][1] - 0.125f;
 	v2.z = 0.0f;
-	//v2.u = m_NewUV[1][1];
-	//v2.v = m_NewUV[1][2];
+	v2.u = m_NewUV[1][0];
+	v2.v = m_NewUV[1][1];
 
 	v3.x = m_vertex[2][0] - 0.125f;
 	v3.y = m_vertex[2][1] - 0.125f;
 	v3.z = 0.0f;
-	//v3.u = m_NewUV[2][1];
-	//v3.v = m_NewUV[2][2];
+	v3.u = m_NewUV[2][0];
+	v3.v = m_NewUV[2][1];
 
 	//v1.x = -0.5f;
 	//v1.y = -0.5f;
@@ -184,13 +222,13 @@ void C2DPoly::Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, zdb::CT
 
 	m_buffer->mesh.push_back(*m_mesh);
 
-	PNT4D col;
+	PNT3D col;
 	col.x = m_RGB[0][0];
 	col.y = m_RGB[0][1];
 	col.z = m_RGB[0][2];
-	col.w = 1.0f;
 
-	m_shader->SetVec4("ourColor", col);
+	m_shader->Use();
+	m_shader->SetVec3("ourColor", col);
 
 	zgl_mesh_buffer_create(m_buffer);
 }
@@ -199,6 +237,18 @@ void C2DBitmapPoly::SetColor(f32 r, f32 g, f32 b)
 {
 	m_tris[0].SetColor(r, g, b);
 	m_tris[1].SetColor(r, g, b);
+}
+
+void C2DBitmapPoly::SetTrans(f32 transparency)
+{
+	m_tris[0].SetTrans(transparency);
+	m_tris[1].SetTrans(transparency);
+}
+
+void C2DBitmapPoly::SetUV(f32 v0u, f32 v0v, f32 v1u, f32 v1v, f32 v2u, f32 v2v)
+{
+	m_tris[0].SetUV(v0u, v0v, v1u, v1v, v2u, v2v);
+	m_tris[1].SetUV(v0u, v0v, v1u, v1v, v2u, v2v);
 }
 
 void C2DBitmapPoly::Load(f32 v0x, f32 v0y, f32 v1x, f32 v1y, f32 v2x, f32 v2y, f32 v3x, f32 v3y, zdb::CTexture* texture)
