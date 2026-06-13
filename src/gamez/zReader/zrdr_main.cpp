@@ -113,7 +113,7 @@ _zrdr* zrdr_findtag_startidx(_zrdr* reader, const char* name, u32 startidx)
 	if (!reader)
 		return NULL;
 
-	if (reader->IsArray())
+	if (!reader->IsArray())
 		return NULL;
 
 	u32 length = 0;
