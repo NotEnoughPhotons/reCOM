@@ -12,6 +12,7 @@
 
 zdb::CNode* mdl = NULL;
 C2DBitmapPoly* twodpoly = NULL;
+zdb::CTexture* texture = NULL;
 
 bool LoadWorld(const char* name);
 
@@ -22,24 +23,22 @@ CTestState::CTestState()
 
 bool CTestState::Init()
 {
-    CRdrFile* dbSettings = zrdr_read("./data/zrdr/test_level.rdr", NULL, ZRDR_FLAG_RAW);
-    char* db = zrdr_findstring(dbSettings, "database");
-    char* modelname = zrdr_findstring(dbSettings, "node");
-    zrdr_free(dbSettings);
+    // CRdrFile* dbSettings = zrdr_read("./data/zrdr/test_level.rdr", NULL, ZRDR_FLAG_RAW);
+    // char* db = zrdr_findstring(dbSettings, "database");
+    // char* modelname = zrdr_findstring(dbSettings, "node");
+    // zrdr_free(dbSettings);
 
-    LoadWorld(db);
-    // mdl = zdb::CWorld::GetModel(modelname);
-    // mdl->m_active = true;
+    LoadWorld("ui");
+
     thePipe.m_camera = zdb::CWorld::m_world->m_camera;
     twodpoly = new C2DBitmapPoly();
-    twodpoly->SetColor(200.0f, 200.0f, 200.0f);
-    twodpoly->Load(0.0f, -96.0f, 0.0f, 224.0f, 320.0f, 224.0f, 320.0f, -96.0f, NULL);
+    texture = zdb::CWorld::m_world->GetTexHandle("null_xmas.bmp")->m_texture;
+    twodpoly->Load(0.0f, -96.0f, 0.0f, 224.0f, 320.0f, 224.0f, 320.0f, -96.0f, texture);
+    twodpoly->SetColor(255.0f, 255.0f, 255.0f);
+    twodpoly->SetUV(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
     twodpoly->On();
 
-    // glCullFace(GL_BACK);
-    // glFrontFace(GL_CW);
     zgl_enable_ztest();
-    // glDisable(GL_CULL_FACE);
 
     return true;
 }
