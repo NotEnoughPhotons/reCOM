@@ -6,6 +6,7 @@
 #include "gamez/zReader/zrdr.h"
 
 std::list<CCharacterType*> CCharacterType::m_char_list;
+std::list<CCharacterGear*> CCharacterType::m_gear_list;
 
 bool DeleteTemporaryCharType(CCharacterType* chartype)
 {

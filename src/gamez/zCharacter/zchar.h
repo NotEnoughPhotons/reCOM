@@ -59,7 +59,7 @@ struct HEALTH_PARAMS
 
 class CCharacterGear
 {
-private:
+public:
 	s32 m_ref_count;
 	s32 m_partid;
 	u32 m_gearid;
@@ -102,6 +102,7 @@ public:
 	CCharacterType(const char*, const CCharacterType*);
 
 	static std::list<CCharacterType*> m_char_list;
+	static std::list<CCharacterGear*> m_gear_list;
 
 	static bool Open(const char* path);
 	static void CleanupTemporary();
