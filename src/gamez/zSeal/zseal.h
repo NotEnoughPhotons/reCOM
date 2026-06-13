@@ -472,6 +472,7 @@ public:
 	void AttemptBombDefuse() const;
 
 	CCharacterType* GetCharacter() const;
+	CCharacterGear* CZSealBody::FindGear(const char* name);
 
 	f32 GetFormationHeading(f32 heading) const;
 	void UpdateFollowParams(f32 heading);
@@ -481,6 +482,7 @@ public:
 
 	static CSealAnim* m_sealanim;
 	static CRdrFile* m_motionRdrFile;
+	static AnimType
 
 	static CSndInstance* m_heartbeat_sndisnt;
 	static s32 m_heartbeat_curindex;
