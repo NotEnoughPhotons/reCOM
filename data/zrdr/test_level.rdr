@@ -1,7 +1,0 @@
-; Models for testing
-; UI203FRAG UIc4 flashbangUI claymoreUI
-; fiftycal_boxUI sig_commandoUI
-; SatchelUl worldmodel
-
-database (m15)
-node (worldmodel)
