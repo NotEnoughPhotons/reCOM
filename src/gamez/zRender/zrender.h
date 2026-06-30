@@ -2,12 +2,6 @@
 #define ZRENDER_H
 #include <string>
 
-// TODO:
-// - Connect with rendering APIs like OpenGL, DirectX, and Vulkan
-// - Figure what the whole point of the Z renderer is
-// - Experiment with deferred rendering
-// - Implement mesh abstractions defined in the game renderer
-
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zTexture/ztex.h"

@@ -17,9 +17,6 @@ CZPauseTest::CZPauseTest()
 
 void CZPauseTest::ReInit()
 {
-    m_ttf_font = new C2DTTFFont();
-    m_ttf_font->Load("Z:/ARIALNB.ttf");
-    
     m_numselections = 5;
     
     m_selections[0].Load(1.2f, "RESUME", m_ttf_font, 240, 200);

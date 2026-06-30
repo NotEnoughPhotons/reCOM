@@ -3,48 +3,12 @@
 #include <iostream>
 #include <stdio.h>
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_iostream.h>
-#include <SDL3/SDL_dialog.h>
-#include <SDL3/SDL_thread.h>
-#include <SDL3/SDL_ttf.h>
-
 #include "Apps/FTS/gamever.h"
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zVideo/zvid.h"
 
 bool postinited = false;
 size_t _HeapSize = 0;
-
-SDL_Condition* wait_cond = NULL;
-bool path_failed = false;
-bool path_inited = false;
-char gamez_GameRoot[256];
-char gamez_GameRunPath[256];
-
-SDL_Thread* file_thread;
-
-void zSys_OpenFileDialog(void* userdata, const char * const *filelist, int filter)
-{
-	if (!*filelist)
-	{
-		path_failed = true;
-		path_inited = true;
-		SDL_SignalCondition(wait_cond);
-		return;
-	}
-	
-	size_t length = strlen(*filelist);
-	
-	if (length > 0)
-	{
-		path_failed = false;
-		path_inited = true;
-		strcpy_s(gamez_GameRoot, 256, *filelist);
-		strcpy_s(gamez_GameRunPath, 256, *filelist);
-		SDL_SignalCondition(wait_cond);
-	}
-}
 
 int InterruptDmacBusError()
 {
@@ -58,15 +22,8 @@ void zSysInit()
 	// size_t allocsize = zsys_FullAllocAndFree();
 	zsys_AllocScratchpad();
 	// zSys.isT10K = 0x1ffffff < allocsize;
-	u32 flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_JOYSTICK;
-	zVid_Assert(SDL_Init(flags), LONG_MAX, __FILE__, __LINE__);
-	
-	zSys.isCdBoot = false;
 
-	if (!TTF_Init())
-	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load SDL TTF!");
-	}
+	zSys.isCdBoot = false;
 }
 
 void zSysReset()
@@ -108,92 +65,6 @@ void zSysPostInit()
 	{
 		postinited = true;
 	}
-
-	auto start_settings = zrdr_read("./data/zrdr/settings.rdr", NULL, ZRDR_FLAG_RAW);
-
-	auto boot_tag = zrdr_findtag(start_settings, "boot");
-	auto path = zrdr_findstring(boot_tag, "PATH");
-
-	if (boot_tag || path)
-	{
-		strcpy_s(gamez_GameRoot, 256, path);
-		strcpy_s(gamez_GameRunPath, 256, path);
-	}
-	else
-	{
-		SDL_Mutex* mutex = SDL_CreateMutex();
-		wait_cond = SDL_CreateCondition();
-
-		SDL_LockMutex(mutex);
-		SDL_ShowOpenFolderDialog(zSys_OpenFileDialog, NULL, NULL, "D:/", false);
-		SDL_WaitCondition(wait_cond, mutex);
-		SDL_UnlockMutex(mutex);
-
-		SDL_DestroyMutex(mutex);
-		mutex = NULL;
-
-		SDL_DestroyCondition(wait_cond);
-		wait_cond = NULL;
-	}
-
-	zrdr_free(start_settings);
-
-	if (path_failed)
-	{
-		const SDL_MessageBoxButtonData buttons[]
-		{
-			{
-				SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,
-				0,
-				"OK"
-			}
-		};
-		
-		const SDL_MessageBoxData data =
-		{
-			SDL_MESSAGEBOX_ERROR,
-			NULL,
-			"GameZ - Initialization Error",
-			"You must provide a valid game directory for GameZ to run!",
-			1,
-			buttons,
-			NULL
-		};
-		
-		SDL_ShowMessageBox(&data, NULL);
-		SDL_Quit();
-		exit(-1);
-	}
-	
-	strcat_s(gamez_GameRunPath, 256, "/RUN");
-	if (!SDL_GetPathInfo(gamez_GameRunPath, NULL))
-	{
-		const SDL_MessageBoxButtonData buttons[]
-		{
-			{
-				SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,
-				0,
-				"OK"
-			}
-		};
-		
-		const SDL_MessageBoxData data =
-		{
-			SDL_MESSAGEBOX_ERROR,
-			NULL,
-			"GameZ - Initialization Error",
-			"Game directory does not have a RUN folder!",
-			1,
-			buttons,
-			NULL
-		};
-		
-		SDL_ShowMessageBox(&data, NULL);
-		SDL_Quit();
-		exit(-1);
-	}
-
-	GetGame();
 }
 
 void zVid_Assert(bool condition, unsigned int mask, const char* file, int line)

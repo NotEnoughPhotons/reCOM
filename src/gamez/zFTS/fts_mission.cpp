@@ -19,7 +19,6 @@ char* CMission::m_weaponmodelpostfix = NULL;
 void UpdateMissionArchive(const char* type, const char* path)
 {
 	std::string pathstr;
-	pathstr.append(gamez_GameRunPath);
 
 	if (type)
 	{
@@ -42,8 +41,7 @@ void UpdateMissionArchive(const char* type, const char* path)
 	{
 		if (strlen(path) != 0)
 		{
-			pathstr.assign(gamez_GameRunPath, pathstr.length());
-			pathstr.assign("D:/run/", pathstr.length());
+			pathstr.assign("run/", pathstr.length());
 
 			if (strncmp(path, "mp", 2) == 0)
 			{
@@ -96,8 +94,6 @@ s32 FilterMissionFolder(const char* prefix, const char* infix, const char* postf
 
 bool CMission::Init()
 {
-	char path_buf[256];
-	
 	// TODO:
 	// Implement all these
 	ZAnim.Open();
@@ -114,11 +110,9 @@ bool CMission::Init()
 	ZAnim.AddCmd("HUD_LETTERBOX_OFF", HUDLetterBoxCmdParseOff, NULL, HUDLetterBoxCmdTick, NULL);
 
 	m_chars_loaded = false;
-
-	sprintf_s(path_buf, 256, "%s/ui", gamez_GameRunPath);
 	
-	CRdrArchive::AddArchive("readerc.zar", gamez_GameRunPath);
-	CRdrArchive::AddArchive("readerc.zar", path_buf);
+	CRdrArchive::AddArchive("readerc.zar", "run");
+	CRdrArchive::AddArchive("readerc.zar", "run/ui");
 	CRdrArchive::OpenAll();
 
 	zBoneInit();
@@ -178,7 +172,7 @@ bool CMission::Init()
 
 	// TODO: Implement CTurret
 	//CTurret::Init("ai_turrets.rdr", "data/common");
-	CRdrArchive::RemoveArchive("readerc.zar", gamez_GameRunPath);
+	CRdrArchive::RemoveArchive("readerc.zar", "run");
 
 	return true;
 }
@@ -247,9 +241,6 @@ void LoadMissionMapVisibilities(_zrdr* start)
 
 void CMission::PreOpen(const char* db)
 {
-#if DEBUG
-	SDL_Log("[GameZ] - (%s) CMission::PreOpen", db);
-#endif
 	extern char** g_arrDefCharTypeNames[32];
 	extern u32 g_iNumUiVehicles;
 
@@ -305,11 +296,6 @@ void CMission::PreOpen(const char* db)
 		zrdr_findint(node, "VALUE", &value, 1);
 
 		CValve::Create(name, value, vtype);
-
-
-#if DEBUG
-		SDL_Log("[GameZ] - (%s) Created valve %s", db, name);
-#endif
 	}
 
 	Read(mission);

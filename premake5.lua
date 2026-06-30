@@ -12,14 +12,18 @@ project "fts"
     includedirs {
 		"src"
 	}
-	
-    libdirs { "lib" }
 
     files {
         "src/Apps/FTS/**.cpp",
 		"src/Apps/FTS/**.h",
         "src/gamez/**.cpp",
-		"src/gamez/**.h"
+		"src/gamez/**.h",
+        "src/rsa/**.cpp",
+        "src/rsa/**.h",
+        "src/rt/**.cpp",
+        "src/rt/**.h",
+        "src/posix/**.cpp",
+        "src/posix/**.h"
     }
 
     filter { "configurations:Debug" }

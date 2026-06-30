@@ -197,15 +197,7 @@ public:
 class CTTY
 {
 public:
-	enum class ZLOG_LEVEL
-	{
-		LVL_INFO,
-		LVL_WARN,
-		LVL_ERROR,
-		LVL_CRITICAL
-	};
-
-	void Print(char* string, ZLOG_LEVEL level = ZLOG_LEVEL::LVL_INFO);
+	void Print(char* string);
 	void Print(char* buffer, size_t size);
 	void Render();
 private:

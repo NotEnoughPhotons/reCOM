@@ -1,5 +1,3 @@
-#include <SDL3/SDL_events.h>
-
 #include "gamez/zFTS/zfts.h"
 #include "gamez/zGame/zgame.h"
 #include "gamez/zNode/node_world.h"
@@ -56,7 +54,5 @@ bool CCoreState::Init()
 
 void CCoreState::Tick(f32 dT)
 {
-	SDL_Event e;
-	SDL_PollEvent(&e);
 	zVid_Swap(true);
 }

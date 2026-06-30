@@ -54,9 +54,6 @@ void CLetterBox::Tick(f32 dT)
                 // m_bitmap[0].TickFade();
                 // m_bitmap[1].TickFade();
             }
-            
-            m_bitmap[0].Load(0.0f, 0.0f, theWindow->GetWidth(), m_curpos, NULL);
-            m_bitmap[1].Load(0.0f, theWindow->GetHeight(), theWindow->GetWidth(), theWindow->GetHeight() - m_curpos, NULL);
         }
     }
     else if (m_slidedir == SLIDE_IN)
@@ -75,9 +72,6 @@ void CLetterBox::Tick(f32 dT)
                 m_curpos = 64.0f;
                 m_slidedir = SLIDE_NONE;
             }
-
-            m_bitmap[0].Load(0.0f, 0.0f, theWindow->GetWidth(), m_curpos, NULL);
-            m_bitmap[1].Load(0.0f, theWindow->GetHeight(), theWindow->GetWidth(), theWindow->GetHeight() - m_curpos, NULL);
         }
     }
 }

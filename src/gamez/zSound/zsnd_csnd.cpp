@@ -7,7 +7,6 @@
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zSeal/zseal.h"
 #include "gamez/zSystem/zsys.h"
-#include "SDL3/SDL_log.h"
 
 s32 g_iReverbTime = 0;
 
@@ -22,7 +21,6 @@ CSnd* CSnd::m_listener = NULL;
 bool CSnd::m_hasreverb = false;
 bool CSnd::m_listenerIsValid = false;
 
-SDL_AudioStream* CSnd::m_audiostream = NULL;
 u8* CSnd::m_snd_data = NULL;
 u32 CSnd::m_snd_len = 0;
 
@@ -57,9 +55,8 @@ void CSnd::Init()
 	if (!vagArchiveIsOpen)
 	{
 		vagArchiveIsOpen = true;
-		char path_buf[256];
-		sprintf_s(path_buf, "%s/SOUNDS/VAGSTORE.ZAR", gamez_GameRunPath);
-		m_vagArchive.Open(path_buf, 0, 0x21, 16);
+		m_vagArchive.Open("RUN\\SOUNDS\\VAGSTORE.ZAR", 0, 0x21, 16);
+		m_vagArchive.CloseKeepDir();
 	}
 }
 
@@ -177,150 +174,6 @@ bool CSnd::vagReadOffset(const char* name, u32& offset, u32& size)
 	}
 	
 	return false;
-}
-
-void CSnd::LoadWAV(const char* name)
-{
-	SDL_PauseAudioStreamDevice(m_audiostream);
-	m_snd_data = NULL;
-	m_snd_len = 0;
-	
-	zar::CKey* key = m_vagArchive.OpenKey(name);
-
-	if (!key)
-	{
-		return;
-	}
-    
-	void* buffer = zmalloc(key->GetSize());
-	m_vagArchive.Fetch(key, buffer, key->GetSize());
-    
-	SDL_IOStream* stream = SDL_IOFromMem(buffer, key->GetSize());
-    
-	m_snd_data = NULL;
-	m_snd_len = NULL;
-	SDL_AudioSpec audioSpec { SDL_AUDIO_S16, 1, 11025 };
-	m_audiostream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec, NULL, NULL);
-	SDL_LoadWAV_IO(stream, false, &audioSpec, &m_snd_data, &m_snd_len);
-
-	SDL_ResumeAudioStreamDevice(m_audiostream);
-
-	if (SDL_GetAudioStreamAvailable(m_audiostream) < (s32)m_snd_len)
-	{
-		SDL_PutAudioStreamData(m_audiostream, m_snd_data, m_snd_len);
-	}
-	
-	m_vagArchive.CloseKey(key);
-}
-
-void CSnd::LoadVAG(const char* name)
-{
-	SDL_PauseAudioStreamDevice(m_audiostream);
-	m_snd_data = NULL;
-	m_snd_len = 0;
-	
-	zar::CKey* key = m_vagArchive.OpenKey(name);
-
-	if (!key)
-	{
-		return;
-	}
-
-	size_t size = key->GetSize();
-	u8* buffer = (u8*)zmalloc(size);
-	m_vagArchive.Fetch(key, buffer, size);
-
-	CBufferIO io;
-	std::vector<s16> samples;
-	
-	io.Open(buffer, size);
-	
-	tag_VAGHeader header;
-	vag_read_header(&io, &header);
-	
-	m_snd_len = (header.size - sizeof(tag_VAGHeader)) / sizeof(tag_VAGChunk);
-
-	for (u32 i = 0; i < m_snd_len; i++)
-	{
-		vag_decode(&io, samples);
-	}
-	
-	io.Close();
-	
-	SDL_AudioSpec audioSpec
-	{
-		SDL_AUDIO_S16,
-		1,
-		(s32)header.rate
-	};
-	
-	m_audiostream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec, NULL, NULL);
-
-	SDL_ResumeAudioStreamDevice(m_audiostream);
-
-	if (SDL_GetAudioStreamAvailable(m_audiostream) < (s32)m_snd_len)
-	{
-		SDL_PutAudioStreamData(m_audiostream, samples.data(), samples.size() * sizeof(s16));
-	}
-	
-	m_vagArchive.CloseKey(key);
-}
-
-void CSnd::LoadVPK(const char* name)
-{
-	SDL_PauseAudioStreamDevice(m_audiostream);
-	m_snd_data = NULL;
-	m_snd_len = 0;
-	
-	zar::CKey* key = m_vagArchive.OpenKey(name);
-
-	if (!key)
-	{
-		return;
-	}
-
-	size_t size = key->GetSize();
-	u8* buffer = (u8*)zmalloc(size);
-	m_vagArchive.Fetch(key, buffer, size);
-
-	CBufferIO io;
-	std::vector<s16> samples;
-	
-	io.Open(buffer, size);
-	
-	tag_VPKHeader header;
-	vpk_read_header(&io, &header);
-
-	io.fseek(header.start_offset, SEEK_SET);
-	
-	m_snd_len = (header.channel_size / 2 - sizeof(tag_VPKHeader)) / sizeof(tag_VAGChunk);
-
-	SDL_Log("%ui", m_snd_len);
-	
-	for (u32 i = 0; i < m_snd_len; i++)
-	{
-		vag_decode(&io, samples);
-	}
-	
-	io.Close();
-	
-	SDL_AudioSpec audioSpec
-	{
-		SDL_AUDIO_S16,
-		1,
-		header.sample_rate
-	};
-	
-	m_audiostream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &audioSpec, NULL, NULL);
-
-	SDL_ResumeAudioStreamDevice(m_audiostream);
-
-	if (SDL_GetAudioStreamAvailable(m_audiostream) < (s32)m_snd_len)
-	{
-		SDL_PutAudioStreamData(m_audiostream, samples.data(), samples.size() * sizeof(s16));
-	}
-	
-	m_vagArchive.CloseKey(key);
 }
 
 void CSnd::AddNewCSnd(CSnd* sound)

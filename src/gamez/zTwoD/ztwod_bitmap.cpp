@@ -47,67 +47,7 @@ void C2DBitmap::Load(f32 x, f32 y, f32 width, f32 height, zdb::CTexHandle* handl
 	
 	if (m_hasTexture)
 	{
-		zdb::CTexture* texture = NULL;
-
-		if (handle != NULL)
-		{
-			texture = handle->m_texture;
-
-			s32 pitch = 0;
-
-			if (texture->m_format == SDL_PIXELFORMAT_RGBA32 || texture->m_format == SDL_PIXELFORMAT_RGBA8888)
-			{
-				pitch = texture->m_width * sizeof(u8) * 4;
-			}
-			else if (texture->m_format == SDL_PIXELFORMAT_RGB24)
-			{
-				pitch = texture->m_width * sizeof(u8) * 3;
-			}
-			else if (texture->m_format == SDL_PIXELFORMAT_RGBA5551 || texture->m_format == SDL_PIXELFORMAT_RGBA4444 || texture->m_format == SDL_PIXELFORMAT_BGRA5551)
-			{
-				pitch = texture->m_width * sizeof(u8) * 2;
-			}
-			else if (texture->m_format == SDL_PIXELFORMAT_INDEX8)
-			{
-				pitch = texture->m_width * sizeof(u8);
-			}
-
-			SDL_Palette* palette = SDL_CreatePalette(8);
-			SDL_Surface* surface = SDL_CreateSurfaceFrom(texture->m_width, texture->m_height, SDL_PIXELFORMAT_INDEX8, texture->m_buffer, texture->m_width * sizeof(u8));
-			SDL_SetSurfacePalette(surface, palette);
-			
-			if (!surface)
-			{
-				SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, SDL_GetError());
-				return;
-			}
-			
-			/*m_pSDLTexture = SDL_CreateTextureFromSurface(theWindow->GetRenderer(), surface);
-
-			if (!m_pSDLTexture)
-			{
-				SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, SDL_GetError());
-				return;
-			}*/
-			
-			if (texture->m_bilinear)
-			{
-				/*SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_LINEAR);*/
-			}
-			else
-			{
-				/*SDL_SetTextureScaleMode(m_pSDLTexture, SDL_SCALEMODE_NEAREST);*/
-			}
-
-			m_hasTexture = true;
-			
-			SDL_DestroySurface(surface);
-		}
-
-		if (texture == NULL && first)
-		{
-			first = false;
-		}
+		
 	}
 }
 

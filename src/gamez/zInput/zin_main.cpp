@@ -1,6 +1,3 @@
-#include <SDL3/SDL_gamepad.h>
-#include <SDL3/SDL_joystick.h>
-
 #include "gamez/zInput/zinput.h"
 #include "gamez/zMath/zmath.h"
 
@@ -13,7 +10,6 @@ CKeyboard* CInput::m_keyboard = NULL;
 void CInput::Init()
 {
 	m_init = OpenPadIO() != false;
-	CKeyboard::Init();
 	m_init = true;
 }
 
@@ -32,11 +28,6 @@ void CInput::ClosePadIO()
 
 void CInput::Tick(f32 dT)
 {
-	if (m_keyboard != NULL)
-	{
-		m_keyboard->Tick(dT);
-	}
-
 	for (s32 pad = 0; pad < 2; pad++)
 	{
 		if (m_pads[pad] != NULL)

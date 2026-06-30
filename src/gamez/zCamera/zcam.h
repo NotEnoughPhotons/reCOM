@@ -5,8 +5,6 @@
 #include "gamez/zNode/znode.h"
 #include "gamez/zSystem/zsys.h"
 
-#include "glm/vec3.hpp"
-
 enum class SEAL_PEEK;
 
 class CHUD;
@@ -244,12 +242,6 @@ namespace zdb
 
 		f32 m_yaw;
 		f32 m_pitch;
-		glm::vec3 m_target;
-		glm::vec3 m_direction;
-		glm::vec3 m_position;
-		glm::vec3 m_right;
-		glm::vec3 m_forward;
-		glm::vec3 m_up;
 	};
 }
 

@@ -1,10 +1,5 @@
-#include <GL/glew.h>
-#include <SDL3/SDL.h>
-
 #include "zvid.h"
-#include "Apps/FTS/gamever.h"
 
-#include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zValve/zvalve.h"
 
@@ -18,8 +13,6 @@ void zVid_Init(_zvid_mode mode)
 {
 	zVid.runTime = 0.0f;
 	zVid.renderBuf = NULL;
-	zVid.ztest_on = GL_DEPTH_TEST;
-	zVid.ztest_off = GL_DEPTH_TEST;
 	zVid.doMpeg224 = false;
 	zVid.minZ = 10.0f;
 	zVid.pcrtcDo = false;
@@ -30,8 +23,6 @@ void zVid_Init(_zvid_mode mode)
 	zVid.frameRate = 144.0f;
 	zVid.hblnkRate = 15750.0f;
 	zvid_SetVideoMode(mode);
-
-	zVid_CreateWindow();
 
 	if (lodLevel == NULL)
 	{

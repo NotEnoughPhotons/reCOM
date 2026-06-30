@@ -6,9 +6,9 @@
 #include "gamez/zAnim/zanim.h"
 #include "gamez/zBody/zbody.h"
 #include "gamez/zEntity/zentity.h"
-#include "gamez/zPhysics/zphysics.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zNode/node_action.h"
+#include "gamez/zSound/zsnd.h"
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zUI/zui.h"
 #include "gamez/zWeapon/zweapon.h"
@@ -21,8 +21,6 @@ class CSealCtrl;
 class CAppCamera;
 
 class CCharacterGear;
-
-class CSndInstance;
 
 enum class PLAYER_CAM_STATE;
 
@@ -482,7 +480,6 @@ public:
 
 	static CSealAnim* m_sealanim;
 	static CRdrFile* m_motionRdrFile;
-	static AnimType
 
 	static CSndInstance* m_heartbeat_sndisnt;
 	static s32 m_heartbeat_curindex;

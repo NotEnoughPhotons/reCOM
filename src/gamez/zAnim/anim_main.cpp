@@ -1,5 +1,7 @@
 #include "zanim.h"
 
+#include "posix/strcasecmp.h"
+
 CZAnimMain ZAnim;
 bool CZAnimMain::m_LoadFromZAR = false;
 
@@ -216,12 +218,12 @@ u32 CZAnimMain::GetAnimSetIndex(const char* animName, bool searchList)
 			if (!m_animset_list[i].m_name)
 				return i;
 
-			if (!SDL_strcasecmp(m_animset_list[i].m_name, "None"))
+			if (!strcasecmp(m_animset_list[i].m_name, "None"))
 				return i;
 		}
 		else if (m_animset_list[i].m_name)
 		{
-			if (!SDL_strcasecmp(m_animset_list[i].m_name, animName))
+			if (!strcasecmp(m_animset_list[i].m_name, animName))
 				return i;
 		}
 	}

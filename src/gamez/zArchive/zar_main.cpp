@@ -1,7 +1,6 @@
 #include "zar.h"
-#include "Apps/FTS/gamever.h"
 #include "gamez/zUtil/zutil.h"
-#include "SDL3/SDL_stdinc.h"
+#include "posix/strcasecmp.h"
 
 namespace zar
 {
@@ -36,7 +35,7 @@ namespace zar
 		{
 			CKey* current = *i;
 
-			if (current->m_size != -1 && SDL_strcasecmp(current->m_name, name) == 0)
+			if (current->m_size != -1 && strcasecmp(current->m_name, name) == 0)
 				return current;
 		}
 
@@ -383,12 +382,7 @@ namespace zar
 		{
 			m_data_padded = padded_size;
 
-			bool success = false;
-
-			if (GetGame() == game_SOCOM1_BETA)
-				success = ReadDirectory(version, mode);
-			else if (GetGame() == game_SOCOM1 || GetGame() == game_SOCOM2_BETA)
-				success = ReadDirectory_V2(version, mode);
+			bool success = ReadDirectory(version, mode);
 
 			if (success)
 			{
@@ -447,16 +441,10 @@ namespace zar
 			SetFilename(m_filename);
 			m_data_padded = 16;
 
-			if (GetGame() == game_SOCOM1_BETA)
-			{
-				if (ReadDirectory(appver, mode)) m_tail.appversion = appver;
-				else Close();
-			}
-			else if (GetGame() == game_SOCOM1 || GetGame() == game_SOCOM2_BETA)
-			{
-				if (ReadDirectory_V2(appver, mode)) m_tail.appversion = appver;
-				else Close();
-			}
+			if (ReadDirectory(appver, mode)) 
+				m_tail.appversion = appver;
+			else 
+				Close();
 		}
 
 		return false;

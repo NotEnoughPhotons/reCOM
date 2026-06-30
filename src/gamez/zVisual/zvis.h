@@ -8,8 +8,6 @@
 #include "gamez/zMath/zmath.h"
 #include "gamez/zTexture/ztex.h"
 
-#include "gamez/zRender/zrndr_gl.h"
-
 class CShader;
 class CTextureRelocMgr;
 
@@ -244,8 +242,6 @@ namespace zdb
 		f32 m_range_sqd_to_camera;
 
 		CShader* m_shader;
-
-		zgl_mesh_buffer* m_meshBuffer;
 
 		f32 m_r;
 		f32 m_g;

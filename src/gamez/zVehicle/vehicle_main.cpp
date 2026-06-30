@@ -3,6 +3,8 @@
 #include "gamez/zReader/zrdr.h"
 #include "gamez/zMath/zmath.h"
 
+#include "posix/strcasecmp.h"
+
 CVehicleRdrEntry* _dest = NULL;
 
 bool CVehicleRdr::Open(const char* name)
@@ -71,16 +73,16 @@ bool CVehicleRdr::Load(_zrdr* file)
 
 		if (!_dest->m_display_name)
 		{
-			if (SDL_strcasecmp(name, "player") == 0)
+			if (strcasecmp(name, "player") == 0)
 				strncpy(_dest->m_display_name, "Kahuna", 32);
 
-			if (SDL_strcasecmp(name, "Hutchins") == 0)
+			if (strcasecmp(name, "Hutchins") == 0)
 				strncpy(_dest->m_display_name, "Boomer", 32);
 
-			if (SDL_strcasecmp(name, "Dimone") == 0)
+			if (strcasecmp(name, "Dimone") == 0)
 				strncpy(_dest->m_display_name, "Spectre", 32);
 
-			if (SDL_strcasecmp(name, "Bailey") == 0)
+			if (strcasecmp(name, "Bailey") == 0)
 				strncpy(_dest->m_display_name, "Jester", 32);
 		}
 
@@ -131,7 +133,7 @@ CVehicleRdrEntry* CVehicleRdr::GetEntryByName(const char* name)
 	for (auto i = begin(); i != end(); i++)
 	{
 		CVehicleRdrEntry entry = *i;
-		if (SDL_strcasecmp(entry.m_name, name) == 0)
+		if (strcasecmp(entry.m_name, name) == 0)
 			return &entry;
 	}
 

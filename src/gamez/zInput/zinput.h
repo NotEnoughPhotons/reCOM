@@ -4,11 +4,6 @@
 
 #include <map>
 
-#include "glm/vec2.hpp"
-
-#include "SDL3/SDL.h"
-#include "SDL3/SDL_mouse.h"
-
 class CInput;
 class CPad;
 class CKeyboard;
@@ -150,26 +145,5 @@ public:
 	f32 m_deadTime[4];
 
 	CStickType m_stickType[2];
-};
-
-class CKeyboard
-{
-public:
-	static std::map<SDL_Scancode, bool> m_keys;
-
-	static void Init();
-	static void Tick(f32 delta);
-};
-
-class CMouse
-{
-public:
-	static void ProcessMouseMotion(const SDL_MouseMotionEvent& event);
-
-	void Tick(f32 dT);
-
-	static f32 m_mouseSensitivity;
-	static glm::vec2 m_mousePos;
-	static glm::vec2 m_mouseVelocity;
 };
 #endif

@@ -1,7 +1,5 @@
 #ifndef ZVIDEO_H
 #define ZVIDEO_H
-#include <SDL3/SDL_video.h>
-#include <SDL3/SDL_render.h>
 
 #include "gamez/zMath/zmath.h"
 
@@ -21,7 +19,6 @@ enum _zvid_mode
 
 void zVid_Init(_zvid_mode mode);
 void zVid_Uninit();
-void zVid_CreateWindow();
 void zVid_Open();
 void zVid_Swap(bool doSwap);
 void zVid_FrameRestore();
@@ -81,29 +78,6 @@ public:
 	s64 ztest_off;
 
 	s64 dmaFrameRestore;
-};
-
-class CWindow
-{
-public:
-	CWindow();
-	CWindow(CRdrFile* reader);
-	CWindow(const char* name, u32 width, u32 height);
-	
-	SDL_Window* GetWindow() const;
-	SDL_Renderer* GetRenderer() const;
-	SDL_GLContext GetContext() const;
-
-	f32 GetWidth() const { return m_width; }
-	f32 GetHeight() const { return m_height; }
-private:
-	char* m_name;
-	u32 m_width;
-	u32 m_height;
-
-	SDL_Window* m_window;
-	SDL_Renderer* m_renderer;
-	SDL_GLContext m_context;
 };
 
 class CVideo

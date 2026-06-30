@@ -3,7 +3,7 @@
 #include "gamez/zUtil/zutil.h"
 #include "gamez/zUtil/util_stable.h"
 #include "gamez/zUtil/util_systemio.h"
-#include "SDL3/SDL_stdinc.h"
+#include "posix/strcasecmp.h"
 
 std::list<zar::CZAR*> CRdrArchive::m_list;
 
@@ -25,7 +25,7 @@ zar::CZAR* CRdrArchive::AddArchive(const char* name, const char* path)
 	{
 		CZAR* archive = *it;
 
-		if (SDL_strcasecmp(archive->m_filename, archiveName) == 0)
+		if (strcasecmp(archive->m_filename, archiveName) == 0)
 		{
 			output = archive;
 			break;

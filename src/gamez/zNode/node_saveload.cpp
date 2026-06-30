@@ -101,7 +101,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_txr");
+			sprintf(m_zed_filename, "run/%s/%s%s.zed", library->m_name, temp.c_str(), "_txr");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -120,7 +120,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_pal");
+			sprintf(m_zed_filename, "run/%s/%s%s.zed", library->m_name, temp.c_str(), "_pal");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -139,7 +139,7 @@ namespace zdb
 			std::string temp(library->RootName());
 			temp.assign(temp.substr(0, 4));
 
-			sprintf_s(m_zed_filename, 256, "%s/%s/%s%s.zed", gamez_GameRunPath, library->m_name, temp.c_str(), "_mdl");
+			sprintf_s(m_zed_filename, "run/%s/%s%s.zed", library->m_name, temp.c_str(), "_mdl");
 
 			if (!m_zfile.Open(m_zed_filename, CWorld::GetVersion(), 1, 16))
 			{
@@ -246,7 +246,7 @@ namespace zdb
 		
 		zdb::CWorld* world = NULL;
 		
-		FilterMissionFolder(name, gamez_GameRunPath, name, m_zed_filename);
+		FilterMissionFolder(name, "/run", name, m_zed_filename);
 		strcat_s(m_zed_filename, "/");
 		strcat_s(m_zed_filename, name);
 		strcat_s(m_zed_filename, ".zed");

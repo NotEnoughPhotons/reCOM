@@ -85,7 +85,7 @@ _zanim_cmd_hdr* zAnimLoadWhile(_zrdr* tag)
             bool isTrue = false;
             if (evaluation->type == ZRDR_STRING)
             {
-                isTrue = SDL_strcmp(evaluation->string, "true") == 0;
+                isTrue = strcmp(evaluation->string, "true") == 0;
             }
 
             if (isTrue)

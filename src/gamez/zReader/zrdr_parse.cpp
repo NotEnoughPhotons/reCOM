@@ -2,12 +2,9 @@
 
 #include "zrdr.h"
 #include "zrdr_local.h"
-#include "Apps/FTS/gamever.h"
 
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zUtil/util_stack.h"
-#include "SDL3/SDL_egl.h"
-#include "SDL3/SDL_log.h"
 
 std::list<char*> zrdr_symbols;
 
@@ -386,7 +383,6 @@ CRdrFile* zrdr_read(const char* name, const char* path, s32 flags)
 	// Syntax error check failed
 	else
 	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Syntax error in zReader file %s!", name);
 		// delete array;
 		rdrfile = NULL;
 	}
@@ -431,55 +427,33 @@ _zrdr* CRdrFile::ReadArray()
 	_zrdr* parent = zrdr_alloc(sizeof(_zrdr), 1);
 	parent->type = ZRDR_ARRAY;
 	
-	if (GetGame() <= game_SOCOM1)
+	_zrdr* child = zrdr_alloc(sizeof(_zrdr), arrays.size() + 1);
+	child->type = ZRDR_INTEGER;
+
+	// Set parent node equal to child, and append the size of
+	// the child node to the first array element
+	parent->array = child;
+	parent->array->type = ZRDR_INTEGER;
+
+	parent->array->integer = arrays.size() + 1;
+
+	// When working with readers of version 2,
+	// The first index (0) is ALWAYS used to store the length.
+	// This means that zReader arrays start at index 1.
+	// In future zReader versions this was put into the
+	// "length" bitfield.
+	// When iterating through them, target the second index to access
+	// the arrays.
+	for (u32 i = 1; i < parent->array->integer; i++)
 	{
-		_zrdr* child = zrdr_alloc(sizeof(_zrdr), arrays.size() + 1);
-		child->type = ZRDR_INTEGER;
-        
-		// Set parent node equal to child, and append the size of
-		// the child node to the first array element
-		parent->array = child;
-		parent->array->type = ZRDR_INTEGER;
-        
-		parent->array->integer = arrays.size() + 1;
+		// The arrangement of each zReader node should go as follows:
+		// Length, name, array
+		array = arrays.front();
+		arrays.erase(arrays.begin());
 
-		// When working with readers of version 2,
-		// The first index (0) is ALWAYS used to store the length.
-		// This means that zReader arrays start at index 1.
-		// In future zReader versions this was put into the
-		// "length" bitfield.
-		// When iterating through them, target the second index to access
-		// the arrays.
-		for (u32 i = 1; i < parent->array->integer; i++)
-		{
-			// The arrangement of each zReader node should go as follows:
-			// Length, name, array
-			array = arrays.front();
-			arrays.erase(arrays.begin());
+		parent->array[i] = *array;
 
-			parent->array[i] = *array;
-		
-			zfree(array);
-		}
-	}
-	else if (GetGame() > game_SOCOM1)
-	{
-		_zrdr* child = zrdr_alloc(sizeof(_zrdr), arrays.size());
-        
-		// Set parent node equal to child, and append the size of
-		// the child node to the parents length
-		parent->array = child;
-		parent->length = arrays.size();
-		
-		for (u32 i = 0; i < parent->length; i++)
-		{
-			array = arrays.front();
-			arrays.erase(arrays.begin());
-
-			parent->array[i] = *array;
-		
-			zfree(array);
-		}
+		zfree(array);
 	}
 	
 	return parent;

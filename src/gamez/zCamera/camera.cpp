@@ -1,7 +1,5 @@
 #include "zcam.h"
 
-#include "glm/ext/matrix_transform.hpp"
-
 #include "gamez/zCharacter/zchar.h"
 #include "gamez/zEntity/zentity.h"
 #include "gamez/zFTS/zfts.h"
@@ -250,31 +248,7 @@ void CAppCamera::FTSTick(f32 dT)
 
 void CAppCamera::LookAt(CPnt3D* center, CPnt3D* eye, CMatrix& mat)
 {
-	glm::mat4x4 lookat = glm::lookAt(
-		glm::vec3(eye->x, eye->y, eye->z),
-		glm::vec3(center->x, center->y, center->z),
-		glm::vec3(0, 1, 0)
-		);
 
-	mat.m_matrix[0][0] = lookat[0][0];
-	mat.m_matrix[0][1] = lookat[0][1];
-	mat.m_matrix[0][2] = lookat[0][2];
-	mat.m_matrix[0][3] = lookat[0][3];
-
-	mat.m_matrix[1][0] = lookat[1][0];
-	mat.m_matrix[1][1] = lookat[1][1];
-	mat.m_matrix[1][2] = lookat[1][2];
-	mat.m_matrix[1][3] = lookat[1][3];
-
-	mat.m_matrix[2][0] = lookat[2][0];
-	mat.m_matrix[2][1] = lookat[2][1];
-	mat.m_matrix[2][2] = lookat[2][2];
-	mat.m_matrix[2][3] = lookat[2][3];
-
-	mat.m_matrix[3][0] = mat.m_matrix[0][0];
-	mat.m_matrix[3][1] = mat.m_matrix[0][1];
-	mat.m_matrix[3][2] = mat.m_matrix[0][2];
-	mat.m_matrix[3][3] = mat.m_matrix[0][3];
 }
 
 void CAppCamera::SetZoom(f32 zoom)

@@ -1,8 +1,6 @@
 #ifndef ZTEXTURE_H
 #define ZTEXTURE_H
 #include <vector>
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_pixels.h>
 
 #include "gamez/zSystem/zsys.h"
 

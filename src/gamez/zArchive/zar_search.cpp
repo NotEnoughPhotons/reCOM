@@ -1,5 +1,4 @@
 #include "zar.h"
-#include "Apps/FTS/gamever.h"
 
 #include "gamez/zutil/util_stable.h"
 #include "gamez/zutil/util_systemio.h"
@@ -27,35 +26,16 @@ namespace zar
 			return false;
 		}
 
-		GameZ_FTSGame game = GetGame();
+		s32 offset = key->m_offset;
+		size_t position = m_pFile->fseek(offset, SEEK_SET);
 
-		if (game == game_SOCOM1_BETA)
+		if (offset == position && size <= key->m_size)
 		{
-			s32 offset = key->m_offset;
-			size_t position = m_pFile->fseek(offset, SEEK_SET);
+			offset = m_pFile->fread(buf, size);
+			ZAR_SECURE(m_bSecure, buf, size);
 
-			if (offset == position && size <= key->m_size)
-			{
-				offset = m_pFile->fread(buf, size);
-				ZAR_SECURE(m_bSecure, buf, size);
-
-				CloseKey(key);
-				return size == offset;
-			}
-		}
-		else if (game == game_SOCOM1 || game == game_SOCOM2_BETA)
-		{
-			s32 offset = key->m_offset;
-			size_t position = m_pFile->fseek(m_rootOffset + offset, SEEK_SET);
-
-			if (m_rootOffset + offset == position && size <= key->m_size)
-			{
-				offset = m_pFile->fread(buf, size);
-				ZAR_SECURE(m_bSecure, buf, size);
-				
-				CloseKey(key);
-				return size == offset;
-			}
+			CloseKey(key);
+			return size == offset;
 		}
 
 		return false;

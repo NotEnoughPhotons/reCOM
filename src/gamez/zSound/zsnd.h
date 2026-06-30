@@ -4,18 +4,14 @@
 #include <vector>
 #include <unordered_map>
 
-#include <SDL3/SDL_audio.h>
-
 #include "gamez/zArchive/zar.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zReader/zrdr.h"
-#include "gamez/zValve/zvalve.h"
 #include "gamez/zSystem/zsys.h"
-
-#define VAG_SAMPLES 14
-#define VAG_EXPAND_SAMPLES VAG_SAMPLES * 2
+#include "gamez/zValve/zvalve.h"
 
 class CSnd;
+class CSndInstance;
 
 enum SOUND_TYPE
 {
@@ -55,63 +51,6 @@ extern bool snd_system_initialized;
 extern _zrdr* sound_rdr;
 extern std::unordered_map<const char*, CSnd*> sound_map;
 
-struct tag_VAGHeader
-{
-	char magic[4];
-	u32 version;
-	u32 unused1;
-	u32 size;
-	u32 rate;
-	u32 unused2[3];
-	char name[16];
-	u8 padding[16];
-};
-
-struct tag_VAGChunk
-{
-	union
-	{
-		u8 shift;
-		u8 predict;
-	};
-
-	u8 flags;
-	u8 sample[VAG_SAMPLES];
-};
-
-struct tag_VPKHeader
-{
-	char magic[4];
-	u32 channel_size;
-	u32 start_offset;
-	u32 interleave_block_size;
-	s32 sample_rate;
-	u32 channels;
-};
-
-// https://github.com/vgmstream/vgmstream/blob/master/src/meta/bnk_sony.c#L491
-struct tag_VABHeader
-{
-	u32 version;
-	u32 sections;
-	u32 sblk_offset;
-	u32 unused;
-	u32 data_offset;
-	u32 data_size;
-};
-
-struct tag_SBLKHeader
-{
-	char magic[4];
-	u32 version;
-};
-
-void vag_read_header(CBufferIO* io, tag_VAGHeader* header);
-void vag_decode(CBufferIO* io, std::vector<s16>& out);
-void vpk_read_header(CBufferIO* io, tag_VPKHeader* header);
-void vpk_decode(CBufferIO* io, std::vector<s16>& out);
-void vab_read_header(CBufferIO* io, tag_VABHeader* header);
-
 class CSnd
 {
 public:
@@ -126,9 +65,6 @@ public:
 	static CSnd* GetSoundByName(const char* name);
 	static bool GetSubtitles();
 	static bool vagReadOffset(const char* name, u32& offset, u32& size);
-	static void LoadWAV(const char* name);
-	static void LoadVAG(const char* name);
-	static void LoadVPK(const char* name);
 
 	static bool PostTick(f32 dT, void* buf);
 	
@@ -139,8 +75,7 @@ public:
 	static CSnd* m_listener;
 
 	static f32 m_fadetime;
-	
-	static SDL_AudioStream* m_audiostream;
+
 	static u8* m_snd_data;
 	static u32 m_snd_len;
 	

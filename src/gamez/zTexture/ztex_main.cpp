@@ -3,6 +3,7 @@
 #include "gamez/zArchive/zar.h"
 #include "gamez/zNode/node_saveload.h"
 #include "gamez/zVideo/zvid.h"
+#include "posix/strcasecmp.h"
 
 namespace zdb
 {
@@ -198,7 +199,7 @@ nopal:
 				continue;
 			}
 
-			if (SDL_strcasecmp(cur->m_name, name) == 0)
+			if (strcasecmp(cur->m_name, name) == 0)
 				return cur;
 		}
 

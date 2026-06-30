@@ -1,13 +1,10 @@
 #ifndef ZTWOD_H
 #define ZTWOD_H
-#include <SDL3/SDL.h>
 
 #include "gamez/zAnim/zanim.h"
 #include "gamez/zCamera/zcam.h"
 #include "gamez/zInput/zinput.h"
 #include "gamez/zSystem/zsys.h"
-#include "gamez/zRender/zrndr_gl.h"
-#include "SDL3/SDL_ttf.h"
 
 class C2D;
 class C2DFont;
@@ -151,10 +148,6 @@ public:
 	f32 m_NewUV[3][4];
 	f32 m_vertex[3][4];
 	zdb::CTexture* m_texture;
-
-	zgl_mesh* m_mesh;
-	zgl_mesh_buffer* m_buffer;
-	CShader* m_shader;
 };
 
 class C2DBitmapPoly : public C2D, protected C2DFade
@@ -202,11 +195,6 @@ public:
 	void Load(f32 scale, const char* message, C2DFont* font, s32 x, s32 y);
 	
 	C2DFont* m_font;
-	C2DTTFFont* m_ttf_font;
-
-	SDL_FRect m_rect;
-
-	SDL_Texture* m_strTexture;
 	
 	char* m_string;
 	s32 m_stringlen_max;
@@ -321,24 +309,6 @@ public:
 
 	C2DFontEntry* GetEntry(char character);
 	u32 GetIndex(char character);
-	
-	std::vector<C2DFontEntry*> m_charlist;
-	zdb::CTexHandle* m_pTexHandle;
-	zdb::CTexHandle* m_pGlowTexHandle;
-	s32 m_displaytop;
-	s32 m_displaybottom;
-	s32 XPadding;
-	f32 m_avgWidth;
-	f32 m_opacity;
-	f32 m_scale_factor;
-};
-
-class C2DTTFFont : public C2D
-{
-public:
-	void Load(const char* path);
-
-	TTF_Font* m_ttf_font;
 	
 	std::vector<C2DFontEntry*> m_charlist;
 	zdb::CTexHandle* m_pTexHandle;

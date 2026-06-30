@@ -1,8 +1,3 @@
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "zvis.h"
 
 #include "gamez/zArchive/zar.h"
@@ -13,9 +8,7 @@
 #include "gamez/zNode/node_model.h"
 #include "gamez/zNode/node_world.h"
 #include "gamez/zMath/zmath_vu.h"
-#include "gamez/zRender/zrndr_gl.h"
 #include "gamez/zRender/zrender.h"
-#include "gamez/zShader/zshader.h"
 
 s32 node_index = 0;
 zdb::CVisData* _vdataTex = NULL;
@@ -247,15 +240,7 @@ namespace zdb
 	CVisual::CVisual()
 	{
 		m_lodIndex = 0;
-		m_shader = new CShader();
 		m_chainPtr = NULL;
-		m_meshBuffer = NULL;
-
-		m_r = 1.0f / (rand() % 10 + 1);
-		m_g = 1.0f / (rand() % 10 + 1);
-		m_b = 1.0f / (rand() % 10 + 1);
-
-		SetupShaders();
 	}
 
 	CVisual* CVisual::Create(zar::CZAR& archive)
@@ -380,40 +365,6 @@ namespace zdb
 				break;
 			}
 		}
-
-		zgl_chain meshPkt = zgl_read_chain(m_chainPtr);
-		m_meshBuffer = new zgl_mesh_buffer();
-		m_meshBuffer->mesh = zgl_chain_read_meshes(&meshPkt);
-		zgl_mesh_buffer_create(m_meshBuffer);
-
-		u32 numVertices = 0;
-		u32 numIndices = 0;
-
-		for (auto i = m_meshBuffer->mesh.begin(); i != m_meshBuffer->mesh.end(); ++i)
-		{
-			zgl_mesh& mesh = *i;
-
-			mesh.base_vertex = numVertices;
-			mesh.base_index = numIndices;
-
-			numVertices += mesh.vertex_count;
-			numIndices += mesh.index_count;
-		}
-	}
-
-	void CVisual::SetupShaders()
-	{
-		// m_shader->Destroy();
-
-		char buf[256];
-		sprintf_s(buf, 256, "data/shaders/%s.vertex", "standard");
-		m_shader->LoadVertexShader(buf);
-		memset(buf, 0, 256);
-		sprintf_s(buf, 256, "data/shaders/%s.fragment", "standard");
-		m_shader->LoadFragmentShader(buf);
-		memset(buf, 0, 256);
-
-		m_shader->Create();
 	}
 	
 	bool CVisual::GetChainData()
@@ -461,47 +412,7 @@ namespace zdb
 
 	void CVisual::VuUpdate(CMatrix* transform, f32 opacity)
 	{
-		CMatrix camera = CMatrix::identity;
-
-		camera.m_matrix[3][2] = -5.0f;
-
-		PNT3D col;
-		col.x = m_r;
-		col.y = m_g;
-		col.z = m_b;
-
-		f32 aspect = 1280.0f / 960.0f;
-		f32 fov = glm::radians(90.0f);
-
-		// Doing this for now until I extend the matrix library.
-		glm::mat4x4 proj = glm::perspective(fov, aspect, 0.01f, 10000.0f);
-		CMatrix projMat = reinterpret_cast<CMatrix&>(proj);
-		// projMat.m_matrix[3][3] = 1.0f;
-
-		m_shader->Use();
-		m_shader->SetMat4("model", *transform);
-		m_shader->SetMat4("view", zdb::CWorld::m_world->m_camera->m_matrix);
-		m_shader->SetMat4("projection", projMat);
-		m_shader->SetVec3("col", col);
-
-		GetChainData();
-
-		if (!m_meshBuffer || m_meshBuffer->mesh.size() == 0)
-		{
-			glBindVertexArray(0);
-			return;
-		}
-
-
-		for (auto i = m_meshBuffer->mesh.begin(); i != m_meshBuffer->mesh.end(); ++i)
-		{
-			zgl_mesh& mesh = *i;
-
-			glBindVertexArray(mesh.v_array);
-			glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, NULL);
-			glBindVertexArray(0);
-		}
-
+		
 	}
 
 	CTexture* CVisual::ResolveTextureName(_word128* packet, s32 offset)

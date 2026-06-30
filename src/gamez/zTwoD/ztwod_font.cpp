@@ -332,16 +332,6 @@ void C2DFont::Load(CRdrFile* font, const char* name)
     }
 }
 
-void C2DTTFFont::Load(const char* path)
-{
-    m_ttf_font = TTF_OpenFont(path, 12.0f);
-    
-    if (!m_ttf_font)
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, SDL_GetError());
-    }
-}
-
 C2DFontEntry* C2DFont::GetEntry(char character)
 {
     C2DFontEntry* entry = NULL;

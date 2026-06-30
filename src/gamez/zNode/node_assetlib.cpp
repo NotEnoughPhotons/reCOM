@@ -154,9 +154,6 @@ namespace zdb
 
 			if (mdl)
 			{
-#if DEBUG
-				SDL_Log("Model added: %s", mdl->m_name);
-#endif
 				library = *i;
 				break;
 			}

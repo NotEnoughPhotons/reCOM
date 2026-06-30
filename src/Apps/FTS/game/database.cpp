@@ -22,18 +22,11 @@ extern char* GetDatabase()
 
 extern char* SetDatabase(const char* db)
 {
-#ifdef DEBUG
-	SDL_Log("Set database to %s", db);
-#endif
 	return strcpy(database, db);
 }
 
 extern bool LoadWorld(const char* name)
 {
-#if DEBUG
-	SDL_Log("[GameZ] - Loading world %s", name);
-#endif
-
 	char strbuf[1024];
 	zdb::CNodeUniverse* universe = zdb::NodeUniverse;
 
@@ -64,19 +57,14 @@ extern bool LoadWorld(const char* name)
 
 		if (library->m_autoload)
 		{
-			sprintf_s(pathbuf, 128, "%s/%s/models.zar", gamez_GameRunPath, library->m_name);
+			sprintf(pathbuf, "run/%s/models.zar", library->m_name);
 	
 			if (archive.Open(pathbuf, -1, 1, 16))
 			{
 				if (!library->m_models.empty())
 				{
-
-
 					for (u32 j = 0; j != library->m_models.size(); j++)
 					{
-#if DEBUG
-						SDL_Log("[GameZ] - Hooking up visuals for model %s", library->m_models[j]->m_name);
-#endif
 						hookupVisuals(&archive, library->m_models[j]);
 					}
 

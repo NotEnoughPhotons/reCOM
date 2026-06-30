@@ -1,5 +1,3 @@
-#include <SDL3/SDL_events.h>
-
 #include "gamez/zNode/node_assetlib.h"
 
 #include "gamez/zCamera/zcam.h"
@@ -39,10 +37,7 @@ bool CMenuState::Init()
 	if (m_skip)
 		return true;
 
-	char pathbuf[64];
-	sprintf_s(pathbuf, 64, "%s/ui", gamez_GameRunPath);
-
-	zar::CZAR* archive = CRdrArchive::AddArchive("readerc.zar", pathbuf);
+	zar::CZAR* archive = CRdrArchive::AddArchive("readerc.zar", "run/ui");
 
 	if (archive)
 		archive->ReOpen(CRdrArchive::version, 1);
@@ -105,8 +100,6 @@ void CMenuState::Tick(f32 dT)
 	if (zdb::CWorld::m_world != NULL && zdb::CWorld::m_world->m_camera)
 		zdb::CWorld::m_world->m_camera->Update(zdb::tag_ZCAM_TYPE::ZCAM_NORMAL);
 
-	SDL_Event e;
-	SDL_PollEvent(&e);
 	zVid_ClearColor(0.0f, 0.0f, 0.0f);
 	zVid_Swap(false);
 }

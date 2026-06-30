@@ -3,11 +3,10 @@
 #include <cstring>
 
 #include "zrdr_local.h"
-#include "Apps/FTS/gamever.h"
 #include "gamez/zMath/zmath.h"
 #include "gamez/zSystem/zsys.h"
 #include "gamez/zUtil/util_systemio.h"
-#include "SDL3/SDL_stdinc.h"
+#include "posix/strcasecmp.h"
 
 bool zrdr_init = false;
 bool warnonce = false;
@@ -102,10 +101,7 @@ bool _zrdr::Write(FILE* file)
 
 _zrdr* zrdr_findtag(_zrdr* reader, const char* name)
 {
-	if (GetGame() <= game_SOCOM1)
-		return zrdr_findtag_startidx(reader, name, 1);
-	else if (GetGame() > game_SOCOM1)
-		return zrdr_findtag_startidx(reader, name, 0);
+	return zrdr_findtag_startidx(reader, name, 1);
 }
 
 _zrdr* zrdr_findtag_startidx(_zrdr* reader, const char* name, u32 startidx)
@@ -115,15 +111,8 @@ _zrdr* zrdr_findtag_startidx(_zrdr* reader, const char* name, u32 startidx)
 
 	if (!reader->IsArray())
 		return NULL;
-
-	u32 length = 0;
-
-	if (GetGame() <= game_SOCOM1)
-		length = reader->array->integer;
-	else if (GetGame() == game_SOCOM2_BETA || GetGame() == game_SOCOM2)
-		length = reader->length;
 	
-	for (; startidx < length; startidx++)
+	for (u32 length = reader->array->integer; startidx < length; startidx++)
 	{
 		_zrdr* node = &reader->array[startidx];
 
@@ -402,12 +391,12 @@ bool zrdr_tobool(_zrdr* reader, bool* output)
 
 	if (reader->type == ZRDR_STRING)
 	{
-		if (SDL_strcasecmp(reader->string, "true") == 0 || SDL_strcasecmp(reader->string, "on") == 0)
+		if (strcasecmp(reader->string, "true") == 0 || strcasecmp(reader->string, "on") == 0)
 		{
 			*output = true;
 			return true;
 		}
-		else if (SDL_strcasecmp(reader->string, "false") == 0 || SDL_strcasecmp(reader->string, "off") == 0)
+		else if (strcasecmp(reader->string, "false") == 0 || strcasecmp(reader->string, "off") == 0)
 		{
 			*output = false;
 			return true;
